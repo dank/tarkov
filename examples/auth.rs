@@ -1,3 +1,7 @@
+use tarkov::Tarkov;
+
+// TODO: Change my password soon!
 fn main() {
-    println!("Hello, world!");
+    let t = Tarkov::new();
+    t.login("***REMOVED***", "***REMOVED***");
 }
