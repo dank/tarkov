@@ -355,6 +355,8 @@ pub struct Ragfair {
 pub enum ProfileError {
     #[error(display = "not authorized or game profile not selected")]
     NotAuthorized,
+    #[error(display = "invalid user id selected")]
+    InvalidUserID,
 }
 
 #[derive(Debug, Serialize)]
@@ -369,13 +371,8 @@ struct SelectResponse {
     status: Option<String>,
 }
 
-#[derive(Debug, err_derive::Error)]
-pub enum SelectError {
-    #[error(display = "invalid user id selected")]
-    InvalidUserID,
-}
-
 impl Tarkov {
+    /// Get a list of your profiles.
     pub async fn get_profiles(&self) -> Result<Vec<Profile>> {
         let url = format!("{}/client/game/profile/list", PROD_ENDPOINT);
         let res: ProfileResponse = self.post_json(&url, &{}).await?;
@@ -388,6 +385,7 @@ impl Tarkov {
         }
     }
 
+    /// Select a profile by user ID.
     pub async fn select_profile(&self, user_id: &str) -> Result<()> {
         let url = format!("{}/client/game/profile/select", PROD_ENDPOINT);
         let res: SelectResponse = self
@@ -395,7 +393,8 @@ impl Tarkov {
             .await?;
         match res.error.code {
             0 => Ok(()),
-            205 => Err(SelectError::InvalidUserID)?,
+            201 => Err(ProfileError::NotAuthorized)?,
+            205 => Err(ProfileError::InvalidUserID)?,
             _ => Err(Error::UnknownAPIError(res.error.code)),
         }
     }

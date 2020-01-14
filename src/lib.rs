@@ -1,5 +1,5 @@
 use crate::auth::LoginError;
-use crate::profile::{ProfileError, SelectError};
+use crate::profile::ProfileError;
 use actix_web::client::Client;
 use actix_web::http::StatusCode;
 use err_derive::Error;
@@ -16,36 +16,49 @@ const LAUNCHER_ENDPOINT: &str = "https://launcher.escapefromtarkov.com";
 const PROD_ENDPOINT: &str = "https://prod.escapefromtarkov.com";
 const TRADING_ENDPOINT: &str = "https://trading.escapefromtarkov.com";
 
-pub mod auth;
+mod auth;
+
+/// Structs for the Friend API.
 pub mod friend;
+/// Helper functions for hardware ID.
 pub mod hwid;
+/// Structs for the Profile API.
 pub mod profile;
+/// Structs for the Trading API.
 pub mod trading;
 
+/// Common error enum returned by most functions.
 #[derive(Debug, Error)]
 pub enum Error {
+    /// A `std::io` error
     #[error(display = "io error: {}", _0)]
     Io(#[error(source)] std::io::Error),
+    /// An `actix-web` error sending request.
     #[error(display = "send request error: {}", _0)]
     SendRequestError(#[error(from)] actix_web::client::SendRequestError),
+    /// An `actix-web` error parsing response.
     #[error(display = "payload error: {}", _0)]
     PayloadError(#[error(from)] actix_web::client::PayloadError),
+    /// A `serde_json` error.
     #[error(display = "json error: {}", _0)]
     Json(#[error(source)] serde_json::error::Error),
+    /// Generic non-success response from the API.
     #[error(display = "non-success response from api: {}", _0)]
     Status(StatusCode),
 
+    /// Unidentified error within the EFT API.
     #[error(display = "unidentified login error with error code: {}", _0)]
     UnknownAPIError(u8),
+    #[doc(hidden)]
     #[error(display = "login api error: {}", _0)]
     LoginError(#[error(source)] LoginError),
+    /// `Profile` API error.
     #[error(display = "profile api error: {}", _0)]
     ProfileError(#[error(source)] ProfileError),
-    #[error(display = "profile select api error: {}", _0)]
-    SelectError(#[error(source)] SelectError),
 }
 
-type Result<T> = std::result::Result<T, Error>;
+/// `Result` alias type.
+pub type Result<T> = std::result::Result<T, Error>;
 
 #[derive(Debug, Deserialize)]
 struct ErrorResponse {
@@ -55,6 +68,7 @@ struct ErrorResponse {
     message: Option<String>,
 }
 
+/// Client for the EFT API.
 pub struct Tarkov {
     client: Client,
     pub hwid: String,
@@ -62,7 +76,8 @@ pub struct Tarkov {
 }
 
 impl Tarkov {
-    pub async fn new(email: &str, password: &str, hwid: &str) -> Result<Self> {
+    /// Login with an email and password.
+    pub async fn from_email_and_password(email: &str, password: &str, hwid: &str) -> Result<Self> {
         let client = Client::new();
 
         let user = auth::login(&client, email, password, &hwid).await?;
@@ -75,6 +90,7 @@ impl Tarkov {
         })
     }
 
+    /// Login with a Bearer token.
     pub async fn from_access_token(access_token: &str, hwid: &str) -> Result<Self> {
         let client = Client::new();
         let session = auth::exchange_access_token(&client, &access_token, &hwid).await?;
@@ -86,6 +102,7 @@ impl Tarkov {
         })
     }
 
+    /// Login with a cookie session (AKA `PHPSESSID`).
     pub async fn from_session(session: &str, hwid: &str) -> Result<Self> {
         let client = Client::new();
 

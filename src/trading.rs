@@ -84,6 +84,7 @@ struct GetTraderResponse {
 }
 
 impl Tarkov {
+    /// Get a list of all traders.
     pub async fn get_traders(&self) -> Result<Vec<Trader>> {
         let url = format!("{}/client/trading/api/getTradersList", TRADING_ENDPOINT);
         let res: TraderResponse = self.post_json(&url, &{}).await?;
@@ -96,8 +97,12 @@ impl Tarkov {
         }
     }
 
+    /// Get a trader by ID.
     pub async fn get_trader(&self, trader_id: &str) -> Result<Trader> {
-        let url = format!("{}/client/trading/api/getTrader/{}", TRADING_ENDPOINT, trader_id);
+        let url = format!(
+            "{}/client/trading/api/getTrader/{}",
+            TRADING_ENDPOINT, trader_id
+        );
         let res: GetTraderResponse = self.post_json(&url, &{}).await?;
 
         match res.error.code {

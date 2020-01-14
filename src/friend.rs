@@ -13,10 +13,11 @@ struct FriendResponse {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
-pub struct Friends {
-    pub friends: Vec<Friend>, // TODO: Types unknown
-                              // ignore: []
-                              // in_ignore_list: []
+struct Friends {
+    pub friends: Vec<Friend>,
+    // TODO: Types unknown
+    // ignore: []
+    // in_ignore_list: []
 }
 
 #[derive(Debug, Deserialize)]
@@ -37,6 +38,7 @@ pub struct Info {
 }
 
 impl Tarkov {
+    /// Get a list of your friends.
     pub async fn get_friends(&self) -> Result<Vec<Friend>> {
         let url = format!("{}/client/friend/list", PROD_ENDPOINT);
         let res: FriendResponse = self.post_json(&url, &{}).await?;

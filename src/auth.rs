@@ -17,8 +17,9 @@ struct LoginRequest<'a> {
     captcha: Option<()>, // Always null
 }
 
+/// Authenticated user.
 #[derive(Debug, Deserialize)]
-pub struct Auth {
+pub(crate) struct Auth {
     #[serde(default)]
     pub aid: String,
     #[serde(default)]
@@ -56,11 +57,14 @@ struct LoginResponse {
 
 #[derive(Debug, err_derive::Error)]
 pub enum LoginError {
+    /// Invalid or missing parameters.
     #[error(display = "invalid or missing login parameters")]
     MissingParameters,
-    #[error(display = "2fa is not supported yet")]
+    /// 2FA code is required to continue authentication.
+    #[error(display = "2fa is required")]
     TwoFactorRequired,
-    #[error(display = "captcha is not supported yet")]
+    /// Captcha response is required to continue authentication.
+    #[error(display = "captcha is required")]
     Captcha,
 }
 
@@ -139,6 +143,7 @@ struct ExchangeResponse {
     data: Option<Session>,
 }
 
+/// Authenticated user session.
 #[derive(Debug, Deserialize)]
 pub struct Session {
     pub queued: bool,
@@ -189,6 +194,7 @@ pub(crate) async fn exchange_access_token(
 }
 
 impl Tarkov {
+    /// Keep the current session alive
     pub async fn keep_alive(&self) -> Result<()> {
         let url = format!("{}/client/game/keepalive", PROD_ENDPOINT);
         let res: ErrorResponse = self.post_json(&url, &{}).await?;
