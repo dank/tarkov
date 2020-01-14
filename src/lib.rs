@@ -4,6 +4,9 @@ use actix_web::http::StatusCode;
 use err_derive::Error;
 use crate::profile::{ProfileError, SelectError};
 use serde::Deserialize;
+use serde::de::DeserializeOwned;
+use flate2::read::ZlibDecoder;
+use std::io::Read;
 
 const GAME_VERSION: &str = "0.12.2.5485";
 const LAUNCHER_VERSION: &str = "0.9.1.935";
@@ -46,14 +49,14 @@ type Result<T> = std::result::Result<T, Error>;
 #[derive(Debug, Deserialize)]
 struct ErrorResponse {
     #[serde(rename = "err")]
-    error_code: u8,
+    code: u8,
     #[serde(rename = "errmsg")]
-    error_message: Option<String>,
+    message: Option<String>,
 }
 
 pub struct Tarkov {
     client: Client,
-    hwid: String,
+    pub hwid: String,
     pub session: String,
 }
 
@@ -90,6 +93,31 @@ impl Tarkov {
             hwid: hwid.to_string(),
             session: session.to_string(),
         })
+    }
+
+    async fn post_json<S: serde::Serialize + ?Sized, T: DeserializeOwned>(
+        &self,
+        url: &str,
+        body: &S,
+    ) -> Result<T> {
+        let mut res = self.client
+            .post(url)
+            .header("User-Agent", format!("UnityPlayer/{} (UnityWebRequest/1.0, libcurl/7.52.0-DEV)", UNITY_VERSION))
+            .header("App-Version", format!("EFT Client {}", GAME_VERSION))
+            .header("X-Unity-Version", UNITY_VERSION)
+            .header("Cookie", format!("PHPSESSID={}", self.session))
+            .send_json(&body)
+            .await?;
+
+        let body = res.body().await?;
+        let mut decode = ZlibDecoder::new(&body[..]);
+        let mut body = String::new();
+        decode.read_to_string(&mut body)?;
+
+        match res.status() {
+            StatusCode::OK => Ok(serde_json::from_slice::<T>(body.as_bytes())?),
+            _ => Err(Error::Status(res.status())),
+        }
     }
 }
 

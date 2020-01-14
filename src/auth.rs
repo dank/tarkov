@@ -179,29 +179,11 @@ pub async fn exchange_access_token(client: &Client, access_token: &str, hwid: &s
 impl Tarkov {
     pub async fn keep_alive(&self) -> Result<()> {
         let url = format!("{}/client/game/keepalive", PROD_ENDPOINT);
-        let mut res = self.client
-            .post(url)
-            .header("User-Agent", format!("UnityPlayer/{} (UnityWebRequest/1.0, libcurl/7.52.0-DEV)", UNITY_VERSION))
-            .header("App-Version", format!("EFT Client {}", GAME_VERSION))
-            .header("X-Unity-Version", UNITY_VERSION)
-            .header("Cookie", format!("PHPSESSID={}", self.session))
-            .send_json(&{})
-            .await?;
+        let res: ErrorResponse = self.post_json(&url, &{}).await?;
 
-        let body = res.body().await?;
-        let mut decode = ZlibDecoder::new(&body[..]);
-        let mut body = String::new();
-        decode.read_to_string(&mut body)?;
-
-        match res.status() {
-            StatusCode::OK => {
-                let res = serde_json::from_slice::<ErrorResponse>(body.as_bytes())?;
-                match res.error_code {
-                    0 => Ok(()),
-                    _ => Err(Error::UnknownAPIError(res.error_code)),
-                }
-            }
-            _ => Err(Error::Status(res.status())),
+        match res.code {
+            0 => Ok(()),
+            _ => Err(Error::UnknownAPIError(res.code)),
         }
     }
 }

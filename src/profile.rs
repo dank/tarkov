@@ -1,4 +1,4 @@
-use crate::{Tarkov, Result, GAME_VERSION, UNITY_VERSION, PROD_ENDPOINT, Error};
+use crate::{Tarkov, Result, GAME_VERSION, UNITY_VERSION, PROD_ENDPOINT, Error, ErrorResponse};
 use serde::{Deserialize, Serialize, de};
 use flate2::read::ZlibDecoder;
 use std::io::Read;
@@ -9,10 +9,8 @@ use serde::de::Unexpected;
 
 #[derive(Debug, Deserialize)]
 struct ProfileResponse {
-    #[serde(rename = "err")]
-    error_code: u8,
-    #[serde(rename = "errmsg")]
-    error_message: Option<String>,
+    #[serde(flatten)]
+    error: ErrorResponse,
     data: Option<Vec<ProfileData>>,
 }
 
@@ -222,10 +220,8 @@ struct SelectRequest<'a> {
 
 #[derive(Deserialize)]
 struct SelectResponse {
-    #[serde(rename = "err")]
-    error_code: u8,
-    #[serde(rename = "errmsg")]
-    error_message: Option<String>,
+    #[serde(flatten)]
+    error: ErrorResponse,
     status: Option<String>,
 }
 
@@ -238,61 +234,23 @@ pub enum SelectError {
 impl Tarkov {
     pub async fn get_profiles(&self) -> Result<Vec<ProfileData>> {
         let url = format!("{}/client/game/profile/list", PROD_ENDPOINT);
-        let mut res = self.client
-            .post(url)
-            .header("User-Agent", format!("UnityPlayer/{} (UnityWebRequest/1.0, libcurl/7.52.0-DEV)", UNITY_VERSION))
-            .header("App-Version", format!("EFT Client {}", GAME_VERSION))
-            .header("X-Unity-Version", UNITY_VERSION)
-            .header("Cookie", format!("PHPSESSID={}", self.session))
-            .send_json(&{})
-            .await?;
-
-        let body = res.body().await?;
-        let mut decode = ZlibDecoder::new(&body[..]);
-        let mut body = String::new();
-        decode.read_to_string(&mut body)?;
-
-        match res.status() {
-            StatusCode::OK => {
-                let res = serde_json::from_slice::<ProfileResponse>(body.as_bytes())?;
-                match res.error_code {
-                    0 => Ok(res
-                        .data
-                        .expect("API returned no errors but `data` is unavailable.")),
-                    201 => Err(ProfileError::NotAuthorized)?,
-                    _ => Err(Error::UnknownAPIError(res.error_code)),
-                }
-            }
-            _ => Err(Error::Status(res.status())),
+        let res: ProfileResponse = self.post_json(&url, &{}).await?;
+        match res.error.code {
+            0 => Ok(res
+                .data
+                .expect("API returned no errors but `data` is unavailable.")),
+            201 => Err(ProfileError::NotAuthorized)?,
+            _ => Err(Error::UnknownAPIError(res.error.code)),
         }
     }
 
     pub async fn select_profile(&self, user_id: &str) -> Result<()> {
         let url = format!("{}/client/game/profile/select", PROD_ENDPOINT);
-        let mut res = self.client
-            .post(url)
-            .header("User-Agent", format!("UnityPlayer/{} (UnityWebRequest/1.0, libcurl/7.52.0-DEV)", UNITY_VERSION))
-            .header("App-Version", format!("EFT Client {}", GAME_VERSION))
-            .header("X-Unity-Version", UNITY_VERSION)
-            .header("Cookie", format!("PHPSESSID={}", self.session))
-            .send_json(&SelectRequest { uid: user_id })
-            .await?;
-
-        let body = res.body().await?;
-        let mut decode = ZlibDecoder::new(&body[..]);
-        let mut body = String::new();
-        decode.read_to_string(&mut body)?;
-
-        match res.status() {
-            StatusCode::OK => {
-                let res = serde_json::from_slice::<SelectResponse>(body.as_bytes())?;
-                match res.error_code {
-                    0 => Ok(()),
-                    205 => Err(SelectError::InvalidUserID)?,
-                    _ => Err(Error::UnknownAPIError(res.error_code)),
-                }
-            }
-            _ => Err(Error::Status(res.status())),
+        let res: SelectResponse = self.post_json(&url, &SelectRequest { uid: user_id }).await?;
+        match res.error.code {
+            0 => Ok(()),
+            205 => Err(SelectError::InvalidUserID)?,
+            _ => Err(Error::UnknownAPIError(res.error.code)),
         }
     }
 }
