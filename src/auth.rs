@@ -1,6 +1,6 @@
-use crate::{Tarkov, LAUNCHER_ENDPOINT, LAUNCHER_VERSION, Result};
+use crate::{Tarkov, LAUNCHER_ENDPOINT, LAUNCHER_VERSION, Result, Error};
 use actix_web::http::StatusCode;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::str::from_utf8;
 use std::io::Read;
 use flate2::read::ZlibDecoder;
@@ -14,15 +14,42 @@ struct LoginRequest<'a> {
     captcha: Option<()>, // Always null
 }
 
+#[derive(Debug, Deserialize)]
+pub struct LoginData {
+    aid: String,
+    lang: String,
+    region: String,
+    #[serde(rename = "gameVersion")]
+    game_version: String,
+    #[serde(rename = "dataCenters")]
+    data_centers: Vec<String>,
+    #[serde(rename = "ipRegion")]
+    // XXX: Not a mistake. Tarkov developers are inconsistent.
+    ip_region: String,
+    token_type: String,
+    expires_in: u64,
+    access_token: String,
+    refresh_token: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct LoginResponse {
+    #[serde(rename = "err")]
+    error_code: u8,
+    #[serde(rename = "errmsg")]
+    error_message: Option<String>,
+    data: LoginData
+}
+
 impl Tarkov {
-    pub async fn login(&self, email: &str, password: &str, hw_code: &str) -> Result<()> {
+    pub async fn login(&self, email: &str, password: &str, hw_code: &str) -> Result<LoginResponse> {
         let url = format!("{}/launcher/login?launcherVersion={}&branch=live", LAUNCHER_ENDPOINT, LAUNCHER_VERSION);
         let password = format!("{:x}", md5::compute(&password));
         let req = LoginRequest {
             email,
             pass: &password,
             hw_code,
-            captcha: None
+            captcha: None,
         };
 
         let mut res = self.client.post(url)
@@ -34,13 +61,13 @@ impl Tarkov {
         let mut body = String::new();
         decode.read_to_string(&mut body)?;
 
-        println!("{}", body);
+        match res.status() {
+            StatusCode::OK => return Ok(serde_json::from_slice::<LoginResponse>(body.as_bytes())?),
+            _ => {}
+        };
 
-        Ok(())
-
-//        match res.status() {
-//            StatusCode::OK => Ok(serde_json::from_slice::<T>(&body)?),
-//            _ => {}
-//        };
+        Err(Error::UnknownError)
     }
+
+    // TODO: Implement refresh_tokens.
 }

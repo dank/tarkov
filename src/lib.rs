@@ -16,6 +16,10 @@ pub enum Error {
     SendRequestError(#[error(from)] actix_web::client::SendRequestError),
     #[error(display = "payload error: {}", _0)]
     PayloadError(#[error(from)] actix_web::client::PayloadError),
+    #[error(display = "json error: {}", _0)]
+    Json(#[error(source)] serde_json::error::Error),
+    #[error(display = "???")]
+    UnknownError, // TODO
 }
 
 type Result<T> = std::result::Result<T, Error>;
