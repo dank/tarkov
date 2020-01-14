@@ -11,4 +11,5 @@ async fn main() {
     println!("{:?}", t.get_friends().await);
     println!("{:?}", t.keep_alive().await);
     println!("{:?}", t.get_traders().await);
+    println!("{:?}", t.get_trader("54cb50c76803fa8b248b4571").await);
 }

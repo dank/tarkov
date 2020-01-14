@@ -76,10 +76,29 @@ struct TraderResponse {
     data: Option<Vec<Trader>>,
 }
 
+#[derive(Debug, Deserialize)]
+struct GetTraderResponse {
+    #[serde(flatten)]
+    error: ErrorResponse,
+    data: Option<Trader>,
+}
+
 impl Tarkov {
     pub async fn get_traders(&self) -> Result<Vec<Trader>> {
         let url = format!("{}/client/trading/api/getTradersList", TRADING_ENDPOINT);
         let res: TraderResponse = self.post_json(&url, &{}).await?;
+
+        match res.error.code {
+            0 => Ok(res
+                .data
+                .expect("API returned no errors but `data` is unavailable.")),
+            _ => Err(Error::UnknownAPIError(res.error.code)),
+        }
+    }
+
+    pub async fn get_trader(&self, trader_id: &str) -> Result<Trader> {
+        let url = format!("{}/client/trading/api/getTrader/{}", TRADING_ENDPOINT, trader_id);
+        let res: GetTraderResponse = self.post_json(&url, &{}).await?;
 
         match res.error.code {
             0 => Ok(res
