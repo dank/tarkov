@@ -20,7 +20,7 @@ pub struct Trader {
     discount: i64,
     discount_end: i64,
     buyer_up: bool,
-    // enum?
+    // XXX: This could be an enum?
     currency: String,
     supply_next_time: u64,
     repair: Repair,

@@ -15,7 +15,6 @@ struct FriendResponse {
 #[serde(rename_all = "PascalCase")]
 struct Friends {
     pub friends: Vec<Friend>,
-    // TODO: Types unknown
     // ignore: []
     // in_ignore_list: []
 }

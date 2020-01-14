@@ -47,8 +47,9 @@ pub struct Profile {
     #[serde(rename = "Quests")]
     pub quests: Vec<Quest>,
     #[serde(rename = "RagfairInfo")]
-    pub ragfair: Ragfair, // trader_standings
-                          // wish_list
+    pub ragfair: Ragfair,
+    // trader_standings: [],
+    // wish_list: [],
 }
 
 #[derive(Debug, Deserialize)]
@@ -56,7 +57,7 @@ pub struct Profile {
 pub struct Info {
     pub nickname: String,
     pub lower_nickname: String,
-    // TODO: This can be enum
+    // XXX: This could be enum
     pub side: String,
     pub voice: String,
     pub level: u64,
@@ -74,7 +75,7 @@ pub struct Info {
     pub need_wipe: bool,
     pub global_wipe: bool,
     pub nickname_change_date: u64,
-    // bans: [] TODO: Type unknown
+    // bans: []
 }
 
 #[derive(Debug, Deserialize)]
@@ -212,7 +213,8 @@ pub struct Item {
     pub tpl: String,
     pub parent_id: Option<String>,
     pub slot_id: Option<String>,
-    //    location: Option<Location>, TODO: Bad type...
+    // XXX: This type can be both Integer and `Location`...
+    // location: Option<Location>
 }
 
 #[derive(Debug, Deserialize)]
@@ -223,7 +225,7 @@ pub struct Inventory {
     pub stash: Option<String>,
     pub quest_raid_items: String,
     pub quest_stash_items: String,
-    // first_panel: {} // TODO: Type unknown
+    // first_panel: {}
 }
 
 #[derive(Debug, Deserialize)]
@@ -261,11 +263,11 @@ pub struct Stats {
     pub last_session_date: u64,
     pub aggressor: StatsAggressor,
     pub total_in_game_time: u64,
-    pub survivor_class: String, // TODO: Unknown types:
-                                // dropped_items: [],
-                                // found_in_raid_items: [],
-                                // victims: [],
-                                // carried_quest_items: []
+    pub survivor_class: String,
+    // dropped_items: [],
+    // found_in_raid_items: [],
+    // victims: [],
+    // carried_quest_items: []
 }
 
 #[derive(Debug, Deserialize)]
