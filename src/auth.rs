@@ -66,7 +66,12 @@ pub enum LoginError {
 
 // TODO: Implement refresh_tokens.
 
-pub async fn login(client: &Client, email: &str, password: &str, hwid: &str) -> Result<Auth> {
+pub(crate) async fn login(
+    client: &Client,
+    email: &str,
+    password: &str,
+    hwid: &str,
+) -> Result<Auth> {
     if email.is_empty() || password.is_empty() || hwid.is_empty() {
         return Err(LoginError::MissingParameters)?;
     }
@@ -140,7 +145,7 @@ pub struct Session {
     pub session: String,
 }
 
-pub async fn exchange_access_token(
+pub(crate) async fn exchange_access_token(
     client: &Client,
     access_token: &str,
     hwid: &str,
