@@ -1,8 +1,8 @@
-use crate::{Tarkov, Result, PROD_ENDPOINT, UNITY_VERSION, GAME_VERSION, ErrorResponse, Error};
-use flate2::read::ZlibDecoder;
-use std::io::Read;
-use serde::Deserialize;
+use crate::{Error, ErrorResponse, Result, Tarkov, GAME_VERSION, PROD_ENDPOINT, UNITY_VERSION};
 use actix_web::http::StatusCode;
+use flate2::read::ZlibDecoder;
+use serde::Deserialize;
+use std::io::Read;
 
 #[derive(Debug, Deserialize)]
 struct FriendResponse {
@@ -14,27 +14,26 @@ struct FriendResponse {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct Friends {
-    friends: Vec<Friend>
-    // TODO: Types unknown
-    // ignore: []
-    // in_ignore_list: []
+    pub friends: Vec<Friend>, // TODO: Types unknown
+                              // ignore: []
+                              // in_ignore_list: []
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct Friend {
     #[serde(rename = "_id")]
-    id: String,
-    info: FriendInfo,
+    pub id: String,
+    pub info: Info,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
-pub struct FriendInfo {
-    nickname: String,
-    side: String,
-    level: u64,
-    member_category: String,
+pub struct Info {
+    pub nickname: String,
+    pub side: String,
+    pub level: u64,
+    pub member_category: String,
 }
 
 impl Tarkov {

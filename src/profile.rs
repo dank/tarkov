@@ -1,360 +1,355 @@
-use crate::{Tarkov, Result, GAME_VERSION, UNITY_VERSION, PROD_ENDPOINT, Error, ErrorResponse};
-use serde::{Deserialize, Serialize, de};
-use flate2::read::ZlibDecoder;
-use std::io::Read;
+use crate::{Error, ErrorResponse, Result, Tarkov, GAME_VERSION, PROD_ENDPOINT, UNITY_VERSION};
 use actix_web::http::StatusCode;
-use std::fmt::Write;
 use core::fmt;
+use flate2::read::ZlibDecoder;
 use serde::de::Unexpected;
+use serde::{de, Deserialize, Serialize};
 use std::collections::HashMap;
+use std::fmt::Write;
+use std::io::Read;
 
 #[derive(Debug, Deserialize)]
 struct ProfileResponse {
     #[serde(flatten)]
     error: ErrorResponse,
-    data: Option<Vec<ProfileData>>,
+    data: Option<Vec<Profile>>,
 }
 
 #[derive(Debug, Deserialize)]
-pub struct ProfileData {
+pub struct Profile {
     #[serde(rename = "_id")]
-    id: String,
-    aid: u64,
-    savage: Option<String>,
+    pub id: String,
+    pub aid: u64,
+    pub savage: Option<String>,
     #[serde(rename = "Info")]
-    info: Info,
+    pub info: Info,
     #[serde(rename = "Customization")]
-    customization: Customization,
+    pub customization: Customization,
     #[serde(rename = "Health")]
-    health: Health,
+    pub health: Health,
     #[serde(rename = "Inventory")]
-    inventory: Inventory,
+    pub inventory: Inventory,
     #[serde(rename = "Skills")]
-    skills: Skills,
+    pub skills: Skills,
     #[serde(rename = "Stats")]
-    stats: Stats,
+    pub stats: Stats,
     #[serde(rename = "Encyclopedia")]
-    encyclopedia: HashMap<String, bool>,
+    pub encyclopedia: HashMap<String, bool>,
     #[serde(rename = "ConditionCounters")]
-    condition_counters: ConditionCounters,
+    pub condition_counters: ConditionCounters,
     #[serde(rename = "BackendCounters")]
-    backend_counters: HashMap<String, BackendCounter>,
+    pub backend_counters: HashMap<String, BackendCounter>,
     // insured_items: [],
     // hideout: {},
     // notes: {},
     #[serde(rename = "Bonuses")]
-    bonuses: Vec<Bonus>,
+    pub bonuses: Vec<Bonus>,
     #[serde(rename = "Quests")]
-    quests: Vec<Quest>,
+    pub quests: Vec<Quest>,
     #[serde(rename = "RagfairInfo")]
-    ragfair: Ragfair
-    // trader_standings
-    // wish_list
+    pub ragfair: Ragfair, // trader_standings
+                          // wish_list
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct Info {
-    nickname: String,
-    // XXX: BAD DEVS!
-    lower_nickname: Option<String>,
-    lowercase_nickname: Option<String>,
+    pub nickname: String,
+    pub lower_nickname: String,
     // TODO: This can be enum
-    side: String,
-    voice: String,
-    level: u64,
-    experience: u64,
-    registration_date: u64,
-    game_version: String,
-    account_type: u64,
+    pub side: String,
+    pub voice: String,
+    pub level: u64,
+    pub experience: u64,
+    pub registration_date: u64,
+    pub game_version: String,
+    pub account_type: u64,
     // XXX: Bad devs! This field can be both String and integer, ignoring for now.
     // member_category: String,
     #[serde(rename = "lockedMoveCommands")]
-    locked_move_commands: bool,
-    savage_lock_time: u64,
-    last_time_played_as_savage: u64,
-    settings: InfoSettings,
-    need_wipe: bool,
-    global_wipe: bool,
-    nickname_change_date: u64,
+    pub locked_move_commands: bool,
+    pub savage_lock_time: u64,
+    pub last_time_played_as_savage: u64,
+    pub settings: InfoSettings,
+    pub need_wipe: bool,
+    pub global_wipe: bool,
+    pub nickname_change_date: u64,
     // bans: [] TODO: Type unknown
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct InfoSettings {
-    role: Option<String>,
-    bot_difficulty: Option<String>,
-    experience: Option<i64>,
+    pub role: Option<String>,
+    pub bot_difficulty: Option<String>,
+    pub experience: Option<i64>,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct Customization {
-    head: String,
-    body: String,
-    feet: String,
-    hands: String,
+    pub head: String,
+    pub body: String,
+    pub feet: String,
+    pub hands: String,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
-pub struct HealthData {
-    current: u64,
-    maximum: u64,
+pub struct HealthLevel {
+    pub current: u64,
+    pub maximum: u64,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct BodyParts {
-    head: Head,
-    chest: Chest,
-    stomach: Stomach,
-    left_arm: LeftArm,
-    right_arm: RightArm,
-    left_leg: LeftLeg,
-    right_leg: RightLeg,
+    pub head: Head,
+    pub chest: Chest,
+    pub stomach: Stomach,
+    pub left_arm: LeftArm,
+    pub right_arm: RightArm,
+    pub left_leg: LeftLeg,
+    pub right_leg: RightLeg,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct Head {
-    health: HealthData
+    pub health: HealthLevel,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct Chest {
-    health: HealthData
+    pub health: HealthLevel,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct Stomach {
-    health: HealthData
+    pub health: HealthLevel,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct LeftArm {
-    health: HealthData
+    pub health: HealthLevel,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct RightArm {
-    health: HealthData
+    pub health: HealthLevel,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct LeftLeg {
-    health: HealthData
+    pub health: HealthLevel,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct RightLeg {
-    health: HealthData
+    pub health: HealthLevel,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct Health {
-    hydration: HealthData,
-    energy: HealthData,
-    body_parts: BodyParts,
-    update_time: u64,
+    pub hydration: HealthLevel,
+    pub energy: HealthLevel,
+    pub body_parts: BodyParts,
+    pub update_time: u64,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct Upd {
-    stack_objects_count: Option<u64>,
-    spawned_in_session: Option<bool>,
-    med_kit: Option<UpdMedkit>,
-    repairable: Option<UpdRepairable>,
-    light: Option<UpdLight>,
+    pub stack_objects_count: Option<u64>,
+    pub spawned_in_session: Option<bool>,
+    pub med_kit: Option<UpdMedkit>,
+    pub repairable: Option<UpdRepairable>,
+    pub light: Option<UpdLight>,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct UpdMedkit {
-    hp_resource: u64,
+    pub hp_resource: u64,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct UpdRepairable {
-    max_durability: u64,
-    durability: f64,
+    pub max_durability: u64,
+    pub durability: f64,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct UpdLight {
-    is_active: bool,
-    selected_mode: u64,
+    pub is_active: bool,
+    pub selected_mode: u64,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Location {
-    x: u64,
-    y: u64,
-    r: u64,
-    is_searched: Option<bool>,
+    pub x: u64,
+    pub y: u64,
+    pub r: u64,
+    pub is_searched: Option<bool>,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Item {
     #[serde(rename = "_id")]
-    id: String,
+    pub id: String,
     #[serde(rename = "_tpl")]
-    tpl: String,
-    parent_id: Option<String>,
-    slot_id: Option<String>,
-//    location: Option<Location>, TODO: Bad type...
+    pub tpl: String,
+    pub parent_id: Option<String>,
+    pub slot_id: Option<String>,
+    //    location: Option<Location>, TODO: Bad type...
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Inventory {
-    items: Vec<Item>,
-    equipment: String,
-    stash: Option<String>,
-    quest_raid_items: String,
-    quest_stash_items: String,
+    pub items: Vec<Item>,
+    pub equipment: String,
+    pub stash: Option<String>,
+    pub quest_raid_items: String,
+    pub quest_stash_items: String,
     // first_panel: {} // TODO: Type unknown
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct Skills {
-    common: Vec<CommonSkill>,
-    mastering: Vec<MasteringSkill>,
-    points: f64,
+    pub common: Vec<CommonSkill>,
+    pub mastering: Vec<MasteringSkill>,
+    pub points: f64,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct CommonSkill {
-    id: String,
-    progress: f64,
-    points_earned_during_session: f64,
-    last_access: i64,
+    pub id: String,
+    pub progress: f64,
+    pub points_earned_during_session: f64,
+    pub last_access: i64,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct MasteringSkill {
-    id: String,
-    progress: u64,
+    pub id: String,
+    pub progress: u64,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct Stats {
-    session_counters: SessionCounters,
-    overall_counters: OverallCounters,
-    session_experience_mult: u64,
-    experience_bonus_mult: u64,
-    total_session_experience: u64,
-    last_session_date: u64,
-    aggressor: StatsAggressor,
-    total_in_game_time: u64,
-    survivor_class: String
-    // TODO: Unknown types:
-    // dropped_items: [],
-    // found_in_raid_items: [],
-    // victims: [],
-    // carried_quest_items: [],
+    pub session_counters: SessionCounters,
+    pub overall_counters: OverallCounters,
+    pub session_experience_mult: u64,
+    pub experience_bonus_mult: u64,
+    pub total_session_experience: u64,
+    pub last_session_date: u64,
+    pub aggressor: StatsAggressor,
+    pub total_in_game_time: u64,
+    pub survivor_class: String, // TODO: Unknown types:
+                                // dropped_items: [],
+                                // found_in_raid_items: [],
+                                // victims: [],
+                                // carried_quest_items: []
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct SessionCounters {
-    items: Vec<SessionItem>
+    pub items: Vec<SessionItem>,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct OverallCounters {
-    items: Vec<SessionItem>
+    pub items: Vec<SessionItem>,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct SessionItem {
-    key: Vec<String>,
-    value: u64,
+    pub key: Vec<String>,
+    pub value: u64,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct StatsAggressor {
-    name: String,
-    side: String,
-    body_part: String,
-    head_segment: Option<String>,
-    weapon_name: String,
-    category: String
+    pub name: String,
+    pub side: String,
+    pub body_part: String,
+    pub head_segment: Option<String>,
+    pub weapon_name: String,
+    pub category: String,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct ConditionCounters {
-    counters: Vec<ConditionCounter>
+    pub counters: Vec<ConditionCounter>,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ConditionCounter {
-    id: String,
-    value: u64,
+    pub id: String,
+    pub value: u64,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct BackendCounter {
-    id: String,
-    qid: String,
-    value: u64,
+    pub id: String,
+    pub qid: String,
+    pub value: u64,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Bonus {
     #[serde(rename = "type")]
-    bonus_type: String,
-    template_id: Option<String>,
-    value: Option<i64>,
-    passive: Option<bool>,
-    visible: Option<bool>,
-    production: Option<bool>,
-    filter: Option<Vec<String>>,
-    id: Option<String>,
-    icon: Option<String>
+    pub bonus_type: String,
+    pub template_id: Option<String>,
+    pub value: Option<i64>,
+    pub passive: Option<bool>,
+    pub visible: Option<bool>,
+    pub production: Option<bool>,
+    pub filter: Option<Vec<String>>,
+    pub id: Option<String>,
+    pub icon: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Quest {
-    qid: String,
-    start_time: u64,
-    status: u64,
-    status_timers: HashMap<String, u64>,
+    pub qid: String,
+    pub start_time: u64,
+    pub status: u64,
+    pub status_timers: HashMap<String, u64>,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Ragfair {
-    rating: f64,
-    is_rating_growing: bool,
+    pub rating: f64,
+    pub is_rating_growing: bool,
     // offers: []
 }
-
 
 #[derive(Debug, err_derive::Error)]
 pub enum ProfileError {
@@ -381,7 +376,7 @@ pub enum SelectError {
 }
 
 impl Tarkov {
-    pub async fn get_profiles(&self) -> Result<Vec<ProfileData>> {
+    pub async fn get_profiles(&self) -> Result<Vec<Profile>> {
         let url = format!("{}/client/game/profile/list", PROD_ENDPOINT);
         let res: ProfileResponse = self.post_json(&url, &{}).await?;
         match res.error.code {
@@ -395,7 +390,9 @@ impl Tarkov {
 
     pub async fn select_profile(&self, user_id: &str) -> Result<()> {
         let url = format!("{}/client/game/profile/select", PROD_ENDPOINT);
-        let res: SelectResponse = self.post_json(&url, &SelectRequest { uid: user_id }).await?;
+        let res: SelectResponse = self
+            .post_json(&url, &SelectRequest { uid: user_id })
+            .await?;
         match res.error.code {
             0 => Ok(()),
             205 => Err(SelectError::InvalidUserID)?,
@@ -405,33 +402,33 @@ impl Tarkov {
 }
 
 // XXX: I shouldn't have to do this if tarkov devs know what types are.
-struct LocationVisitor;
-
-impl<'de> de::Visitor<'de> for LocationVisitor {
-    type Value = Option<Location>;
-
-    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        formatter.write_str("Location struct")
-    }
-
-    fn visit_none<E>(self) -> std::result::Result<Self::Value, E>
-        where
-            E: de::Error,
-    {
-        Ok(None)
-    }
-
-    fn visit_some<D>(self, d: D) -> std::result::Result<Self::Value, D::Error>
-        where
-            D: de::Deserializer<'de>,
-    {
-        Ok(None)
-    }
-}
-
-pub fn deserialize_location_or_none<'de, D>(d: D) -> std::result::Result<Option<Location>, D::Error>
-    where
-        D: de::Deserializer<'de>,
-{
-    d.deserialize_option(LocationVisitor)
-}
+//struct LocationVisitor;
+//
+//impl<'de> de::Visitor<'de> for LocationVisitor {
+//    type Value = Option<Location>;
+//
+//    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+//        formatter.write_str("Location struct")
+//    }
+//
+//    fn visit_none<E>(self) -> std::result::Result<Self::Value, E>
+//        where
+//            E: de::Error,
+//    {
+//        Ok(None)
+//    }
+//
+//    fn visit_some<D>(self, d: D) -> std::result::Result<Self::Value, D::Error>
+//        where
+//            D: de::Deserializer<'de>,
+//    {
+//        Ok(None)
+//    }
+//}
+//
+//pub fn deserialize_location_or_none<'de, D>(d: D) -> std::result::Result<Option<Location>, D::Error>
+//    where
+//        D: de::Deserializer<'de>,
+//{
+//    d.deserialize_option(LocationVisitor)
+//}

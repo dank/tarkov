@@ -1,11 +1,11 @@
 use crate::auth::LoginError;
+use crate::profile::{ProfileError, SelectError};
 use actix_web::client::Client;
 use actix_web::http::StatusCode;
 use err_derive::Error;
-use crate::profile::{ProfileError, SelectError};
-use serde::Deserialize;
-use serde::de::DeserializeOwned;
 use flate2::read::ZlibDecoder;
+use serde::de::DeserializeOwned;
+use serde::Deserialize;
 use std::io::Read;
 
 const GAME_VERSION: &str = "0.12.2.5485";
@@ -16,10 +16,10 @@ const LAUNCHER_ENDPOINT: &str = "https://launcher.escapefromtarkov.com";
 const PROD_ENDPOINT: &str = "https://prod.escapefromtarkov.com";
 const TRADING_ENDPOINT: &str = "https://trading.escapefromtarkov.com";
 
-mod auth;
-mod profile;
-mod friend;
+pub mod auth;
+pub mod friend;
 pub mod hwid;
+pub mod profile;
 
 #[derive(Debug, Error)]
 pub enum Error {
@@ -100,9 +100,16 @@ impl Tarkov {
         url: &str,
         body: &S,
     ) -> Result<T> {
-        let mut res = self.client
+        let mut res = self
+            .client
             .post(url)
-            .header("User-Agent", format!("UnityPlayer/{} (UnityWebRequest/1.0, libcurl/7.52.0-DEV)", UNITY_VERSION))
+            .header(
+                "User-Agent",
+                format!(
+                    "UnityPlayer/{} (UnityWebRequest/1.0, libcurl/7.52.0-DEV)",
+                    UNITY_VERSION
+                ),
+            )
             .header("App-Version", format!("EFT Client {}", GAME_VERSION))
             .header("X-Unity-Version", UNITY_VERSION)
             .header("Cookie", format!("PHPSESSID={}", self.session))

@@ -1,4 +1,7 @@
-use crate::{Error, Result, GAME_VERSION, LAUNCHER_ENDPOINT, LAUNCHER_VERSION, PROD_ENDPOINT, Tarkov, UNITY_VERSION, ErrorResponse};
+use crate::{
+    Error, ErrorResponse, Result, Tarkov, GAME_VERSION, LAUNCHER_ENDPOINT, LAUNCHER_VERSION,
+    PROD_ENDPOINT, UNITY_VERSION,
+};
 use actix_web::client::Client;
 use actix_web::http::StatusCode;
 use flate2::read::ZlibDecoder;
@@ -15,7 +18,7 @@ struct LoginRequest<'a> {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct LoginData {
+pub struct Auth {
     #[serde(default)]
     pub aid: String,
     #[serde(default)]
@@ -48,7 +51,7 @@ struct LoginResponse {
     error_code: u8,
     #[serde(rename = "errmsg")]
     error_message: Option<String>,
-    data: Option<LoginData>,
+    data: Option<Auth>,
 }
 
 #[derive(Debug, err_derive::Error)]
@@ -63,7 +66,7 @@ pub enum LoginError {
 
 // TODO: Implement refresh_tokens.
 
-pub async fn login(client: &Client, email: &str, password: &str, hwid: &str) -> Result<LoginData> {
+pub async fn login(client: &Client, email: &str, password: &str, hwid: &str) -> Result<Auth> {
     if email.is_empty() || password.is_empty() || hwid.is_empty() {
         return Err(LoginError::MissingParameters)?;
     }
@@ -128,16 +131,20 @@ struct ExchangeResponse {
     error_code: u8,
     #[serde(rename = "errmsg")]
     error_message: Option<String>,
-    data: Option<ExchangeData>,
+    data: Option<Session>,
 }
 
 #[derive(Debug, Deserialize)]
-pub struct ExchangeData {
+pub struct Session {
     pub queued: bool,
     pub session: String,
 }
 
-pub async fn exchange_access_token(client: &Client, access_token: &str, hwid: &str) -> Result<ExchangeData> {
+pub async fn exchange_access_token(
+    client: &Client,
+    access_token: &str,
+    hwid: &str,
+) -> Result<Session> {
     let url = format!(
         "{}/launcher/game/start?launcherVersion={}&branch=live",
         PROD_ENDPOINT, LAUNCHER_VERSION
