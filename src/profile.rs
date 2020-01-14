@@ -6,6 +6,7 @@ use actix_web::http::StatusCode;
 use std::fmt::Write;
 use core::fmt;
 use serde::de::Unexpected;
+use std::collections::HashMap;
 
 #[derive(Debug, Deserialize)]
 struct ProfileResponse {
@@ -15,8 +16,45 @@ struct ProfileResponse {
 }
 
 #[derive(Debug, Deserialize)]
+pub struct ProfileData {
+    #[serde(rename = "_id")]
+    id: String,
+    aid: u64,
+    savage: Option<String>,
+    #[serde(rename = "Info")]
+    info: Info,
+    #[serde(rename = "Customization")]
+    customization: Customization,
+    #[serde(rename = "Health")]
+    health: Health,
+    #[serde(rename = "Inventory")]
+    inventory: Inventory,
+    #[serde(rename = "Skills")]
+    skills: Skills,
+    #[serde(rename = "Stats")]
+    stats: Stats,
+    #[serde(rename = "Encyclopedia")]
+    encyclopedia: HashMap<String, bool>,
+    #[serde(rename = "ConditionCounters")]
+    condition_counters: ConditionCounters,
+    #[serde(rename = "BackendCounters")]
+    backend_counters: HashMap<String, BackendCounter>,
+    // insured_items: [],
+    // hideout: {},
+    // notes: {},
+    #[serde(rename = "Bonuses")]
+    bonuses: Vec<Bonus>,
+    #[serde(rename = "Quests")]
+    quests: Vec<Quest>,
+    #[serde(rename = "RagfairInfo")]
+    ragfair: Ragfair
+    // trader_standings
+    // wish_list
+}
+
+#[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
-pub struct ProfileInfo {
+pub struct Info {
     nickname: String,
     // XXX: BAD DEVS!
     lower_nickname: Option<String>,
@@ -35,7 +73,7 @@ pub struct ProfileInfo {
     locked_move_commands: bool,
     savage_lock_time: u64,
     last_time_played_as_savage: u64,
-    settings: ProfileInfoSettings,
+    settings: InfoSettings,
     need_wipe: bool,
     global_wipe: bool,
     nickname_change_date: u64,
@@ -44,7 +82,7 @@ pub struct ProfileInfo {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
-pub struct ProfileInfoSettings {
+pub struct InfoSettings {
     role: Option<String>,
     bot_difficulty: Option<String>,
     experience: Option<i64>,
@@ -52,7 +90,7 @@ pub struct ProfileInfoSettings {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
-pub struct ProfileCustomization {
+pub struct Customization {
     head: String,
     body: String,
     feet: String,
@@ -61,7 +99,7 @@ pub struct ProfileCustomization {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
-pub struct Health {
+pub struct HealthData {
     current: u64,
     maximum: u64,
 }
@@ -81,50 +119,50 @@ pub struct BodyParts {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct Head {
-    health: Health
+    health: HealthData
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct Chest {
-    health: Health
+    health: HealthData
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct Stomach {
-    health: Health
+    health: HealthData
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct LeftArm {
-    health: Health
+    health: HealthData
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct RightArm {
-    health: Health
+    health: HealthData
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct LeftLeg {
-    health: Health
+    health: HealthData
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct RightLeg {
-    health: Health
+    health: HealthData
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
-pub struct ProfileHealth {
-    hydration: Health,
-    energy: Health,
+pub struct Health {
+    hydration: HealthData,
+    energy: HealthData,
     body_parts: BodyParts,
     update_time: u64,
 }
@@ -182,7 +220,7 @@ pub struct Item {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct ProfileInventory {
+pub struct Inventory {
     items: Vec<Item>,
     equipment: String,
     stash: Option<String>,
@@ -192,20 +230,131 @@ pub struct ProfileInventory {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct ProfileData {
-    #[serde(rename = "_id")]
-    id: String,
-    aid: u64,
-    savage: Option<String>,
-    #[serde(rename = "Info")]
-    info: ProfileInfo,
-    #[serde(rename = "Customization")]
-    customization: ProfileCustomization,
-    #[serde(rename = "Health")]
-    health: ProfileHealth,
-    #[serde(rename = "Inventory")]
-    inventory: ProfileInventory,
+#[serde(rename_all = "PascalCase")]
+pub struct Skills {
+    common: Vec<CommonSkill>,
+    mastering: Vec<MasteringSkill>,
+    points: f64,
 }
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct CommonSkill {
+    id: String,
+    progress: f64,
+    points_earned_during_session: f64,
+    last_access: i64,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct MasteringSkill {
+    id: String,
+    progress: u64,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct Stats {
+    session_counters: SessionCounters,
+    overall_counters: OverallCounters,
+    session_experience_mult: u64,
+    experience_bonus_mult: u64,
+    total_session_experience: u64,
+    last_session_date: u64,
+    aggressor: StatsAggressor,
+    total_in_game_time: u64,
+    survivor_class: String
+    // TODO: Unknown types:
+    // dropped_items: [],
+    // found_in_raid_items: [],
+    // victims: [],
+    // carried_quest_items: [],
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct SessionCounters {
+    items: Vec<SessionItem>
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct OverallCounters {
+    items: Vec<SessionItem>
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct SessionItem {
+    key: Vec<String>,
+    value: u64,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct StatsAggressor {
+    name: String,
+    side: String,
+    body_part: String,
+    head_segment: Option<String>,
+    weapon_name: String,
+    category: String
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct ConditionCounters {
+    counters: Vec<ConditionCounter>
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ConditionCounter {
+    id: String,
+    value: u64,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct BackendCounter {
+    id: String,
+    qid: String,
+    value: u64,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Bonus {
+    #[serde(rename = "type")]
+    bonus_type: String,
+    template_id: Option<String>,
+    value: Option<i64>,
+    passive: Option<bool>,
+    visible: Option<bool>,
+    production: Option<bool>,
+    filter: Option<Vec<String>>,
+    id: Option<String>,
+    icon: Option<String>
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Quest {
+    qid: String,
+    start_time: u64,
+    status: u64,
+    status_timers: HashMap<String, u64>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Ragfair {
+    rating: f64,
+    is_rating_growing: bool,
+    // offers: []
+}
+
 
 #[derive(Debug, err_derive::Error)]
 pub enum ProfileError {
