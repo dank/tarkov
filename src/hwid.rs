@@ -1,6 +1,6 @@
 use rand::Rng;
 
-pub fn random_md5<R: Rng + ?Sized>(rng: &mut R) -> String {
+fn random_md5<R: Rng + ?Sized>(rng: &mut R) -> String {
     format!("{:x}", md5::compute(&rng.gen::<i32>().to_le_bytes()))
 }
 

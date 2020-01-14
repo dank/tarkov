@@ -1,12 +1,11 @@
 use crate::{
-    Error, Result, Tarkov, GAME_VERSION, LAUNCHER_ENDPOINT, LAUNCHER_VERSION, PROD_ENDPOINT,
+    Error, Result, GAME_VERSION, LAUNCHER_ENDPOINT, LAUNCHER_VERSION, PROD_ENDPOINT,
 };
 use actix_web::client::Client;
 use actix_web::http::StatusCode;
 use flate2::read::ZlibDecoder;
 use serde::{Deserialize, Serialize};
 use std::io::Read;
-use std::str::from_utf8;
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
