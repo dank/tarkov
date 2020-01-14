@@ -2,14 +2,17 @@ use crate::auth::LoginError;
 use actix_web::client::Client;
 use actix_web::http::StatusCode;
 use err_derive::Error;
+use crate::profile::ProfileError;
 
 const GAME_VERSION: &str = "0.12.2.5485";
 const LAUNCHER_VERSION: &str = "0.9.1.935";
+const UNITY_VERSION: &str = "2018.4.13f1";
 
 const LAUNCHER_ENDPOINT: &str = "https://launcher.escapefromtarkov.com";
 const PROD_ENDPOINT: &str = "https://prod.escapefromtarkov.com";
 
 mod auth;
+mod profile;
 pub mod hwid;
 
 #[derive(Debug, Error)]
@@ -27,6 +30,8 @@ pub enum Error {
 
     #[error(display = "login api error: {}", _0)]
     LoginError(#[error(source)] LoginError),
+    #[error(display = "login api error: {}", _0)]
+    ProfileError(#[error(source)] ProfileError),
 }
 
 type Result<T> = std::result::Result<T, Error>;
