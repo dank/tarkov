@@ -8,7 +8,7 @@ use std::io::Read;
 struct FriendResponse {
     #[serde(flatten)]
     error: ErrorResponse,
-    data: Friends,
+    data: Option<Friends>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -42,7 +42,10 @@ impl Tarkov {
         let res: FriendResponse = self.post_json(&url, &{}).await?;
 
         match res.error.code {
-            0 => Ok(res.data.friends),
+            0 => Ok(res
+                .data
+                .expect("API returned no errors but `data` is unavailable.")
+                .friends),
             _ => Err(Error::UnknownAPIError(res.error.code)),
         }
     }

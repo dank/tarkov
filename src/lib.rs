@@ -20,6 +20,7 @@ pub mod auth;
 pub mod friend;
 pub mod hwid;
 pub mod profile;
+pub mod trading;
 
 #[derive(Debug, Error)]
 pub enum Error {
