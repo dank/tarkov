@@ -2,7 +2,8 @@ use crate::auth::LoginError;
 use actix_web::client::Client;
 use actix_web::http::StatusCode;
 use err_derive::Error;
-use crate::profile::ProfileError;
+use crate::profile::{ProfileError, SelectError};
+use serde::Deserialize;
 
 const GAME_VERSION: &str = "0.12.2.5485";
 const LAUNCHER_VERSION: &str = "0.9.1.935";
@@ -10,9 +11,11 @@ const UNITY_VERSION: &str = "2018.4.13f1";
 
 const LAUNCHER_ENDPOINT: &str = "https://launcher.escapefromtarkov.com";
 const PROD_ENDPOINT: &str = "https://prod.escapefromtarkov.com";
+const TRADING_ENDPOINT: &str = "https://trading.escapefromtarkov.com";
 
 mod auth;
 mod profile;
+mod friend;
 pub mod hwid;
 
 #[derive(Debug, Error)]
@@ -28,18 +31,30 @@ pub enum Error {
     #[error(display = "non-success response from api: {}", _0)]
     Status(StatusCode),
 
+    #[error(display = "unidentified login error with error code: {}", _0)]
+    UnknownAPIError(u8),
     #[error(display = "login api error: {}", _0)]
     LoginError(#[error(source)] LoginError),
-    #[error(display = "login api error: {}", _0)]
+    #[error(display = "profile api error: {}", _0)]
     ProfileError(#[error(source)] ProfileError),
+    #[error(display = "profile select api error: {}", _0)]
+    SelectError(#[error(source)] SelectError),
 }
 
 type Result<T> = std::result::Result<T, Error>;
 
+#[derive(Debug, Deserialize)]
+struct ErrorResponse {
+    #[serde(rename = "err")]
+    error_code: u8,
+    #[serde(rename = "errmsg")]
+    error_message: Option<String>,
+}
+
 pub struct Tarkov {
     client: Client,
     hwid: String,
-    session: String,
+    pub session: String,
 }
 
 impl Tarkov {

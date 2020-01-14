@@ -211,8 +211,6 @@ pub struct ProfileData {
 
 #[derive(Debug, err_derive::Error)]
 pub enum ProfileError {
-    #[error(display = "unidentified login error with error code: {}", _0)]
-    UnknownError(u8),
     #[error(display = "not authorized or game profile not selected")]
     NotAuthorized,
 }
@@ -220,6 +218,21 @@ pub enum ProfileError {
 #[derive(Debug, Serialize)]
 struct SelectRequest<'a> {
     uid: &'a str,
+}
+
+#[derive(Deserialize)]
+struct SelectResponse {
+    #[serde(rename = "err")]
+    error_code: u8,
+    #[serde(rename = "errmsg")]
+    error_message: Option<String>,
+    status: Option<String>,
+}
+
+#[derive(Debug, err_derive::Error)]
+pub enum SelectError {
+    #[error(display = "invalid user id selected")]
+    InvalidUserID,
 }
 
 impl Tarkov {
@@ -247,14 +260,14 @@ impl Tarkov {
                         .data
                         .expect("API returned no errors but `data` is unavailable.")),
                     201 => Err(ProfileError::NotAuthorized)?,
-                    _ => Err(ProfileError::UnknownError(res.error_code))?,
+                    _ => Err(Error::UnknownAPIError(res.error_code)),
                 }
             }
             _ => Err(Error::Status(res.status())),
         }
     }
 
-    pub async fn select_profile(&self, id: &str) -> Result<()> {
+    pub async fn select_profile(&self, user_id: &str) -> Result<()> {
         let url = format!("{}/client/game/profile/select", PROD_ENDPOINT);
         let mut res = self.client
             .post(url)
@@ -262,7 +275,7 @@ impl Tarkov {
             .header("App-Version", format!("EFT Client {}", GAME_VERSION))
             .header("X-Unity-Version", UNITY_VERSION)
             .header("Cookie", format!("PHPSESSID={}", self.session))
-            .send_json(&SelectRequest { uid: id })
+            .send_json(&SelectRequest { uid: user_id })
             .await?;
 
         let body = res.body().await?;
@@ -270,9 +283,17 @@ impl Tarkov {
         let mut body = String::new();
         decode.read_to_string(&mut body)?;
 
-        println!("{:?}", body);
-
-        Ok(())
+        match res.status() {
+            StatusCode::OK => {
+                let res = serde_json::from_slice::<SelectResponse>(body.as_bytes())?;
+                match res.error_code {
+                    0 => Ok(()),
+                    205 => Err(SelectError::InvalidUserID)?,
+                    _ => Err(Error::UnknownAPIError(res.error_code)),
+                }
+            }
+            _ => Err(Error::Status(res.status())),
+        }
     }
 }
 

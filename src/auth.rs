@@ -1,6 +1,4 @@
-use crate::{
-    Error, Result, GAME_VERSION, LAUNCHER_ENDPOINT, LAUNCHER_VERSION, PROD_ENDPOINT,
-};
+use crate::{Error, Result, GAME_VERSION, LAUNCHER_ENDPOINT, LAUNCHER_VERSION, PROD_ENDPOINT, Tarkov, UNITY_VERSION, ErrorResponse};
 use actix_web::client::Client;
 use actix_web::http::StatusCode;
 use flate2::read::ZlibDecoder;
@@ -55,8 +53,6 @@ struct LoginResponse {
 
 #[derive(Debug, err_derive::Error)]
 pub enum LoginError {
-    #[error(display = "unidentified login error with error code: {}", _0)]
-    UnknownError(u8),
     #[error(display = "invalid or missing login parameters")]
     MissingParameters,
     #[error(display = "2fa is not supported yet")]
@@ -104,7 +100,7 @@ pub async fn login(client: &Client, email: &str, password: &str, hwid: &str) -> 
                 207 => Err(LoginError::MissingParameters)?,
                 209 => Err(LoginError::TwoFactorRequired)?,
                 214 => Err(LoginError::Captcha)?,
-                _ => Err(LoginError::UnknownError(res.error_code))?,
+                _ => Err(Error::UnknownAPIError(res.error_code)),
             }
         }
         _ => Err(Error::Status(res.status())),
@@ -173,9 +169,39 @@ pub async fn exchange_access_token(client: &Client, access_token: &str, hwid: &s
                 0 => Ok(res
                     .data
                     .expect("API returned no errors but `data` is unavailable.")),
-                _ => Err(LoginError::UnknownError(res.error_code))?,
+                _ => Err(Error::UnknownAPIError(res.error_code)),
             }
         }
         _ => Err(Error::Status(res.status())),
+    }
+}
+
+impl Tarkov {
+    pub async fn keep_alive(&self) -> Result<()> {
+        let url = format!("{}/client/game/keepalive", PROD_ENDPOINT);
+        let mut res = self.client
+            .post(url)
+            .header("User-Agent", format!("UnityPlayer/{} (UnityWebRequest/1.0, libcurl/7.52.0-DEV)", UNITY_VERSION))
+            .header("App-Version", format!("EFT Client {}", GAME_VERSION))
+            .header("X-Unity-Version", UNITY_VERSION)
+            .header("Cookie", format!("PHPSESSID={}", self.session))
+            .send_json(&{})
+            .await?;
+
+        let body = res.body().await?;
+        let mut decode = ZlibDecoder::new(&body[..]);
+        let mut body = String::new();
+        decode.read_to_string(&mut body)?;
+
+        match res.status() {
+            StatusCode::OK => {
+                let res = serde_json::from_slice::<ErrorResponse>(body.as_bytes())?;
+                match res.error_code {
+                    0 => Ok(()),
+                    _ => Err(Error::UnknownAPIError(res.error_code)),
+                }
+            }
+            _ => Err(Error::Status(res.status())),
+        }
     }
 }
