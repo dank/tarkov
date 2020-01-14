@@ -10,7 +10,7 @@ const LAUNCHER_ENDPOINT: &str = "https://launcher.escapefromtarkov.com";
 const PROD_ENDPOINT: &str = "https://prod.escapefromtarkov.com";
 
 mod auth;
-mod hwid;
+pub mod hwid;
 
 #[derive(Debug, Error)]
 pub enum Error {
