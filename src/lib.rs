@@ -1,7 +1,7 @@
 //! An unofficial client library for the [Ecape from Tarkov](https://escapefromtarkov.com) (EFT) API.
 //!
 //! To get started, login to EFT with `Tarkov::from_email_and_password`, `from_access_token`, or `from_session`.
-//! Additionally, on a new session, a profile must be selected with `select_profile` before continuing.
+//! (Additionally, on a new session, a profile must be selected with `select_profile` before continuing.)
 //!
 //! Once authenticated, the resulting value can be used to make further API requests.
 //!
