@@ -351,6 +351,7 @@ pub struct Ragfair {
 
 #[derive(Debug, err_derive::Error)]
 pub enum ProfileError {
+    /// Invalid user ID selected.
     #[error(display = "invalid user id selected")]
     InvalidUserID,
 }
