@@ -253,11 +253,11 @@ pub struct MasteringSkill {
 pub struct Stats {
     pub session_counters: SessionCounters,
     pub overall_counters: OverallCounters,
-    pub session_experience_mult: u64,
+    pub session_experience_mult: f64,
     pub experience_bonus_mult: u64,
     pub total_session_experience: u64,
     pub last_session_date: u64,
-    pub aggressor: StatsAggressor,
+    pub aggressor: Option<Aggressor>,
     pub total_in_game_time: u64,
     pub survivor_class: String,
     // dropped_items: [],
@@ -287,7 +287,7 @@ pub struct SessionItem {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
-pub struct StatsAggressor {
+pub struct Aggressor {
     pub name: String,
     pub side: String,
     pub body_part: String,
