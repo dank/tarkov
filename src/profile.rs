@@ -66,7 +66,7 @@ pub struct Info {
     pub locked_move_commands: bool,
     pub savage_lock_time: u64,
     pub last_time_played_as_savage: u64,
-    pub settings: InfoSettings,
+    pub settings: Settings,
     pub need_wipe: bool,
     pub global_wipe: bool,
     pub nickname_change_date: u64,
@@ -75,7 +75,7 @@ pub struct Info {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
-pub struct InfoSettings {
+pub struct Settings {
     pub role: Option<String>,
     pub bot_difficulty: Option<String>,
     pub experience: Option<i64>,
@@ -335,7 +335,8 @@ pub struct Bonus {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Quest {
-    pub qid: String,
+    #[serde(rename = "qid")]
+    pub id: String,
     pub start_time: u64,
     pub status: u64,
     pub status_timers: HashMap<String, u64>,
@@ -361,11 +362,26 @@ struct SelectRequest<'a> {
     uid: &'a str,
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 struct SelectResponse {
     #[serde(flatten)]
     error: ErrorResponse,
-    status: Option<String>,
+    data: Option<SelectResult>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SelectResult {
+    status: String,
+    notifier: Notifier,
+    notifier_server: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Notifier {
+    server: String,
+    channel_id: String,
+    url: String,
 }
 
 impl Tarkov {
@@ -382,13 +398,17 @@ impl Tarkov {
     }
 
     /// Select a profile by user ID.
-    pub async fn select_profile(&self, user_id: &str) -> Result<()> {
+    pub async fn select_profile(&self, user_id: &str) -> Result<SelectResult> {
         let url = format!("{}/client/game/profile/select", PROD_ENDPOINT);
         let res: SelectResponse = self
             .post_json(&url, &SelectRequest { uid: user_id })
             .await?;
 
-        self.handle_error(res.error, ())
+        self.handle_error(
+            res.error,
+            res.data
+                .expect("API returned no errors but `data` is unavailable."),
+        )
     }
 }
 

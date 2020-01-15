@@ -11,7 +11,7 @@ struct FriendResponse {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
-struct Friends {
+pub struct Friends {
     pub friends: Vec<Friend>,
     // ignore: []
     // in_ignore_list: []
@@ -36,15 +36,14 @@ pub struct Info {
 
 impl Tarkov {
     /// Get a list of your friends.
-    pub async fn get_friends(&self) -> Result<Vec<Friend>> {
+    pub async fn get_friends(&self) -> Result<Friends> {
         let url = format!("{}/client/friend/list", PROD_ENDPOINT);
         let res: FriendResponse = self.post_json(&url, &{}).await?;
 
         match res.error.code {
             0 => Ok(res
                 .data
-                .expect("API returned no errors but `data` is unavailable.")
-                .friends),
+                .expect("API returned no errors but `data` is unavailable.")),
             _ => Err(Error::UnknownAPIError(res.error.code)),
         }
     }
