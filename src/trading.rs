@@ -5,68 +5,68 @@ use std::collections::HashMap;
 #[derive(Debug, Deserialize)]
 pub struct Trader {
     #[serde(rename = "_id")]
-    id: String,
-    working: bool,
-    customization_seller: bool,
-    name: String,
-    surname: String,
-    nickname: String,
-    location: String,
-    avatar: String,
-    balance_rub: u64,
-    balance_dol: u64,
-    balance_eur: u64,
-    display: bool,
-    discount: i64,
-    discount_end: i64,
-    buyer_up: bool,
+    pub id: String,
+    pub working: bool,
+    pub customization_seller: bool,
+    pub name: String,
+    pub surname: String,
+    pub nickname: String,
+    pub location: String,
+    pub avatar: String,
+    pub balance_rub: u64,
+    pub balance_dol: u64,
+    pub balance_eur: u64,
+    pub display: bool,
+    pub discount: i64,
+    pub discount_end: i64,
+    pub buyer_up: bool,
     // XXX: This could be an enum?
-    currency: String,
-    supply_next_time: u64,
-    repair: Repair,
-    insurance: Insurance,
+    pub currency: String,
+    pub supply_next_time: u64,
+    pub repair: Repair,
+    pub insurance: Insurance,
     #[serde(rename = "gridHeight")]
-    grid_height: u64,
-    loyalty: Loyalty,
+    pub grid_height: u64,
+    pub loyalty: Loyalty,
     // sell_category: []
 }
 
 #[derive(Debug, Deserialize)]
 pub struct Repair {
-    availability: bool,
-    quality: String,
-    excluded_id_list: Vec<String>,
-    excluded_category: Vec<String>,
-    currency: Option<String>,
-    currency_coefficient: Option<u64>,
-    price_rate: u64,
+    pub availability: bool,
+    pub quality: String,
+    pub excluded_id_list: Vec<String>,
+    pub excluded_category: Vec<String>,
+    pub currency: Option<String>,
+    pub currency_coefficient: Option<u64>,
+    pub price_rate: u64,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct Insurance {
-    availability: bool,
-    min_payment: u64,
-    min_return_hour: u64,
-    max_return_hour: u64,
-    max_storage_time: u64,
-    excluded_category: Vec<String>,
+    pub availability: bool,
+    pub min_payment: u64,
+    pub min_return_hour: u64,
+    pub max_return_hour: u64,
+    pub max_storage_time: u64,
+    pub excluded_category: Vec<String>,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Loyalty {
-    current_level: u64,
-    current_standing: f64,
-    current_sales_sum: u64,
-    loyalty_levels: HashMap<String, LoyaltyLevel>,
+    pub current_level: u64,
+    pub current_standing: f64,
+    pub current_sales_sum: u64,
+    pub loyalty_levels: HashMap<String, LoyaltyLevel>,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct LoyaltyLevel {
-    min_level: u64,
-    min_sales_sum: u64,
-    min_standing: f64,
+    pub min_level: u64,
+    pub min_sales_sum: u64,
+    pub min_standing: f64,
 }
 
 #[derive(Debug, Deserialize)]
