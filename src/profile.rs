@@ -356,8 +356,6 @@ pub struct Ragfair {
 
 #[derive(Debug, err_derive::Error)]
 pub enum ProfileError {
-    #[error(display = "not authorized or game profile not selected")]
-    NotAuthorized,
     #[error(display = "invalid user id selected")]
     InvalidUserID,
 }
@@ -379,13 +377,8 @@ impl Tarkov {
     pub async fn get_profiles(&self) -> Result<Vec<Profile>> {
         let url = format!("{}/client/game/profile/list", PROD_ENDPOINT);
         let res: ProfileResponse = self.post_json(&url, &{}).await?;
-        match res.error.code {
-            0 => Ok(res
-                .data
-                .expect("API returned no errors but `data` is unavailable.")),
-            201 => Err(ProfileError::NotAuthorized)?,
-            _ => Err(Error::UnknownAPIError(res.error.code)),
-        }
+
+        self.handle_error(res.error, res.data.expect("API returned no errors but `data` is unavailable."))
     }
 
     /// Select a profile by user ID.
@@ -394,12 +387,8 @@ impl Tarkov {
         let res: SelectResponse = self
             .post_json(&url, &SelectRequest { uid: user_id })
             .await?;
-        match res.error.code {
-            0 => Ok(()),
-            201 => Err(ProfileError::NotAuthorized)?,
-            205 => Err(ProfileError::InvalidUserID)?,
-            _ => Err(Error::UnknownAPIError(res.error.code)),
-        }
+
+        self.handle_error(res.error, ())
     }
 }
 

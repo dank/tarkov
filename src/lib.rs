@@ -63,6 +63,9 @@ pub enum Error {
     /// Unidentified error within the EFT API.
     #[error(display = "unidentified login error with error code: {}", _0)]
     UnknownAPIError(u8),
+    /// Not authorized to API or profile is not selected.
+    #[error(display = "not authorized or game profile not selected")]
+    NotAuthorized,
     #[doc(hidden)]
     #[error(display = "login api error: {}", _0)]
     LoginError(#[error(source)] LoginError),
@@ -153,11 +156,18 @@ impl Tarkov {
         let mut body = String::new();
         decode.read_to_string(&mut body)?;
 
-        println!("{:?}", body);
-
         match res.status() {
             StatusCode::OK => Ok(serde_json::from_slice::<T>(body.as_bytes())?),
             _ => Err(Error::Status(res.status())),
+        }
+    }
+
+    fn handle_error<T: DeserializeOwned>(&self, error: ErrorResponse, ret: T) -> Result<T> {
+        match error.code {
+            0 => Ok(ret),
+            201 => Err(Error::NotAuthorized)?,
+            205 => Err(ProfileError::InvalidUserID)?,
+            _ => Err(Error::UnknownAPIError(error.code)),
         }
     }
 }
