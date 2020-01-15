@@ -1,6 +1,6 @@
 use crate::{
     Error, ErrorResponse, Result, Tarkov, GAME_VERSION, LAUNCHER_ENDPOINT, LAUNCHER_VERSION,
-    PROD_ENDPOINT, UNITY_VERSION,
+    PROD_ENDPOINT,
 };
 use actix_web::client::Client;
 use actix_web::http::StatusCode;

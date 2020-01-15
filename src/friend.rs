@@ -1,8 +1,6 @@
-use crate::{Error, ErrorResponse, Result, Tarkov, GAME_VERSION, PROD_ENDPOINT, UNITY_VERSION};
-use actix_web::http::StatusCode;
-use flate2::read::ZlibDecoder;
+use crate::{Error, ErrorResponse, Result, Tarkov, PROD_ENDPOINT};
+
 use serde::Deserialize;
-use std::io::Read;
 
 #[derive(Debug, Deserialize)]
 struct FriendResponse {

@@ -1,12 +1,7 @@
-use crate::{Error, ErrorResponse, Result, Tarkov, GAME_VERSION, PROD_ENDPOINT, UNITY_VERSION};
-use actix_web::http::StatusCode;
-use core::fmt;
-use flate2::read::ZlibDecoder;
-use serde::de::Unexpected;
-use serde::{de, Deserialize, Serialize};
+use crate::{ErrorResponse, Result, Tarkov, PROD_ENDPOINT};
+
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::fmt::Write;
-use std::io::Read;
 
 #[derive(Debug, Deserialize)]
 struct ProfileResponse {
@@ -378,7 +373,11 @@ impl Tarkov {
         let url = format!("{}/client/game/profile/list", PROD_ENDPOINT);
         let res: ProfileResponse = self.post_json(&url, &{}).await?;
 
-        self.handle_error(res.error, res.data.expect("API returned no errors but `data` is unavailable."))
+        self.handle_error(
+            res.error,
+            res.data
+                .expect("API returned no errors but `data` is unavailable."),
+        )
     }
 
     /// Select a profile by user ID.

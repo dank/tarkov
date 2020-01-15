@@ -1,9 +1,8 @@
-use crate::{Tarkov, UNITY_VERSION, GAME_VERSION, RAGFAIR_ENDPOINT, Result, ErrorResponse, Error};
-use flate2::read::ZlibDecoder;
-use std::io::Read;
+use crate::{ErrorResponse, Result, Tarkov, RAGFAIR_ENDPOINT};
+
+use crate::profile::Item;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use crate::profile::{Item, ProfileError};
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -111,11 +110,15 @@ impl Tarkov {
             linked_search_id: "",
             needed_search_id: "",
             build_count: 0,
-            tm: 1
+            tm: 1,
         };
         let url = format!("{}/client/ragfair/find", RAGFAIR_ENDPOINT);
         let res: SearchResponse = self.post_json(&url, &body).await?;
 
-        self.handle_error(res.error, res.data.expect("API returned no errors but `data` is unavailable."))
+        self.handle_error(
+            res.error,
+            res.data
+                .expect("API returned no errors but `data` is unavailable."),
+        )
     }
 }

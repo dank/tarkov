@@ -36,10 +36,10 @@ pub mod friend;
 pub mod hwid;
 /// Structs for the Profile API.
 pub mod profile;
-/// Structs for the Trading API.
-pub mod trading;
 /// Structs for the Flea Market (Ragfair) API.
 pub mod ragfair;
+/// Structs for the Trading API.
+pub mod trading;
 
 /// Common error enum returned by most functions.
 #[derive(Debug, Error)]
