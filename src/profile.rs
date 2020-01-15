@@ -184,7 +184,7 @@ pub struct UpdMedkit {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct UpdRepairable {
-    pub max_durability: u64,
+    pub max_durability: f64,
     pub durability: f64,
 }
 
@@ -213,6 +213,7 @@ pub struct Item {
     pub tpl: String,
     pub parent_id: Option<String>,
     pub slot_id: Option<String>,
+    pub upd: Option<Upd>,
     // XXX: This type can be both Integer and `Location`...
     // location: Option<Location>
 }

@@ -1,6 +1,8 @@
 //! An unofficial client library for the [Ecape from Tarkov](https://escapefromtarkov.com) (EFT) API.
 //!
 //! To get started, login to EFT with `Tarkov::from_email_and_password`, `from_access_token`, or `from_session`.
+//! Additionally, on a new session, a profile must be selected with `select_profile` before continuing.
+//!
 //! Once authenticated, the resulting value can be used to make further API requests.
 //!
 //! See [Tarkov](struct.Tarkov.html) for a list of available methods.
@@ -24,6 +26,7 @@ const UNITY_VERSION: &str = "2018.4.13f1";
 const LAUNCHER_ENDPOINT: &str = "https://launcher.escapefromtarkov.com";
 const PROD_ENDPOINT: &str = "https://prod.escapefromtarkov.com";
 const TRADING_ENDPOINT: &str = "https://trading.escapefromtarkov.com";
+const RAGFAIR_ENDPOINT: &str = "https://ragfair.escapefromtarkov.com";
 
 mod auth;
 
@@ -35,6 +38,8 @@ pub mod hwid;
 pub mod profile;
 /// Structs for the Trading API.
 pub mod trading;
+/// Structs for the Flea Market (Ragfair) API.
+pub mod ragfair;
 
 /// Common error enum returned by most functions.
 #[derive(Debug, Error)]
@@ -147,6 +152,8 @@ impl Tarkov {
         let mut decode = ZlibDecoder::new(&body[..]);
         let mut body = String::new();
         decode.read_to_string(&mut body)?;
+
+        println!("{:?}", body);
 
         match res.status() {
             StatusCode::OK => Ok(serde_json::from_slice::<T>(body.as_bytes())?),
