@@ -6,7 +6,7 @@ An unofficial client library for the [Escape from Tarkov](https://escapefromtark
 Comprehensive examples can be found in the `examples` directory.
 
 ### Authentication
-![Authentication flowchart](https://i.imgur.com/mLwH987.png)
+![Authentication flowchart](flow.png)
 There are three ways to authenticate your EFT account for `tarkov`. **Your _PMC_ profile must be selected with `select_profile` before any other API can be called.**
 1. [Email & password](https://docs.rs/todo)
 The easiest way to authenticate your account is to login with your email & password. However, a captcha and 2FA code might be required, read the [HWID section](#hardware-id) for more details.
