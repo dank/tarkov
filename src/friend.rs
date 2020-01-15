@@ -6,12 +6,12 @@ use serde::Deserialize;
 struct FriendResponse {
     #[serde(flatten)]
     error: ErrorResponse,
-    data: Option<Friends>,
+    data: Option<FriendResult>,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
-pub struct Friends {
+pub struct FriendResult {
     pub friends: Vec<Friend>,
     // ignore: []
     // in_ignore_list: []
@@ -36,7 +36,7 @@ pub struct Info {
 
 impl Tarkov {
     /// Get a list of your friends.
-    pub async fn get_friends(&self) -> Result<Friends> {
+    pub async fn get_friends(&self) -> Result<FriendResult> {
         let url = format!("{}/client/friend/list", PROD_ENDPOINT);
         let res: FriendResponse = self.post_json(&url, &{}).await?;
 
