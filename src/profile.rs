@@ -52,8 +52,7 @@ pub struct Profile {
 pub struct Info {
     pub nickname: String,
     pub lower_nickname: String,
-    // XXX: This could be enum
-    pub side: String,
+    pub side: Side,
     pub voice: String,
     pub level: u64,
     pub experience: u64,
@@ -71,6 +70,13 @@ pub struct Info {
     pub global_wipe: bool,
     pub nickname_change_date: u64,
     // bans: []
+}
+
+#[derive(Debug, Deserialize)]
+pub enum Side {
+    Bear,
+    Usec,
+    Savage,
 }
 
 #[derive(Debug, Deserialize)]
@@ -289,7 +295,7 @@ pub struct SessionItem {
 #[serde(rename_all = "PascalCase")]
 pub struct Aggressor {
     pub name: String,
-    pub side: String,
+    pub side: Side,
     pub body_part: String,
     pub head_segment: Option<String>,
     pub weapon_name: String,

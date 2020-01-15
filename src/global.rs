@@ -2,6 +2,7 @@ use crate::{ErrorResponse, Result, Tarkov, PROD_ENDPOINT};
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use crate::profile::Side;
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -75,25 +76,25 @@ pub struct Props {
     pub can_sell_on_ragfair: Option<bool>,
     pub can_require_on_ragfair: Option<bool>,
     pub banned_from_ragfair: Option<bool>,
-    pub conflicting_items: Option<serde_json::Value>,
+    pub conflicting_items: Option<Vec<String>>,
     pub fixed_price: Option<bool>,
     pub unlootable: Option<bool>,
     pub unlootable_from_slot: Option<String>,
-    pub unlootable_from_side: Option<serde_json::Value>,
+    pub unlootable_from_side: Option<Vec<Side>>,
     #[serde(rename = "ChangePriceCoef")]
     pub change_price_coefficient: Option<u64>,
-    pub allow_spawn_on_locations: Option<serde_json::Value>,
+    pub allow_spawn_on_locations: Option<Vec<String>>,
     pub send_to_client: Option<bool>,
     pub animation_variants_number: Option<u64>,
     pub discarding_block: Option<bool>,
     pub max_resource: Option<u64>,
     pub resource: Option<u64>,
     pub dog_tag_qualities: Option<bool>,
-    pub grids: Option<serde_json::Value>,
-    pub slots: Option<serde_json::Value>,
+    pub grids: Option<Vec<Grid>>,
+    pub slots: Option<Vec<Slot>>,
     pub can_put_into_during_the_raid: Option<bool>,
-    pub cant_remove_from_slots_during_raid: Option<serde_json::Value>,
-    pub key_ids: Option<serde_json::Value>,
+    pub cant_remove_from_slots_during_raid: Option<Vec<String>>,
+    pub key_ids: Option<Vec<String>>,
     pub tag_color: Option<u64>,
     pub tag_name: Option<String>,
     pub durability: Option<u64>,
@@ -124,13 +125,13 @@ pub struct Props {
     #[serde(rename = "aimingSensitivity")]
     pub aiming_sensitivity: Option<f64>,
     pub sight_modes_count: Option<u64>,
-    pub optic_calibration_distances: Option<serde_json::Value>,
+    pub optic_calibration_distances: Option<Vec<u64>>,
     pub intensity: Option<f64>,
     pub mask: Option<String>,
     pub mask_size: Option<f64>,
     pub noise_intensity: Option<f64>,
     pub noise_scale: Option<u64>,
-    pub color: Option<serde_json::Value>,
+    pub color: Option<Color>,
     pub diffuse_intensity: Option<f64>,
     pub has_hinge: Option<bool>,
     pub ramp_palette: Option<String>,
@@ -174,7 +175,7 @@ pub struct Props {
     #[serde(rename = "speedPenaltyPercent")]
     pub speed_penalty_percent: Option<i64>,
     pub grid_layout_name: Option<String>,
-    pub spawn_filter: Option<serde_json::Value>,
+    pub spawn_filter: Option<Vec<String>>,
     #[serde(rename = "containType")]
     pub contain_type: Option<serde_json::Value>,
     #[serde(rename = "sizeWidth")]
@@ -193,12 +194,12 @@ pub struct Props {
     pub min_count_spawn: Option<u64>,
     #[serde(rename = "maxCountSpawn")]
     pub max_count_spawn: Option<u64>,
-    #[serde(rename = "openedByKeyID")]
-    pub opened_by_key_i_d: Option<serde_json::Value>,
+    #[serde(rename = ";ef")]
+    pub opened_by_key_id: Option<serde_json::Value>,
     pub rig_layout_name: Option<String>,
     pub max_durability: Option<u64>,
     #[serde(rename = "armorZone")]
-    pub armor_zone: Option<serde_json::Value>,
+    pub armor_zone: Option<Vec<ArmorZone>>,
     // #[serde(rename = "armorClass")]
     // pub armor_class: Option<u64>, // armorClass can be both String and int...
     #[serde(rename = "mousePenalty")]
@@ -225,7 +226,7 @@ pub struct Props {
     pub convergence: Option<f64>,
     pub recoil_angle: Option<u64>,
     #[serde(rename = "weapFireType")]
-    pub weapon_fire_type: Option<serde_json::Value>,
+    pub weapon_fire_type: Option<Vec<FireMode>>,
     #[serde(rename = "RecolDispersion")]
     pub recoil_dispersion: Option<u64>,
     #[serde(rename = "bFirerate")]
@@ -252,11 +253,11 @@ pub struct Props {
     pub deviation_curve: Option<u64>,
     pub deviation_max: Option<u64>,
     #[serde(rename = "TacticalReloadStiffnes")]
-    pub tactical_reload_stiffness: Option<serde_json::Value>,
+    pub tactical_reload_stiffness: Option<Coordinate>,
     pub tactical_reload_fixation: Option<f64>,
-    pub recoil_center: Option<serde_json::Value>,
-    pub rotation_center: Option<serde_json::Value>,
-    pub rotation_center_no_stock: Option<serde_json::Value>,
+    pub recoil_center: Option<Coordinate>,
+    pub rotation_center: Option<Coordinate>,
+    pub rotation_center_no_stock: Option<Coordinate>,
     pub folded_slot: Option<String>,
     pub compact_handling: Option<bool>,
     pub min_repair_degradation: Option<u64>,
@@ -409,17 +410,17 @@ pub struct Props {
     #[serde(rename = "throwDamMax")]
     pub throw_dam_max: Option<u64>,
     pub expl_delay: Option<f64>,
-    pub blindness: Option<serde_json::Value>,
-    pub contusion: Option<serde_json::Value>,
+    pub blindness: Option<Coordinate>,
+    pub contusion: Option<Coordinate>,
     pub emit_time: Option<u64>,
     pub can_be_hidden_during_throw: Option<bool>,
     pub indestructibility: Option<f64>,
     #[serde(rename = "headSegments")]
-    pub head_segments: Option<serde_json::Value>,
+    pub head_segments: Option<Vec<HeadSegment>>,
     pub face_shield_component: Option<bool>,
     pub face_shield_mask: Option<String>,
     pub material_type: Option<String>,
-    pub ricochet_params: Option<serde_json::Value>,
+    pub ricochet_params: Option<Coordinate>,
     pub deaf_strength: Option<String>,
     pub distortion: Option<f64>,
     #[serde(rename = "CompressorTreshold")]
@@ -438,6 +439,116 @@ pub struct Props {
 pub struct Prefab {
     path: String,
     rcid: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Grid {
+    #[serde(rename = "_id")]
+    id: String,
+    #[serde(rename = "_name")]
+    name: String,
+    #[serde(rename = "_parent")]
+    parent: String,
+    #[serde(rename = "_props")]
+    props: GridProps,
+    #[serde(rename = "_proto")]
+    proto: String,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GridProps {
+    filters: Vec<GridFilter>,
+    cells_h: u64,
+    cells_v: u64,
+    min_count: u64,
+    max_count: u64,
+    max_weight: u64,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct GridFilter {
+    filter: Vec<String>,
+    excluded_filter: Vec<String>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Slot {
+    #[serde(rename = "_id")]
+    id: String,
+    #[serde(rename = "_name")]
+    name: String,
+    #[serde(rename = "_parent")]
+    parent: String,
+    #[serde(rename = "_props")]
+    props: SlotProps,
+    #[serde(rename = "_required")]
+    required: bool,
+    #[serde(rename = "_mergeSlotWithChildren")]
+    merge_slot_with_children: bool,
+    #[serde(rename = "_proto")]
+    proto: String,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct SlotProps {
+    slot: Option<i64>,
+    animation_index: Option<i64>,
+    filters: Option<Vec<SlotFilter>>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct SlotFilter {
+    slot: Option<i64>,
+    animation_index: Option<i64>,
+    filters: Vec<String>,
+}
+
+#[derive(Debug, Deserialize)]
+pub enum ArmorZone {
+    Head,
+    Chest,
+    Stomach,
+    LeftArm,
+    RightArm,
+    LeftLeg,
+    RightLeg,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum FireMode {
+    Single,
+    Burst,
+    FullAuto,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Color {
+    r: u8,
+    g: u8,
+    b: u8,
+    a: u8,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Coordinate {
+    x: f64,
+    y: f64,
+    z: f64,
+}
+
+#[derive(Debug, Deserialize)]
+pub enum HeadSegment {
+    Top,
+    Nape,
+    Ears,
+    Eyes,
+    Jaws
 }
 
 impl Tarkov {

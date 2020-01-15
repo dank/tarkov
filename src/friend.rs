@@ -1,6 +1,7 @@
 use crate::{Error, ErrorResponse, Result, Tarkov, PROD_ENDPOINT};
 
 use serde::Deserialize;
+use crate::profile::Side;
 
 #[derive(Debug, Deserialize)]
 struct FriendResponse {
@@ -29,7 +30,7 @@ pub struct Friend {
 #[serde(rename_all = "PascalCase")]
 pub struct Info {
     pub nickname: String,
-    pub side: String,
+    pub side: Side,
     pub level: u64,
     pub member_category: String,
 }

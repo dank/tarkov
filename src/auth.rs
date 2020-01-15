@@ -7,6 +7,7 @@ use actix_web::http::StatusCode;
 use flate2::read::ZlibDecoder;
 use serde::{Deserialize, Serialize};
 use std::io::Read;
+use log::debug;
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -92,6 +93,7 @@ pub(crate) async fn login(
         captcha: None,
     };
 
+    debug!("Sending request to {}...", url);
     let mut res = client
         .post(url)
         .header("User-Agent", format!("BSG Launcher {}", LAUNCHER_VERSION))
@@ -101,6 +103,7 @@ pub(crate) async fn login(
     let mut decode = ZlibDecoder::new(&body[..]);
     let mut body = String::new();
     decode.read_to_string(&mut body)?;
+    debug!("Response: {}", body);
 
     match res.status() {
         StatusCode::OK => {
@@ -168,6 +171,7 @@ pub(crate) async fn exchange_access_token(
         hw_code: hwid,
     };
 
+    debug!("Sending request to {}...", url);
     let mut res = client
         .post(url)
         .header("User-Agent", format!("BSG Launcher {}", LAUNCHER_VERSION))
@@ -178,6 +182,7 @@ pub(crate) async fn exchange_access_token(
     let mut decode = ZlibDecoder::new(&body[..]);
     let mut body = String::new();
     decode.read_to_string(&mut body)?;
+    debug!("Response: {}", body);
 
     match res.status() {
         StatusCode::OK => {

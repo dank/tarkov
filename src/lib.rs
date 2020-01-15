@@ -18,6 +18,7 @@ use flate2::read::ZlibDecoder;
 use serde::de::DeserializeOwned;
 use serde::Deserialize;
 use std::io::Read;
+use log::debug;
 
 const GAME_VERSION: &str = "0.12.2.5485";
 const LAUNCHER_VERSION: &str = "0.9.1.935";
@@ -29,6 +30,7 @@ const TRADING_ENDPOINT: &str = "https://trading.escapefromtarkov.com";
 const RAGFAIR_ENDPOINT: &str = "https://ragfair.escapefromtarkov.com";
 
 mod auth;
+pub mod global;
 
 /// Structs for the Friend API.
 pub mod friend;
@@ -95,6 +97,7 @@ pub struct Tarkov {
 impl Tarkov {
     /// Login with an email and password.
     pub async fn from_email_and_password(email: &str, password: &str, hwid: &str) -> Result<Self> {
+        debug!("hi");
         let client = Client::new();
 
         let user = auth::login(&client, email, password, &hwid).await?;
@@ -135,6 +138,7 @@ impl Tarkov {
         url: &str,
         body: &S,
     ) -> Result<T> {
+        debug!("Sending request to {}...", url);
         let mut res = self
             .client
             .post(url)
@@ -158,8 +162,7 @@ impl Tarkov {
         let mut decode = ZlibDecoder::new(&body[..]);
         let mut body = String::new();
         decode.read_to_string(&mut body)?;
-
-        println!("=> {:?}", body);
+        debug!("Response: {}", body);
 
         match res.status() {
             StatusCode::OK => Ok(serde_json::from_slice::<T>(body.as_bytes())?),
