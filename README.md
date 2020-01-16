@@ -3,12 +3,13 @@ An unofficial client library for the [Escape from Tarkov](https://escapefromtark
 
 ## Features
 - [x] Authentication
-- [x] Flea Market
-- [x] Friends/chat
+- [x] Flea market
+- [x] Friends
 - [ ] Hideout
-- [ ] Inventory management (move, examine, delete, etc)
+- [ ] Inventory management (examine, move, delete, etc)
 - [ ] Quests
-- [x] Trader
+- [x] Traders
+- [ ] Messenger
 
 ## Getting Started
 
