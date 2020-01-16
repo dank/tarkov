@@ -1,6 +1,6 @@
 [package]
 name = "tarkov"
-version = "0.1.0"
+version = "0.1.0-alpha.1"
 authors = ["Dan Kyung <dan@kyung.ca>"]
 edition = "2018"
 
