@@ -378,16 +378,16 @@ struct SelectResponse {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SelectResult {
-    status: String,
-    notifier: Notifier,
-    notifier_server: String,
+    pub status: String,
+    pub notifier: Notifier,
+    pub notifier_server: String,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct Notifier {
-    server: String,
-    channel_id: String,
-    url: String,
+    pub server: String,
+    pub channel_id: String,
+    pub url: String,
 }
 
 impl Tarkov {

@@ -1,8 +1,8 @@
 use crate::{ErrorResponse, Result, Tarkov, PROD_ENDPOINT};
 
+use crate::profile::Side;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use crate::profile::Side;
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -12,6 +12,7 @@ struct ItemsRequest {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
+// TODO: Wrong visibility
 pub struct ItemsResponse {
     #[serde(flatten)]
     error: ErrorResponse,
@@ -21,17 +22,17 @@ pub struct ItemsResponse {
 #[derive(Debug, Deserialize)]
 pub struct Item {
     #[serde(rename = "_id")]
-    id: String,
+    pub id: String,
     #[serde(rename = "_name")]
-    name: String,
+    pub name: String,
     #[serde(rename = "_parent")]
-    parent: String,
+    pub parent: String,
     #[serde(rename = "_type")]
-    item_type: String,
+    pub item_type: String,
     #[serde(rename = "_props")]
-    props: Props,
+    pub props: Props,
     #[serde(rename = "_proto")]
-    proto: Option<String>,
+    pub proto: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -154,7 +155,7 @@ pub struct Props {
     pub pixelation_block_count: Option<u64>,
     #[serde(rename = "magAnimationIndex")]
     pub mag_animation_index: Option<u64>,
-    pub cartridges: Option<serde_json::Value>,
+    pub cartridges: Option<Vec<Cartridge>>,
     pub can_fast: Option<bool>,
     pub can_hit: Option<bool>,
     pub can_admin: Option<bool>,
@@ -176,6 +177,7 @@ pub struct Props {
     pub speed_penalty_percent: Option<i64>,
     pub grid_layout_name: Option<String>,
     pub spawn_filter: Option<Vec<String>>,
+    /// Unknown type
     #[serde(rename = "containType")]
     pub contain_type: Option<serde_json::Value>,
     #[serde(rename = "sizeWidth")]
@@ -186,6 +188,7 @@ pub struct Props {
     pub is_secured: Option<bool>,
     #[serde(rename = "spawnTypes")]
     pub spawn_types: Option<String>,
+    /// Unknown type
     #[serde(rename = "lootFilter")]
     pub loot_filter: Option<serde_json::Value>,
     #[serde(rename = "spawnRarity")]
@@ -194,7 +197,8 @@ pub struct Props {
     pub min_count_spawn: Option<u64>,
     #[serde(rename = "maxCountSpawn")]
     pub max_count_spawn: Option<u64>,
-    #[serde(rename = ";ef")]
+    /// Unknown type
+    #[serde(rename = "openedByKeyID")]
     pub opened_by_key_id: Option<serde_json::Value>,
     pub rig_layout_name: Option<String>,
     pub max_durability: Option<u64>,
@@ -245,7 +249,7 @@ pub struct Props {
     pub def_mag_type: Option<String>,
     #[serde(rename = "defAmmo")]
     pub def_ammo: Option<String>,
-    pub chambers: Option<serde_json::Value>,
+    pub chambers: Option<Vec<Chamber>>,
     pub camera_recoil: Option<f64>,
     pub camera_snap: Option<f64>,
     pub reload_mode: Option<String>,
@@ -285,11 +289,11 @@ pub struct Props {
     pub food_effect_type: Option<String>,
     pub stimulator_buffs: Option<String>,
     #[serde(rename = "effects_health")]
-    pub effects_health: Option<serde_json::Value>,
+    pub effects_health: Option<HealthEffects>,
     #[serde(rename = "effects_damage")]
-    pub effects_damage: Option<serde_json::Value>,
+    pub effects_damage: Option<DamageEffects>,
     #[serde(rename = "effects_speed")]
-    pub effects_speed: Option<serde_json::Value>,
+    pub effects_speed: Option<SpeedEffects>,
     pub maximum_number_of_usage: Option<u64>,
     #[serde(rename = "knifeHitDelay")]
     pub knife_hit_delay: Option<u64>,
@@ -332,7 +336,7 @@ pub struct Props {
     pub overdose: Option<u64>,
     pub overdose_recovery: Option<u64>,
     pub addiction_recovery: Option<u64>,
-    pub buffs: Option<serde_json::Value>,
+    // pub buffs: Option<serde_json::Value>, bad devs, multiple types...
     #[serde(rename = "apResource")]
     pub ap_resource: Option<u64>,
     #[serde(rename = "krResource")]
@@ -395,7 +399,7 @@ pub struct Props {
     pub show_hit_effect_on_explode: Option<bool>,
     pub explosion_type: Option<String>,
     pub ammo_life_time_sec: Option<u64>,
-    pub stack_slots: Option<serde_json::Value>,
+    pub stack_slots: Option<Vec<StackSlot>>,
     #[serde(rename = "type")]
     pub item_item: Option<String>,
     #[serde(rename = "eqMin")]
@@ -437,75 +441,101 @@ pub struct Props {
 
 #[derive(Debug, Deserialize)]
 pub struct Prefab {
-    path: String,
-    rcid: String,
+    pub path: String,
+    pub rcid: String,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct Grid {
     #[serde(rename = "_id")]
-    id: String,
+    pub id: String,
     #[serde(rename = "_name")]
-    name: String,
+    pub name: String,
     #[serde(rename = "_parent")]
-    parent: String,
+    pub parent: String,
     #[serde(rename = "_props")]
-    props: GridProps,
+    pub props: GridProps,
     #[serde(rename = "_proto")]
-    proto: String,
+    pub proto: String,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GridProps {
-    filters: Vec<GridFilter>,
-    cells_h: u64,
-    cells_v: u64,
-    min_count: u64,
-    max_count: u64,
-    max_weight: u64,
+    pub filters: Vec<GridFilter>,
+    pub cells_h: u64,
+    pub cells_v: u64,
+    pub min_count: u64,
+    pub max_count: u64,
+    pub max_weight: u64,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct GridFilter {
-    filter: Vec<String>,
-    excluded_filter: Vec<String>,
+    pub filter: Vec<String>,
+    pub excluded_filter: Vec<String>,
 }
 
 #[derive(Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct Slot {
     #[serde(rename = "_id")]
-    id: String,
+    pub id: String,
     #[serde(rename = "_name")]
-    name: String,
+    pub name: String,
     #[serde(rename = "_parent")]
-    parent: String,
+    pub parent: String,
     #[serde(rename = "_props")]
-    props: SlotProps,
+    pub props: SlotProps,
     #[serde(rename = "_required")]
-    required: bool,
+    pub required: bool,
     #[serde(rename = "_mergeSlotWithChildren")]
-    merge_slot_with_children: bool,
+    pub merge_slot_with_children: bool,
     #[serde(rename = "_proto")]
-    proto: String,
+    pub proto: String,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct SlotProps {
-    slot: Option<i64>,
-    animation_index: Option<i64>,
-    filters: Option<Vec<SlotFilter>>,
+    pub slot: Option<i64>,
+    pub animation_index: Option<i64>,
+    pub filters: Option<Vec<SlotFilter>>,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct SlotFilter {
-    slot: Option<i64>,
-    animation_index: Option<i64>,
-    filters: Vec<String>,
+    pub slot: Option<i64>,
+    pub animation_index: Option<i64>,
+    pub filters: Vec<String>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Cartridge {
+    #[serde(rename = "_id")]
+    pub id: String,
+    #[serde(rename = "_name")]
+    pub name: String,
+    #[serde(rename = "_parent")]
+    pub parent: String,
+    #[serde(rename = "_max_count")]
+    pub max_count: u64,
+    #[serde(rename = "_props")]
+    pub props: CartridgeProps,
+    #[serde(rename = "_proto")]
+    pub proto: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct CartridgeProps {
+    pub filters: Vec<CartridgeFilter>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct CartridgeFilter {
+    pub filter: Vec<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -528,18 +558,47 @@ pub enum FireMode {
 }
 
 #[derive(Debug, Deserialize)]
+pub struct Chamber {
+    #[serde(rename = "_id")]
+    pub id: String,
+    #[serde(rename = "_name")]
+    pub name: String,
+    #[serde(rename = "_parent")]
+    pub parent: String,
+    #[serde(rename = "_props")]
+    pub props: ChamberProps,
+    #[serde(rename = "_required")]
+    pub required: bool,
+    #[serde(rename = "_mergeSlotWithChildren")]
+    pub merge_slot_with_children: bool,
+    #[serde(rename = "_proto")]
+    pub proto: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ChamberProps {
+    pub filters: Vec<ChamberFilter>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct ChamberFilter {
+    pub filter: Vec<String>,
+}
+
+#[derive(Debug, Deserialize)]
 pub struct Color {
-    r: u8,
-    g: u8,
-    b: u8,
-    a: u8,
+    pub r: u8,
+    pub g: u8,
+    pub b: u8,
+    pub a: u8,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct Coordinate {
-    x: f64,
-    y: f64,
-    z: f64,
+    pub x: f64,
+    pub y: f64,
+    pub z: f64,
 }
 
 #[derive(Debug, Deserialize)]
@@ -548,7 +607,98 @@ pub enum HeadSegment {
     Nape,
     Ears,
     Eyes,
-    Jaws
+    Jaws,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct HealthEffects {
+    pub common: Health,
+    pub head: Health,
+    pub arm_left: Health,
+    pub arm_right: Health,
+    pub chest: Health,
+    pub tummy: Health,
+    pub leg_left: Health,
+    pub leg_right: Health,
+    pub energy: Health,
+    pub hydration: Health,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Health {
+    pub value: i64,
+    pub percent: bool,
+    pub time: u64,
+    pub duration: u64,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DamageEffects {
+    pub bloodloss: Damage,
+    pub fracture: Damage,
+    pub pain: Damage,
+    pub contusion: Damage,
+    pub toxication: Damage,
+    #[serde(rename = "radExposure")]
+    pub radiation_exposure: Damage,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Damage {
+    pub remove: bool,
+    pub time: u64,
+    pub duration: u64,
+    pub fade_out: Option<u64>,
+    pub cost: Option<u64>,
+    pub health_penalty_min: Option<u64>,
+    pub health_penalty_max: Option<u64>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SpeedEffects {
+    pub mobility: Speed,
+    pub recoil: Speed,
+    pub reload_speed: Speed,
+    pub loot_speed: Speed,
+    pub unlock_speed: Speed,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Speed {
+    pub value: i64,
+    pub percent: bool,
+    pub time: u64,
+    pub duration: u64,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct StackSlot {
+    #[serde(rename = "_id")]
+    pub id: String,
+    #[serde(rename = "_name")]
+    pub name: String,
+    #[serde(rename = "_parent")]
+    pub parent: String,
+    #[serde(rename = "_max_count")]
+    pub max_count: u64,
+    #[serde(rename = "_props")]
+    pub props: StackSlotProps,
+    #[serde(rename = "_proto")]
+    pub proto: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct StackSlotProps {
+    pub filters: Vec<StackSlotFilter>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct StackSlotFilter {
+    pub filter: Vec<String>,
 }
 
 impl Tarkov {

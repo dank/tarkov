@@ -1,7 +1,7 @@
 use crate::{Error, ErrorResponse, Result, Tarkov, PROD_ENDPOINT};
 
-use serde::Deserialize;
 use crate::profile::Side;
+use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
 struct FriendResponse {

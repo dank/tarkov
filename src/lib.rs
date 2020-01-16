@@ -15,10 +15,10 @@ use actix_web::client::Client;
 use actix_web::http::StatusCode;
 use err_derive::Error;
 use flate2::read::ZlibDecoder;
+use log::debug;
 use serde::de::DeserializeOwned;
 use serde::Deserialize;
 use std::io::Read;
-use log::debug;
 
 const GAME_VERSION: &str = "0.12.2.5485";
 const LAUNCHER_VERSION: &str = "0.9.1.935";

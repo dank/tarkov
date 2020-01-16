@@ -70,12 +70,12 @@ pub struct Offer {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct User {
-    id: String,
-    member_type: u64,
-    nickname: String,
-    rating: f64,
-    is_rating_growing: bool,
-    avatar: Option<String>,
+    pub id: String,
+    pub member_type: u64,
+    pub nickname: String,
+    pub rating: f64,
+    pub is_rating_growing: bool,
+    pub avatar: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]

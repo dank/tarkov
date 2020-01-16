@@ -5,9 +5,9 @@ use crate::{
 use actix_web::client::Client;
 use actix_web::http::StatusCode;
 use flate2::read::ZlibDecoder;
+use log::debug;
 use serde::{Deserialize, Serialize};
 use std::io::Read;
-use log::debug;
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
