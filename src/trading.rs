@@ -21,8 +21,7 @@ pub struct Trader {
     pub discount: i64,
     pub discount_end: i64,
     pub buyer_up: bool,
-    // XXX: This could be an enum?
-    pub currency: String,
+    pub currency: Currency,
     pub supply_next_time: u64,
     pub repair: Repair,
     pub insurance: Insurance,
@@ -42,6 +41,16 @@ pub struct Repair {
     pub currency: Option<String>,
     pub currency_coefficient: Option<u64>,
     pub price_rate: u64,
+}
+
+#[derive(Debug, Deserialize)]
+pub enum Currency {
+    #[serde(rename = "RUB")]
+    Rouble,
+    #[serde(rename = "USD")]
+    Dollar,
+    #[serde(rename = "EUR")]
+    Euro
 }
 
 #[derive(Debug, Deserialize)]
