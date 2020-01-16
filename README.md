@@ -27,9 +27,9 @@ tarkov = "0.1"
 ### Authentication
 ![Authentication flowchart](flow.png)
 There are three ways to authenticate your EFT account for `tarkov`:
-1. Email & password is the easiest way to authenticate your account. However, a captcha and 2FA code might be required. Read the [HWID section](#hardware-id) for more details.
-2. Access token or Bearer token can be found by sniffing EFT _launcher_ traffic.
-3. Session is a cookie called `PHPSESSID`, it can be found by sniffing EFT _game_ traffic. HWID is tied to the session so both must be valid. Session is a 32-bit hexadecimal string.
+1. Email & password is the easiest way to authenticate your account. However, a captcha and 2FA code may be required. Read the [HWID section](#hardware-id) for more details.
+2. Access token or Bearer token can be found by sniffing EFT _launcher_ traffic. Captcha and 2FA code may be required.
+3. Session is a cookie called `PHPSESSID`, it can be found by sniffing EFT _game_ traffic. HWID is not required with this method.
 
 **Your _PMC_ character profile must be selected with `select_profile` to complete the authentication.**
 

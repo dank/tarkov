@@ -19,6 +19,7 @@ use log::debug;
 use serde::de::DeserializeOwned;
 use serde::Deserialize;
 use std::io::Read;
+use crate::hwid::generate_hwid;
 
 const GAME_VERSION: &str = "0.12.2.5485";
 const LAUNCHER_VERSION: &str = "0.9.1.935";
@@ -123,12 +124,12 @@ impl Tarkov {
     }
 
     /// Login with a cookie session (AKA `PHPSESSID`).
-    pub async fn from_session(session: &str, hwid: &str) -> Result<Self> {
+    pub async fn from_session(session: &str) -> Result<Self> {
         let client = Client::new();
 
         Ok(Tarkov {
             client,
-            hwid: hwid.to_string(),
+            hwid: generate_hwid(),
             session: session.to_string(),
         })
     }

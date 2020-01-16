@@ -15,12 +15,13 @@ struct LoginRequest<'a> {
     email: &'a str,
     pass: &'a str,
     hw_code: &'a str,
-    captcha: Option<()>, // Always null
+    captcha: Option<&'a str>,
 }
 
 /// Authenticated user.
 #[derive(Debug, Deserialize)]
 pub(crate) struct Auth {
+    // TODO: Why did I use default here?
     #[serde(default)]
     pub aid: String,
     #[serde(default)]
@@ -191,6 +192,9 @@ pub(crate) async fn exchange_access_token(
                 0 => Ok(res
                     .data
                     .expect("API returned no errors but `data` is unavailable.")),
+                207 => Err(LoginError::MissingParameters)?,
+                209 => Err(LoginError::TwoFactorRequired)?,
+                214 => Err(LoginError::Captcha)?,
                 _ => Err(Error::UnknownAPIError(res.error_code)),
             }
         }
