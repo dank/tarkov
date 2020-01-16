@@ -30,7 +30,6 @@ const TRADING_ENDPOINT: &str = "https://trading.escapefromtarkov.com";
 const RAGFAIR_ENDPOINT: &str = "https://ragfair.escapefromtarkov.com";
 
 mod auth;
-pub mod global;
 
 /// Structs for the Friend API.
 pub mod friend;
@@ -42,6 +41,8 @@ pub mod profile;
 pub mod ragfair;
 /// Structs for the Trading API.
 pub mod trading;
+/// Structs for the Global API.
+pub mod global;
 
 /// Common error enum returned by most functions.
 #[derive(Debug, Error)]
