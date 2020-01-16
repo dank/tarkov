@@ -1,6 +1,8 @@
 # Tarkov
 An unofficial client library for the [Escape from Tarkov](https://escapefromtarkov.com) (EFT) API.
 
+This library is currently in alpha. Everything may change significantly in future releases.
+
 ## Features
 - [x] Authentication
 - [x] Flea market
@@ -43,7 +45,7 @@ Using a fresh HWID means both captcha and 2FA code will be required on your firs
 
 I should emphasize that this library is _unofficial_. EFT does not have a public API, everything in this repo was reversed from the game.
 
-The API is clearly designed for internal use. It contains numerous spelling mistakes, inconsistent conventions, and tons of bad practice JSON. The developers could push an update at anytime and break this library.
+The API is clearly designed for internal use. It contains numerous spelling mistakes, inconsistent conventions, and tons of bad practice JSON. The developers may push breaking changes without prior warning.
 
 ## License
 [MIT](LICENSE)
