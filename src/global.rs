@@ -702,8 +702,19 @@ pub struct StackSlotFilter {
 }
 
 impl Tarkov {
-    pub async fn get_items(&self) -> Result<()> {
+    pub async fn get_items(&self) -> Result<HashMap<String, Item>> {
         let url = format!("{}/client/items", PROD_ENDPOINT);
+        let res: ItemsResponse = self.post_json(&url, &ItemsRequest { crc: 0 }).await?;
+
+        self.handle_error(
+            res.error,
+            res.data
+                .expect("API returned no errors but `data` is unavailable."),
+        )
+    }
+
+    pub async fn get_globals(&self) -> Result<()> {
+        let url = format!("{}/client/globals", PROD_ENDPOINT);
         let res: ItemsResponse = self.post_json(&url, &ItemsRequest { crc: 0 }).await?;
 
         println!("{:?}", res);
