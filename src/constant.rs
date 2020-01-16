@@ -6,14 +6,13 @@ use std::collections::HashMap;
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
-struct ItemsRequest {
+struct Request {
     crc: u64,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
-// TODO: Wrong visibility
-pub struct ItemsResponse {
+struct ItemsResponse {
     #[serde(flatten)]
     error: ErrorResponse,
     data: Option<HashMap<String, Item>>,
@@ -701,10 +700,227 @@ pub struct StackSlotFilter {
     pub filter: Vec<String>,
 }
 
+#[derive(Debug, Deserialize)]
+struct LocationsResponse {
+    #[serde(flatten)]
+    error: ErrorResponse,
+    data: Option<Locations>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Locations {
+    pub locations: HashMap<String, Location>,
+    pub paths: Vec<Path>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct Location {
+    pub enabled: bool,
+    pub locked: bool,
+    pub insurance: bool,
+    pub safe_location: bool,
+    pub name: String,
+    pub description: String,
+    pub scene: Scene,
+    pub area: f64,
+    pub required_player_level: u64,
+    #[serde(rename = "surv_gather_minutes")]
+    pub surv_gather_minutes: u64,
+    pub min_players: u64,
+    pub max_players: u64,
+    #[serde(rename = "sav_gather_minutes")]
+    pub scav_gather_minutes: u64,
+    #[serde(rename = "exit_count")]
+    pub exit_count: u64,
+    #[serde(rename = "exit_access_time")]
+    pub exit_access_time: u64,
+    #[serde(rename = "exit_time")]
+    pub exit_time: u64,
+    pub preview: Preview,
+    pub icon_x: u64,
+    pub icon_y: u64,
+    /// Unknown type
+    #[serde(rename = "filter_ex")]
+    pub filter_ex: Vec<serde_json::Value>,
+    #[serde(rename = "waves")]
+    pub waves: Vec<Wave>,
+    /// Unknown type
+    #[serde(rename = "limits")]
+    pub limits: Vec<serde_json::Value>,
+    pub average_play_time: u64,
+    pub average_player_level: u64,
+    #[serde(rename = "escape_time_limit")]
+    pub escape_time_limit: u64,
+    pub rules: String,
+    pub is_secret: bool,
+    /// Unknown type
+    #[serde(rename = "doors")]
+    pub doors: Vec<serde_json::Value>,
+    #[serde(rename = "tmp_location_field_remove_me")]
+    pub tmp_location_field_remove_me: u64,
+    #[serde(rename = "MinDistToExitPoint")]
+    pub min_distance_to_exit_point: u64,
+    #[serde(rename = "MinDistToFreePoint")]
+    pub min_distance_to_free_point: u64,
+    #[serde(rename = "MaxDistToFreePoint")]
+    pub max_distance_to_free_point: u64,
+    pub max_bot_per_zone: u64,
+    pub open_zones: String,
+    #[serde(rename = "OcculsionCullingEnabled")]
+    pub occlusion_culling_enabled: bool,
+    pub global_loot_chance_modifier: f64,
+    pub old_spawn: bool,
+    pub new_spawn: bool,
+    pub bot_max: u64,
+    pub bot_start: u64,
+    pub bot_stop: u64,
+    pub bot_max_time_player: u64,
+    pub bot_spawn_time_on_min: u64,
+    pub bot_spawn_time_on_max: u64,
+    pub bot_spawn_time_off_min: u64,
+    pub bot_spawn_time_off_max: u64,
+    pub bot_max_player: u64,
+    pub bot_easy: u64,
+    pub bot_normal: u64,
+    pub bot_hard: u64,
+    pub bot_impossible: u64,
+    pub bot_assault: u64,
+    pub bot_marksman: u64,
+    pub disabled_scav_exits: String,
+    pub access_keys: Vec<String>,
+    pub min_max_bots: Vec<MinMaxBot>,
+    pub bot_location_modifier: BotLocationModifier,
+    #[serde(rename = "exits")]
+    pub exits: Vec<Exit>,
+    pub disabled_for_scav: bool,
+    pub boss_location_spawn: Vec<BossSpawn>,
+    #[serde(rename = "Id")]
+    pub name_id: String,
+    #[serde(rename = "_Id")]
+    pub id: String,
+    /// Unknown type
+    pub loot: Vec<serde_json::Value>,
+    /// Unknown type
+    pub spawn_areas: Vec<serde_json::Value>,
+    pub banners: Vec<Banner>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Scene {
+    pub path: String,
+    pub rcid: String,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct Path {
+    pub source: String,
+    pub destination: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Preview {
+    pub path: String,
+    pub rcid: String,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct Wave {
+    #[serde(rename = "number")]
+    pub number: u64,
+    #[serde(rename = "time_min")]
+    pub time_min: u64,
+    #[serde(rename = "time_max")]
+    pub time_max: u64,
+    #[serde(rename = "slots_min")]
+    pub slots_min: u64,
+    #[serde(rename = "slots_max")]
+    pub slots_max: u64,
+    pub spawn_points: String,
+    pub bot_side: Side,
+    pub bot_preset: String,
+    #[serde(rename = "isPlayers")]
+    pub is_players: bool,
+    pub wild_spawn_type: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct MinMaxBot {
+    pub min: u64,
+    pub max: u64,
+    #[serde(rename = "WildSpawnType")]
+    pub wild_spawn_type: String,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct BotLocationModifier {
+    pub accuracy_speed: u64,
+    pub scattering: u64,
+    pub gain_sight: u64,
+    #[serde(rename = "MarksmanAccuratyCoef")]
+    pub marksman_accuracy_coefficient: u64,
+    pub visible_distance: u64,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct Exit {
+    pub name: String,
+    pub entry_points: String,
+    pub chance: u64,
+    pub min_time: u64,
+    pub max_time: u64,
+    pub players_count: u64,
+    pub exfiltration_time: u64,
+    pub passage_requirement: Option<String>,
+    pub exfiltration_type: Option<String>,
+    pub required_slot: Option<String>,
+    pub count: Option<u64>,
+    pub id: String,
+    pub requirement_tip: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct BossSpawn {
+    #[serde(rename = "BossName")]
+    pub name: String,
+    #[serde(rename = "BossChance")]
+    pub chance: u64,
+    #[serde(rename = "BossZone")]
+    pub zone: String,
+    #[serde(rename = "BossPlayer")]
+    pub player: bool,
+    #[serde(rename = "BossDifficult")]
+    pub difficulty: String,
+    #[serde(rename = "BossEscortType")]
+    pub escort_type: String,
+    #[serde(rename = "BossEscortDifficult")]
+    pub escort_difficulty: String,
+    #[serde(rename = "BossEscortAmount")]
+    pub escort_amount: String,
+    pub time: i64,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Banner {
+    pub id: String,
+    pub pic: BannerPic,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct BannerPic {
+    pub path: String,
+    pub rcid: String,
+}
+
 impl Tarkov {
     pub async fn get_items(&self) -> Result<HashMap<String, Item>> {
         let url = format!("{}/client/items", PROD_ENDPOINT);
-        let res: ItemsResponse = self.post_json(&url, &ItemsRequest { crc: 0 }).await?;
+        let res: ItemsResponse = self.post_json(&url, &Request { crc: 0 }).await?;
 
         self.handle_error(
             res.error,
@@ -713,12 +929,18 @@ impl Tarkov {
         )
     }
 
-    pub async fn get_globals(&self) -> Result<()> {
-        let url = format!("{}/client/globals", PROD_ENDPOINT);
-        let res: ItemsResponse = self.post_json(&url, &ItemsRequest { crc: 0 }).await?;
+    pub async fn get_locations(&self) -> Result<Locations> {
+        let url = format!("{}/client/locations", PROD_ENDPOINT);
+        let res: LocationsResponse = self.post_json(&url, &Request { crc: 0 }).await?;
 
-        println!("{:?}", res);
+        self.handle_error(
+            res.error,
+            res.data
+                .expect("API returned no errors but `data` is unavailable."),
+        )
+    }
 
+    pub async fn get_weather(&self) -> Result<()> {
         Ok(())
     }
 }

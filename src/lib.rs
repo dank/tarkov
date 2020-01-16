@@ -31,6 +31,8 @@ const RAGFAIR_ENDPOINT: &str = "https://ragfair.escapefromtarkov.com";
 
 mod auth;
 
+/// Structs for game constants.
+pub mod constant;
 /// Structs for the Friend API.
 pub mod friend;
 /// Helper functions for hardware ID.
@@ -41,8 +43,6 @@ pub mod profile;
 pub mod ragfair;
 /// Structs for the Trading API.
 pub mod trading;
-/// Structs for the Global API.
-pub mod global;
 
 /// Common error enum returned by most functions.
 #[derive(Debug, Error)]
@@ -98,7 +98,6 @@ pub struct Tarkov {
 impl Tarkov {
     /// Login with an email and password.
     pub async fn from_email_and_password(email: &str, password: &str, hwid: &str) -> Result<Self> {
-        debug!("hi");
         let client = Client::new();
 
         let user = auth::login(&client, email, password, &hwid).await?;
