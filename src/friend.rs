@@ -1,4 +1,4 @@
-use crate::{Error, ErrorResponse, Result, Tarkov, PROD_ENDPOINT};
+use crate::{ErrorResponse, Result, Tarkov, PROD_ENDPOINT};
 
 use crate::profile::Side;
 use serde::Deserialize;
@@ -41,11 +41,10 @@ impl Tarkov {
         let url = format!("{}/client/friend/list", PROD_ENDPOINT);
         let res: FriendResponse = self.post_json(&url, &{}).await?;
 
-        match res.error.code {
-            0 => Ok(res
-                .data
-                .expect("API returned no errors but `data` is unavailable.")),
-            _ => Err(Error::UnknownAPIError(res.error.code)),
-        }
+        self.handle_error(
+            res.error,
+            res.data
+                .expect("API returned no errors but `data` is unavailable."),
+        )
     }
 }

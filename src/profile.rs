@@ -2,6 +2,7 @@ use crate::{ErrorResponse, Result, Tarkov, PROD_ENDPOINT};
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use crate::trading::Item;
 
 #[derive(Debug, Deserialize)]
 struct ProfileResponse {
@@ -168,16 +169,6 @@ pub struct Health {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
-pub struct Upd {
-    pub stack_objects_count: Option<u64>,
-    pub spawned_in_session: Option<bool>,
-    pub med_kit: Option<UpdMedkit>,
-    pub repairable: Option<UpdRepairable>,
-    pub light: Option<UpdLight>,
-}
-
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "PascalCase")]
 pub struct UpdMedkit {
     pub hp_resource: u64,
 }
@@ -203,20 +194,6 @@ pub struct Location {
     pub y: u64,
     pub r: u64,
     pub is_searched: Option<bool>,
-}
-
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Item {
-    #[serde(rename = "_id")]
-    pub id: String,
-    #[serde(rename = "_tpl")]
-    pub tpl: String,
-    pub parent_id: Option<String>,
-    pub slot_id: Option<String>,
-    pub upd: Option<Upd>,
-    // XXX: This type can be both Integer and `Location`...
-    // location: Option<Location>
 }
 
 #[derive(Debug, Deserialize)]

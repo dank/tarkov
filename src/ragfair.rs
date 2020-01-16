@@ -1,8 +1,9 @@
 use crate::{ErrorResponse, Result, Tarkov, RAGFAIR_ENDPOINT};
 
-use crate::profile::Item;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+
+pub use crate::trading::Item;
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
