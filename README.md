@@ -1,6 +1,15 @@
 # Tarkov
 An unofficial client library for the [Escape from Tarkov](https://escapefromtarkov.com) (EFT) API.
 
+## Features
+- [x] Authentication
+- [x] Flea Market
+- [x] Friends/chat
+- [ ] Hideout
+- [ ] Inventory management (move, examine, delete, etc)
+- [ ] Quests
+- [x] Trader
+
 ## Getting Started
 
 Comprehensive examples can be found in the [`examples`](examples) directory.

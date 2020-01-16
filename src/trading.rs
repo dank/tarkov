@@ -221,6 +221,7 @@ impl Tarkov {
         let prices = self.get_trader_prices_raw(trader_id).await?;
 
         for item in items.items {
+            // TODO: Properly deal with parent/children items
             if item.parent_id != Some("hideout".to_string()) {
                 continue;
             }
