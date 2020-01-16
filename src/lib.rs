@@ -31,6 +31,8 @@ const RAGFAIR_ENDPOINT: &str = "https://ragfair.escapefromtarkov.com";
 
 mod auth;
 
+/// Structs for game constants API.
+pub mod constant;
 /// Structs for the Friend API.
 pub mod friend;
 /// Helper functions for hardware ID.
@@ -41,8 +43,6 @@ pub mod profile;
 pub mod ragfair;
 /// Structs for the Trading API.
 pub mod trading;
-/// Structs for game constants API.
-pub mod constant;
 
 /// Common error enum returned by most functions.
 #[derive(Debug, Error)]
@@ -80,7 +80,7 @@ pub enum Error {
 /// `Result` alias type.
 pub type Result<T> = std::result::Result<T, Error>;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 struct ErrorResponse {
     #[serde(rename = "err")]
     code: u8,

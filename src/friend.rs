@@ -10,7 +10,7 @@ struct FriendResponse {
     data: Option<FriendResult>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct FriendResult {
     pub friends: Vec<Friend>,
@@ -18,7 +18,7 @@ pub struct FriendResult {
     // in_ignore_list: []
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Friend {
     #[serde(rename = "_id")]
@@ -26,7 +26,7 @@ pub struct Friend {
     pub info: Info,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Info {
     pub nickname: String,

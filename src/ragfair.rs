@@ -32,7 +32,7 @@ struct SearchRequest<'a> {
     tm: u64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 struct SearchResponse {
     #[serde(flatten)]
@@ -40,7 +40,7 @@ struct SearchResponse {
     data: Option<SearchResult>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct SearchResult {
     pub categories: HashMap<String, u64>,
@@ -49,7 +49,7 @@ pub struct SearchResult {
     pub selected_category: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Offer {
     #[serde(rename = "_id")]
@@ -68,7 +68,7 @@ pub struct Offer {
     pub loyalty_level: u64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct User {
     pub id: String,
@@ -79,7 +79,7 @@ pub struct User {
     pub avatar: Option<String>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Requirement {
     #[serde(rename = "_tpl")]

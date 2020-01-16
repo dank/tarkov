@@ -1,8 +1,8 @@
 use crate::{ErrorResponse, Result, Tarkov, PROD_ENDPOINT};
 
+use crate::trading::Item;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use crate::trading::Item;
 
 #[derive(Debug, Deserialize)]
 struct ProfileResponse {
@@ -11,7 +11,7 @@ struct ProfileResponse {
     data: Option<Vec<Profile>>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Profile {
     #[serde(rename = "_id")]
     pub id: String,
@@ -48,7 +48,7 @@ pub struct Profile {
     // wish_list: [],
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Info {
     pub nickname: String,
@@ -73,14 +73,14 @@ pub struct Info {
     // bans: []
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 pub enum Side {
     Bear,
     Usec,
     Savage,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Settings {
     pub role: Option<String>,
@@ -88,7 +88,7 @@ pub struct Settings {
     pub experience: Option<i64>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Customization {
     pub head: String,
@@ -97,14 +97,14 @@ pub struct Customization {
     pub hands: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct HealthLevel {
     pub current: u64,
     pub maximum: u64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct BodyParts {
     pub head: Head,
@@ -116,49 +116,49 @@ pub struct BodyParts {
     pub right_leg: RightLeg,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Head {
     pub health: HealthLevel,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Chest {
     pub health: HealthLevel,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Stomach {
     pub health: HealthLevel,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct LeftArm {
     pub health: HealthLevel,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct RightArm {
     pub health: HealthLevel,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct LeftLeg {
     pub health: HealthLevel,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct RightLeg {
     pub health: HealthLevel,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Health {
     pub hydration: HealthLevel,
@@ -167,27 +167,27 @@ pub struct Health {
     pub update_time: u64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct UpdMedkit {
     pub hp_resource: u64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct UpdRepairable {
     pub max_durability: f64,
     pub durability: f64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct UpdLight {
     pub is_active: bool,
     pub selected_mode: u64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Location {
     pub x: u64,
@@ -196,7 +196,7 @@ pub struct Location {
     pub is_searched: Option<bool>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Inventory {
     pub items: Vec<Item>,
@@ -204,10 +204,10 @@ pub struct Inventory {
     pub stash: Option<String>,
     pub quest_raid_items: String,
     pub quest_stash_items: String,
-    // first_panel: {}
+    // first_panel: {},
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Skills {
     pub common: Vec<CommonSkill>,
@@ -215,7 +215,7 @@ pub struct Skills {
     pub points: f64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct CommonSkill {
     pub id: String,
@@ -224,14 +224,14 @@ pub struct CommonSkill {
     pub last_access: i64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct MasteringSkill {
     pub id: String,
     pub progress: u64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Stats {
     pub session_counters: SessionCounters,
@@ -249,26 +249,26 @@ pub struct Stats {
     // carried_quest_items: []
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct SessionCounters {
     pub items: Vec<SessionItem>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct OverallCounters {
     pub items: Vec<SessionItem>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct SessionItem {
     pub key: Vec<String>,
     pub value: u64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Aggressor {
     pub name: String,
@@ -279,20 +279,20 @@ pub struct Aggressor {
     pub category: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct ConditionCounters {
     pub counters: Vec<ConditionCounter>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct ConditionCounter {
     pub id: String,
     pub value: u64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct BackendCounter {
     pub id: String,
@@ -300,7 +300,7 @@ pub struct BackendCounter {
     pub value: u64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Bonus {
     #[serde(rename = "type")]
@@ -315,7 +315,7 @@ pub struct Bonus {
     pub icon: Option<String>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Quest {
     #[serde(rename = "qid")]
@@ -325,7 +325,7 @@ pub struct Quest {
     pub status_timers: HashMap<String, u64>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Ragfair {
     pub rating: f64,
@@ -352,7 +352,7 @@ struct SelectResponse {
     data: Option<SelectResult>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct SelectResult {
     pub status: String,
@@ -360,7 +360,7 @@ pub struct SelectResult {
     pub notifier_server: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Notifier {
     pub server: String,
     pub channel_id: String,

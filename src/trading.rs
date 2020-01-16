@@ -1,9 +1,9 @@
+use crate::profile::{UpdLight, UpdMedkit, UpdRepairable};
 use crate::{ErrorResponse, Result, Tarkov, TRADING_ENDPOINT};
 use serde::Deserialize;
 use std::collections::HashMap;
-use crate::profile::{UpdMedkit, UpdRepairable, UpdLight};
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Trader {
     #[serde(rename = "_id")]
     pub id: String,
@@ -32,7 +32,7 @@ pub struct Trader {
     pub sell_category: Vec<serde_json::Value>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Repair {
     pub availability: bool,
     pub quality: String,
@@ -43,17 +43,17 @@ pub struct Repair {
     pub price_rate: u64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 pub enum Currency {
     #[serde(rename = "RUB")]
     Rouble,
     #[serde(rename = "USD")]
     Dollar,
     #[serde(rename = "EUR")]
-    Euro
+    Euro,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Insurance {
     pub availability: bool,
     pub min_payment: u64,
@@ -63,7 +63,7 @@ pub struct Insurance {
     pub excluded_category: Vec<String>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Loyalty {
     pub current_level: u64,
@@ -72,7 +72,7 @@ pub struct Loyalty {
     pub loyalty_levels: HashMap<String, LoyaltyLevel>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct LoyaltyLevel {
     pub min_level: u64,
@@ -94,7 +94,7 @@ struct TraderResponse {
     data: Option<Trader>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Item {
     #[serde(rename = "_id")]
@@ -108,7 +108,7 @@ pub struct Item {
     // location: Option<Location>
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Upd {
     pub stack_objects_count: Option<u64>,
@@ -142,14 +142,14 @@ struct TraderPricesResponse {
     data: Option<HashMap<String, Vec<Vec<Price>>>>,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Price {
     count: f64,
     #[serde(rename = "_tpl")]
     tpl: String,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct TraderItem {
     pub id: String,
     pub upd: Option<Upd>,
@@ -199,7 +199,10 @@ impl Tarkov {
         )
     }
 
-    async fn get_trader_prices_raw(&self, trader_id: &str) -> Result<HashMap<String, Vec<Vec<Price>>>> {
+    async fn get_trader_prices_raw(
+        &self,
+        trader_id: &str,
+    ) -> Result<HashMap<String, Vec<Vec<Price>>>> {
         let url = format!(
             "{}/client/trading/api/getUserAssortPrice/trader/{}",
             TRADING_ENDPOINT, trader_id
@@ -226,11 +229,16 @@ impl Tarkov {
                 continue;
             }
 
-            let loyalty_level = items.loyal_level_items.get(&item.id).expect("Loyalty level could not be mapped.");
+            let loyalty_level = items
+                .loyal_level_items
+                .get(&item.id)
+                .expect("Loyalty level could not be mapped.");
             let price = {
                 let barter_or_price = match items.barter_scheme.get(&item.id) {
-                    None => prices.get(&item.id).expect("Item price could not be mapped."),
-                    Some(barter) => barter
+                    None => prices
+                        .get(&item.id)
+                        .expect("Item price could not be mapped."),
+                    Some(barter) => barter,
                 };
 
                 barter_or_price.get(0)

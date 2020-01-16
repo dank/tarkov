@@ -10,7 +10,7 @@ struct Request {
     crc: u64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 struct ItemsResponse {
     #[serde(flatten)]
@@ -18,7 +18,7 @@ struct ItemsResponse {
     data: Option<HashMap<String, Item>>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Item {
     #[serde(rename = "_id")]
     pub id: String,
@@ -34,7 +34,7 @@ pub struct Item {
     pub proto: Option<String>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Props {
     pub name: Option<String>,
@@ -438,13 +438,13 @@ pub struct Props {
     pub dry_volume: Option<i64>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Prefab {
     pub path: String,
     pub rcid: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Grid {
     #[serde(rename = "_id")]
     pub id: String,
@@ -458,7 +458,7 @@ pub struct Grid {
     pub proto: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct GridProps {
     pub filters: Vec<GridFilter>,
@@ -469,14 +469,14 @@ pub struct GridProps {
     pub max_weight: u64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct GridFilter {
     pub filter: Vec<String>,
     pub excluded_filter: Vec<String>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Slot {
     #[serde(rename = "_id")]
     pub id: String,
@@ -494,7 +494,7 @@ pub struct Slot {
     pub proto: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct SlotProps {
     pub slot: Option<i64>,
@@ -502,7 +502,7 @@ pub struct SlotProps {
     pub filters: Option<Vec<SlotFilter>>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct SlotFilter {
     pub slot: Option<i64>,
@@ -510,7 +510,7 @@ pub struct SlotFilter {
     pub filters: Vec<String>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Cartridge {
     #[serde(rename = "_id")]
     pub id: String,
@@ -526,18 +526,18 @@ pub struct Cartridge {
     pub proto: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct CartridgeProps {
     pub filters: Vec<CartridgeFilter>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct CartridgeFilter {
     pub filter: Vec<String>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 pub enum ArmorZone {
     Head,
     Chest,
@@ -548,7 +548,7 @@ pub enum ArmorZone {
     RightLeg,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum FireMode {
     Single,
@@ -556,7 +556,7 @@ pub enum FireMode {
     FullAuto,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Chamber {
     #[serde(rename = "_id")]
     pub id: String,
@@ -574,18 +574,18 @@ pub struct Chamber {
     pub proto: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct ChamberProps {
     pub filters: Vec<ChamberFilter>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct ChamberFilter {
     pub filter: Vec<String>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Color {
     pub r: u8,
     pub g: u8,
@@ -593,14 +593,14 @@ pub struct Color {
     pub a: u8,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Coordinate {
     pub x: f64,
     pub y: f64,
     pub z: f64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 pub enum HeadSegment {
     Top,
     Nape,
@@ -609,7 +609,7 @@ pub enum HeadSegment {
     Jaws,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct HealthEffects {
     pub common: Health,
     pub head: Health,
@@ -623,7 +623,7 @@ pub struct HealthEffects {
     pub hydration: Health,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Health {
     pub value: i64,
     pub percent: bool,
@@ -631,7 +631,7 @@ pub struct Health {
     pub duration: u64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct DamageEffects {
     pub bloodloss: Damage,
@@ -643,7 +643,7 @@ pub struct DamageEffects {
     pub radiation_exposure: Damage,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Damage {
     pub remove: bool,
@@ -655,7 +655,7 @@ pub struct Damage {
     pub health_penalty_max: Option<u64>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct SpeedEffects {
     pub mobility: Speed,
@@ -665,7 +665,7 @@ pub struct SpeedEffects {
     pub unlock_speed: Speed,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Speed {
     pub value: i64,
     pub percent: bool,
@@ -673,7 +673,7 @@ pub struct Speed {
     pub duration: u64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct StackSlot {
     #[serde(rename = "_id")]
     pub id: String,
@@ -689,31 +689,31 @@ pub struct StackSlot {
     pub proto: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct StackSlotProps {
     pub filters: Vec<StackSlotFilter>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct StackSlotFilter {
     pub filter: Vec<String>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 struct LocationsResponse {
     #[serde(flatten)]
     error: ErrorResponse,
     data: Option<Locations>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Locations {
     pub locations: HashMap<String, Location>,
     pub paths: Vec<Path>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Location {
     pub enabled: bool,
@@ -806,26 +806,26 @@ pub struct Location {
     pub banners: Vec<Banner>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Scene {
     pub path: String,
     pub rcid: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Path {
     pub source: String,
     pub destination: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Preview {
     pub path: String,
     pub rcid: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Wave {
     #[serde(rename = "number")]
@@ -846,7 +846,7 @@ pub struct Wave {
     pub wild_spawn_type: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct MinMaxBot {
     pub min: u64,
     pub max: u64,
@@ -854,7 +854,7 @@ pub struct MinMaxBot {
     pub wild_spawn_type: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct BotLocationModifier {
     pub accuracy_speed: u64,
@@ -865,7 +865,7 @@ pub struct BotLocationModifier {
     pub visible_distance: u64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Exit {
     pub name: String,
@@ -883,7 +883,7 @@ pub struct Exit {
     pub requirement_tip: Option<String>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct BossSpawn {
     #[serde(rename = "BossName")]
@@ -905,7 +905,7 @@ pub struct BossSpawn {
     pub time: i64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum BotDifficulty {
     Easy,
@@ -913,13 +913,13 @@ pub enum BotDifficulty {
     Hard,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Banner {
     pub id: String,
     pub pic: BannerPic,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct BannerPic {
     pub path: String,
     pub rcid: String,
@@ -940,7 +940,7 @@ struct WeatherData {
     acceleration: u64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Weather {
     pub timestamp: u64,
     pub cloud: f64,

@@ -147,7 +147,7 @@ struct ExchangeResponse {
 }
 
 /// Authenticated user session.
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Session {
     pub queued: bool,
     pub session: String,
