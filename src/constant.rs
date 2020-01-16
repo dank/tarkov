@@ -840,7 +840,7 @@ pub struct Wave {
     pub slots_max: u64,
     pub spawn_points: String,
     pub bot_side: Side,
-    pub bot_preset: String,
+    pub bot_preset: BotDifficulty,
     #[serde(rename = "isPlayers")]
     pub is_players: bool,
     pub wild_spawn_type: String,
@@ -895,14 +895,22 @@ pub struct BossSpawn {
     #[serde(rename = "BossPlayer")]
     pub player: bool,
     #[serde(rename = "BossDifficult")]
-    pub difficulty: String,
+    pub difficulty: BotDifficulty,
     #[serde(rename = "BossEscortType")]
     pub escort_type: String,
     #[serde(rename = "BossEscortDifficult")]
-    pub escort_difficulty: String,
+    pub escort_difficulty: BotDifficulty,
     #[serde(rename = "BossEscortAmount")]
     pub escort_amount: String,
     pub time: i64,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum BotDifficulty {
+    Easy,
+    Normal,
+    Hard,
 }
 
 #[derive(Debug, Deserialize)]
