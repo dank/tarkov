@@ -925,7 +925,39 @@ pub struct BannerPic {
     pub rcid: String,
 }
 
+#[derive(Debug, Deserialize)]
+struct WeatherResponse {
+    #[serde(flatten)]
+    error: ErrorResponse,
+    data: Option<WeatherData>,
+}
+
+#[derive(Debug, Deserialize)]
+struct WeatherData {
+    weather: Weather,
+    date: String,
+    time: String,
+    acceleration: u64,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Weather {
+    pub timestamp: u64,
+    pub cloud: f64,
+    pub wind_speed: u64,
+    pub wind_direction: u64,
+    pub wind_gustiness: f64,
+    pub rain: u64,
+    pub rain_intensity: f64,
+    pub fog: f64,
+    pub temp: u64,
+    pub pressure: u64,
+    pub date: String,
+    pub time: String,
+}
+
 impl Tarkov {
+    /// Get a list of all in-game items.
     pub async fn get_items(&self) -> Result<HashMap<String, Item>> {
         let url = format!("{}/client/items", PROD_ENDPOINT);
         let res: ItemsResponse = self.post_json(&url, &Request { crc: 0 }).await?;
@@ -937,6 +969,7 @@ impl Tarkov {
         )
     }
 
+    /// Get a list of all locations/maps.
     pub async fn get_locations(&self) -> Result<Locations> {
         let url = format!("{}/client/locations", PROD_ENDPOINT);
         let res: LocationsResponse = self.post_json(&url, &Request { crc: 0 }).await?;
@@ -948,7 +981,16 @@ impl Tarkov {
         )
     }
 
-    pub async fn get_weather(&self) -> Result<()> {
-        Ok(())
+    /// Get the current forecast and time.
+    pub async fn get_weather(&self) -> Result<Weather> {
+        let url = format!("{}/client/weather", PROD_ENDPOINT);
+        let res: WeatherResponse = self.post_json(&url, &{}).await?;
+
+        self.handle_error(
+            res.error,
+            res.data
+                .expect("API returned no errors but `data` is unavailable.")
+                .weather,
+        )
     }
 }
