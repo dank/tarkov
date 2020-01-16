@@ -120,7 +120,7 @@ struct TraderItemsResponse {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct TraderItems {
+struct TraderItems {
     items: Vec<Item>,
     barter_scheme: HashMap<String, Vec<Vec<Price>>>,
     loyal_level_items: HashMap<String, u8>,
@@ -176,7 +176,7 @@ impl Tarkov {
         )
     }
 
-    pub async fn get_trader_items_raw(&self, trader_id: &str) -> Result<TraderItems> {
+    async fn get_trader_items_raw(&self, trader_id: &str) -> Result<TraderItems> {
         let url = format!(
             "{}/client/trading/api/getTraderAssort/{}",
             TRADING_ENDPOINT, trader_id
@@ -190,7 +190,7 @@ impl Tarkov {
         )
     }
 
-    pub async fn get_trader_prices_raw(&self, trader_id: &str) -> Result<HashMap<String, Vec<Vec<Price>>>> {
+    async fn get_trader_prices_raw(&self, trader_id: &str) -> Result<HashMap<String, Vec<Vec<Price>>>> {
         let url = format!(
             "{}/client/trading/api/getUserAssortPrice/trader/{}",
             TRADING_ENDPOINT, trader_id
@@ -204,6 +204,7 @@ impl Tarkov {
         )
     }
 
+    /// Get a list of items for sale by trader ID.
     pub async fn get_trader_items(&self, trader_id: &str) -> Result<Vec<TraderItem>> {
         let mut result: Vec<TraderItem> = Vec::new();
 
