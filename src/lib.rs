@@ -12,6 +12,7 @@
 use crate::auth::LoginError;
 use crate::hwid::generate_hwid;
 use crate::profile::ProfileError;
+use crate::trading::TradingError;
 use actix_web::client::Client;
 use actix_web::http::StatusCode;
 use err_derive::Error;
@@ -67,7 +68,7 @@ pub enum Error {
 
     /// Unidentified error within the EFT API.
     #[error(display = "unidentified login error with error code: {}", _0)]
-    UnknownAPIError(u8),
+    UnknownAPIError(u64),
     /// Not authorized to API or profile is not selected.
     #[error(display = "not authorized or game profile not selected")]
     NotAuthorized,
@@ -77,6 +78,8 @@ pub enum Error {
     /// `Profile` API error.
     #[error(display = "profile api error: {}", _0)]
     ProfileError(#[error(source)] ProfileError),
+    #[error(display = "trading api error: {}", _0)]
+    TradingError(#[error(source)] TradingError),
 }
 
 /// `Result` alias type.
@@ -85,7 +88,7 @@ pub type Result<T> = std::result::Result<T, Error>;
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 struct ErrorResponse {
     #[serde(rename = "err")]
-    code: u8,
+    code: u64,
     #[serde(rename = "errmsg")]
     message: Option<String>,
 }
@@ -177,6 +180,7 @@ impl Tarkov {
             0 => Ok(ret),
             201 => Err(Error::NotAuthorized)?,
             205 => Err(ProfileError::InvalidUserID)?,
+            1514 => Err(TradingError::TransactionError)?,
             _ => Err(Error::UnknownAPIError(error.code)),
         }
     }

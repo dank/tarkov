@@ -3,6 +3,13 @@ use crate::{ErrorResponse, Result, Tarkov, PROD_ENDPOINT, TRADING_ENDPOINT};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
+#[derive(Debug, err_derive::Error)]
+pub enum TradingError {
+    /// Transaction error
+    #[error(display = "transaction error")]
+    TransactionError,
+}
+
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Trader {
     #[serde(rename = "_id")]
@@ -169,13 +176,19 @@ struct TradeItemRequest<'a> {
     item_id: &'a str,
     count: u64,
     scheme_id: u64,
-    scheme_items: Vec<SchemeItem>,
+    scheme_items: Vec<BarterItem>,
 }
 
-#[derive(Debug, Serialize)]
-struct SchemeItem {
-    id: String,
-    count: f64,
+#[derive(Debug, Serialize, Clone, PartialEq)]
+pub struct BarterItem {
+    pub id: String,
+    pub count: f64,
+}
+
+#[derive(Debug, Deserialize)]
+struct TradeResponse {
+    #[serde(flatten)]
+    error: ErrorResponse,
 }
 
 impl Tarkov {
@@ -279,12 +292,13 @@ impl Tarkov {
         Ok(result)
     }
 
+    /// Trade item
     pub async fn trade_item(
         &self,
         trader_id: &str,
         item_id: &str,
         quantity: u64,
-        price: Vec<Price>,
+        barter_items: Vec<BarterItem>,
     ) -> Result<()> {
         let url = format!("{}/client/game/profile/items/moving", PROD_ENDPOINT);
         let body = MoveItemRequest {
@@ -295,22 +309,12 @@ impl Tarkov {
                 item_id,
                 count: quantity,
                 scheme_id: 0,
-                scheme_items: price.into_iter().map(|p| SchemeItem::from(p)).collect(),
+                scheme_items: barter_items,
             }],
             tm: 0,
         };
-        println!("{:?}", body);
-        let res: TraderPricesResponse = self.post_json(&url, &body).await?;
 
-        Ok(())
-    }
-}
-
-impl From<Price> for SchemeItem {
-    fn from(price: Price) -> Self {
-        SchemeItem {
-            id: price.schema_id,
-            count: price.count,
-        }
+        let res: TradeResponse = self.post_json(&url, &body).await?;
+        self.handle_error(res.error, ())
     }
 }

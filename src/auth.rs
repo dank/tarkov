@@ -51,7 +51,7 @@ pub(crate) struct Auth {
 #[derive(Debug, Deserialize)]
 struct LoginResponse {
     #[serde(rename = "err")]
-    error_code: u8,
+    error_code: u64,
     #[serde(rename = "errmsg")]
     error_message: Option<String>,
     data: Option<Auth>,
@@ -110,6 +110,7 @@ pub(crate) async fn login(
         StatusCode::OK => {
             let res = serde_json::from_slice::<LoginResponse>(body.as_bytes())?;
             // TODO: Reduce duplicate code
+            // TODO: use serde(flatten)
             match res.error_code {
                 0 => Ok(res
                     .data
@@ -141,8 +142,9 @@ struct ExchangeVersion<'a> {
 
 #[derive(Debug, Deserialize)]
 struct ExchangeResponse {
+    // TODO: use serde(flatten)
     #[serde(rename = "err")]
-    error_code: u8,
+    error_code: u64,
     #[serde(rename = "errmsg")]
     error_message: Option<String>,
     data: Option<Session>,
