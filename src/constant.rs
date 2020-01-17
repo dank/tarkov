@@ -3,6 +3,7 @@ use crate::{ErrorResponse, Result, Tarkov, PROD_ENDPOINT};
 use crate::profile::Side;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use crate::badjson::StringOrInt;
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -10,7 +11,7 @@ struct Request {
     crc: u64,
 }
 
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct ItemsResponse {
     #[serde(flatten)]
@@ -700,7 +701,7 @@ pub struct StackSlotFilter {
     pub filter: Vec<String>,
 }
 
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize)]
 struct LocationsResponse {
     #[serde(flatten)]
     error: ErrorResponse,
@@ -956,6 +957,93 @@ pub struct Weather {
     pub time: String,
 }
 
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct LocalizationResponse {
+    #[serde(flatten)]
+    error: ErrorResponse,
+    data: Option<Localization>,
+}
+
+/// EFT localization table
+#[derive(Debug, Deserialize, Clone, PartialEq)]
+pub struct Localization {
+    /// Localization table for UI elements.
+    pub interface: HashMap<String, String>,
+    /// Unknown type
+    #[serde(rename = "enum")]
+    pub enums: serde_json::Value,
+    /// Localization table for errors.
+    pub error: HashMap<String, String>,
+    /// Localization table for automated messages (eg, from traders).
+    pub mail: HashMap<String, StringOrInt>,
+    /// Localization table for quest missions.
+    pub quest: HashMap<String, Quest>,
+    pub preset: HashMap<String, Preset>,
+    /// Localization table for flea market categories.
+    pub handbook: HashMap<String, String>,
+    pub season: HashMap<String, String>,
+    /// Localization table for items.
+    pub templates: HashMap<String, Template>,
+    /// Localization table for locations/maps.
+    pub locations: HashMap<String, LocationLocalization>,
+    pub banners: HashMap<String, BannerLocalization>,
+    /// Localization table for traders.
+    #[serde(rename = "trading")]
+    pub traders: HashMap<String, Trader>,
+}
+
+#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct Quest {
+    pub name: String,
+    pub description: String,
+    pub note: Option<String>,
+    pub fail_message_text: String,
+    pub started_message_text: String,
+    pub success_message_text: String,
+    pub conditions: HashMap<String, String>,
+    pub location: String,
+}
+
+#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[serde(rename_all = "PascalCase")]
+pub struct Preset {
+    pub name: Option<String>,
+}
+
+#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[serde(rename_all = "PascalCase")]
+pub struct Template {
+    pub name: String,
+    pub short_name: String,
+    pub description: String,
+}
+
+#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[serde(rename_all = "PascalCase")]
+pub struct LocationLocalization {
+    pub name: String,
+    pub description: String,
+}
+
+#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[serde(rename_all = "PascalCase")]
+pub struct BannerLocalization {
+    pub name: Option<String>,
+    pub description: Option<String>,
+}
+
+#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[serde(rename_all = "PascalCase")]
+pub struct Trader {
+    pub full_name: String,
+    pub first_name: String,
+    pub nickname: String,
+    pub location: String,
+    pub description: String,
+}
+
 impl Tarkov {
     /// Get a list of all in-game items.
     pub async fn get_items(&self) -> Result<HashMap<String, Item>> {
@@ -991,6 +1079,18 @@ impl Tarkov {
             res.data
                 .expect("API returned no errors but `data` is unavailable.")
                 .weather,
+        )
+    }
+
+    /// Get the localization table. Pass a valid ISO 639-1 language code.
+    pub async fn get_i18n(&self, language: &str) -> Result<Localization> {
+        let url = format!("{}/client/locale/{}", PROD_ENDPOINT, language);
+        let res: LocalizationResponse = self.post_json(&url, &{}).await?;
+
+        self.handle_error(
+            res.error,
+            res.data
+                .expect("API returned no errors but `data` is unavailable."),
         )
     }
 }

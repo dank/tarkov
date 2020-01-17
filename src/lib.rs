@@ -10,6 +10,7 @@
 //! For examples, see the `examples` directory in the source tree.
 
 use crate::auth::LoginError;
+use crate::hwid::generate_hwid;
 use crate::profile::ProfileError;
 use actix_web::client::Client;
 use actix_web::http::StatusCode;
@@ -19,7 +20,6 @@ use log::debug;
 use serde::de::DeserializeOwned;
 use serde::Deserialize;
 use std::io::Read;
-use crate::hwid::generate_hwid;
 
 const GAME_VERSION: &str = "0.12.2.5485";
 const LAUNCHER_VERSION: &str = "0.9.1.935";
@@ -31,6 +31,7 @@ const TRADING_ENDPOINT: &str = "https://trading.escapefromtarkov.com";
 const RAGFAIR_ENDPOINT: &str = "https://ragfair.escapefromtarkov.com";
 
 mod auth;
+mod badjson;
 
 /// Structs for game constants API.
 pub mod constant;

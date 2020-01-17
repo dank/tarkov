@@ -109,6 +109,7 @@ pub(crate) async fn login(
     match res.status() {
         StatusCode::OK => {
             let res = serde_json::from_slice::<LoginResponse>(body.as_bytes())?;
+            // TODO: Reduce duplicate code
             match res.error_code {
                 0 => Ok(res
                     .data
