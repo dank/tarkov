@@ -21,7 +21,7 @@ async fn main() -> Result<(), Error> {
     let traders = t.get_traders().await?;
     let trader = traders
         .into_iter()
-        .find(|t| t.id == "54cb57776803fa99248b456e")
+        .find(|t| t.nickname == "Терапевт")
         .unwrap();
 
     // Therapist wants 3990₽ for 1 painkiller.
