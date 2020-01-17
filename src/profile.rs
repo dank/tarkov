@@ -4,6 +4,12 @@ use crate::trading::Item;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
+#[derive(Debug, Serialize)]
+pub(crate) struct MoveItemRequest<T> {
+    pub(crate) data: Vec<T>,
+    pub(crate) tm: u64,
+}
+
 #[derive(Debug, Deserialize)]
 struct ProfileResponse {
     #[serde(flatten)]

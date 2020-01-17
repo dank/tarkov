@@ -1,9 +1,9 @@
 use crate::{ErrorResponse, Result, Tarkov, PROD_ENDPOINT};
 
+use crate::badjson::StringOrInt;
 use crate::profile::Side;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use crate::badjson::StringOrInt;
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -1046,7 +1046,7 @@ pub struct Trader {
 
 impl Tarkov {
     /// Get a list of all in-game items.
-    pub async fn get_items(&self) -> Result<HashMap<String, Item>> {
+    pub async fn get_all_items(&self) -> Result<HashMap<String, Item>> {
         let url = format!("{}/client/items", PROD_ENDPOINT);
         let res: ItemsResponse = self.post_json(&url, &Request { crc: 0 }).await?;
 
@@ -1058,7 +1058,7 @@ impl Tarkov {
     }
 
     /// Get a list of all locations/maps.
-    pub async fn get_locations(&self) -> Result<Locations> {
+    pub async fn get_all_locations(&self) -> Result<Locations> {
         let url = format!("{}/client/locations", PROD_ENDPOINT);
         let res: LocationsResponse = self.post_json(&url, &Request { crc: 0 }).await?;
 

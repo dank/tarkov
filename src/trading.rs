@@ -1,6 +1,6 @@
-use crate::profile::{UpdLight, UpdMedkit, UpdRepairable};
-use crate::{ErrorResponse, Result, Tarkov, TRADING_ENDPOINT};
-use serde::Deserialize;
+use crate::profile::{MoveItemRequest, UpdLight, UpdMedkit, UpdRepairable};
+use crate::{ErrorResponse, Result, Tarkov, PROD_ENDPOINT, TRADING_ENDPOINT};
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 #[derive(Debug, Deserialize, Clone, PartialEq)]
@@ -100,7 +100,7 @@ pub struct Item {
     #[serde(rename = "_id")]
     pub id: String,
     #[serde(rename = "_tpl")]
-    pub tpl: String,
+    pub schema_id: String,
     pub parent_id: Option<String>,
     pub slot_id: Option<String>,
     pub upd: Option<Upd>,
@@ -144,17 +144,38 @@ struct TraderPricesResponse {
 
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Price {
-    count: f64,
     #[serde(rename = "_tpl")]
-    tpl: String,
+    pub schema_id: String,
+    pub count: f64,
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct TraderItem {
     pub id: String,
+    pub schema_id: String,
     pub upd: Option<Upd>,
     pub price: Vec<Price>,
     pub loyalty_level: u8,
+}
+
+#[derive(Debug, Serialize)]
+struct TradeItemRequest<'a> {
+    #[serde(rename = "Action")]
+    action: &'a str,
+    #[serde(rename = "type")]
+    trade_type: &'a str,
+    #[serde(rename = "tid")]
+    trader_id: &'a str,
+    item_id: &'a str,
+    count: u64,
+    scheme_id: u64,
+    scheme_items: Vec<SchemeItem>,
+}
+
+#[derive(Debug, Serialize)]
+struct SchemeItem {
+    id: String,
+    count: f64,
 }
 
 impl Tarkov {
@@ -245,7 +266,8 @@ impl Tarkov {
             };
 
             let trader_item = TraderItem {
-                id: item.tpl,
+                id: item.id,
+                schema_id: item.schema_id,
                 upd: item.upd,
                 price: price.expect("Item price could not be mapped.").clone(),
                 loyalty_level: *loyalty_level,
@@ -255,5 +277,40 @@ impl Tarkov {
         }
 
         Ok(result)
+    }
+
+    pub async fn trade_item(
+        &self,
+        trader_id: &str,
+        item_id: &str,
+        quantity: u64,
+        price: Vec<Price>,
+    ) -> Result<()> {
+        let url = format!("{}/client/game/profile/items/moving", PROD_ENDPOINT);
+        let body = MoveItemRequest {
+            data: vec![TradeItemRequest {
+                action: "TradingConfirm",
+                trade_type: "buy_from_trader",
+                trader_id,
+                item_id,
+                count: quantity,
+                scheme_id: 0,
+                scheme_items: price.into_iter().map(|p| SchemeItem::from(p)).collect(),
+            }],
+            tm: 0,
+        };
+        println!("{:?}", body);
+        let res: TraderPricesResponse = self.post_json(&url, &body).await?;
+
+        Ok(())
+    }
+}
+
+impl From<Price> for SchemeItem {
+    fn from(price: Price) -> Self {
+        SchemeItem {
+            id: price.schema_id,
+            count: price.count,
+        }
     }
 }

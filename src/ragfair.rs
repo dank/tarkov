@@ -83,7 +83,7 @@ pub struct User {
 #[serde(rename_all = "camelCase")]
 pub struct Requirement {
     #[serde(rename = "_tpl")]
-    pub tpl: String,
+    pub schema_id: String,
     pub count: u64,
 }
 

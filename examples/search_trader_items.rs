@@ -23,10 +23,24 @@ async fn main() -> Result<(), Error> {
     let traders = t.get_traders().await?;
     let trader = traders
         .into_iter()
-        .find(|t| locale.traders.get(&t.id).unwrap().nickname == "Mechanic")
+        .find(|t| locale.traders.get(&t.id).unwrap().nickname == "Therapist")
         .unwrap();
 
-    println!("{:#?}", trader);
+    // Fetch all items to map item ID to item name/descriptor.
+    let items = t.get_all_items().await?;
+
+    // Find trader's item by name
+    let trader_items = t.get_trader_items(&trader.id).await?;
+    let painkiller = trader_items
+        .into_iter()
+        .find(|i| {
+            // Therapist sells painkillers for Roubles or 2 matches. Finding the barter deal.
+            let item = items.get(&i.schema_id).unwrap();
+            item.name == "painkiller" && i.price.get(0).unwrap().count == 2.0
+        })
+        .unwrap();
+
+    println!("{:?}", painkiller);
 
     Ok(())
 }
