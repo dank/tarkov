@@ -8,6 +8,7 @@ use flate2::read::ZlibDecoder;
 use log::debug;
 use serde::{Deserialize, Serialize};
 use std::io::Read;
+use serde::de::DeserializeOwned;
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -50,10 +51,8 @@ pub(crate) struct Auth {
 
 #[derive(Debug, Deserialize)]
 struct LoginResponse {
-    #[serde(rename = "err")]
-    error_code: u64,
-    #[serde(rename = "errmsg")]
-    error_message: Option<String>,
+    #[serde(flatten)]
+    error: ErrorResponse,
     data: Option<Auth>,
 }
 
@@ -109,17 +108,7 @@ pub(crate) async fn login(
     match res.status() {
         StatusCode::OK => {
             let res = serde_json::from_slice::<LoginResponse>(body.as_bytes())?;
-            // TODO: Reduce duplicate code
-            // TODO: use serde(flatten)
-            match res.error_code {
-                0 => Ok(res
-                    .data
-                    .expect("API returned no errors but `data` is unavailable.")),
-                207 => Err(LoginError::MissingParameters)?,
-                209 => Err(LoginError::TwoFactorRequired)?,
-                214 => Err(LoginError::Captcha)?,
-                _ => Err(Error::UnknownAPIError(res.error_code)),
-            }
+            handle_auth_error(res.error, res.data)
         }
         _ => Err(Error::Status(res.status())),
     }
@@ -142,11 +131,8 @@ struct ExchangeVersion<'a> {
 
 #[derive(Debug, Deserialize)]
 struct ExchangeResponse {
-    // TODO: use serde(flatten)
-    #[serde(rename = "err")]
-    error_code: u64,
-    #[serde(rename = "errmsg")]
-    error_message: Option<String>,
+    #[serde(flatten)]
+    error: ErrorResponse,
     data: Option<Session>,
 }
 
@@ -191,17 +177,20 @@ pub(crate) async fn exchange_access_token(
     match res.status() {
         StatusCode::OK => {
             let res = serde_json::from_slice::<ExchangeResponse>(body.as_bytes())?;
-            match res.error_code {
-                0 => Ok(res
-                    .data
-                    .expect("API returned no errors but `data` is unavailable.")),
-                207 => Err(LoginError::MissingParameters)?,
-                209 => Err(LoginError::TwoFactorRequired)?,
-                214 => Err(LoginError::Captcha)?,
-                _ => Err(Error::UnknownAPIError(res.error_code)),
-            }
+            handle_auth_error(res.error, res.data)
         }
         _ => Err(Error::Status(res.status())),
+    }
+}
+
+fn handle_auth_error<T: DeserializeOwned>(error: ErrorResponse, ret: Option<T>) -> Result<T> {
+    match error.code {
+        0 => Ok(ret.expect("API returned no errors but `data` is unavailable.")),
+        201 => Err(Error::NotAuthorized)?,
+        207 => Err(LoginError::MissingParameters)?,
+        209 => Err(LoginError::TwoFactorRequired)?,
+        214 => Err(LoginError::Captcha)?,
+        _ => Err(Error::UnknownAPIError(error.code)),
     }
 }
 
