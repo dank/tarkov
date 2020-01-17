@@ -32,12 +32,7 @@ async fn main() -> Result<(), Error> {
         .unwrap();
 
     // Trade item
-    t.sell_item(
-        &trader.id,
-        &painkiller.id,
-        1,
-    )
-    .await?;
+    t.sell_item(&trader.id, &painkiller.id, 1).await?;
 
     Ok(())
 }
