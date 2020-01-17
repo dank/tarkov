@@ -6,7 +6,7 @@ async fn main() -> Result<(), Error> {
     std::env::set_var("RUST_LOG", "tarkov=info");
     env_logger::init();
 
-    let t = Tarkov::from_email_and_password("***REMOVED***", "***REMOVED***", "***REMOVED***").await?;
+    let t = Tarkov::from_session("e1bc65a216325f0ad0db8518fa299db2").await?;
 
     // Find and select PMC profile to complete login.
     let profiles = t.get_profiles().await?;
