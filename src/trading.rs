@@ -204,6 +204,30 @@ struct TradeResponse {
     error: ErrorResponse,
 }
 
+#[derive(Debug, Serialize)]
+struct SellItemRequest<'a> {
+    #[serde(rename = "Action")]
+    action: &'a str,
+    #[serde(rename = "type")]
+    trade_type: &'a str,
+    #[serde(rename = "tid")]
+    trader_id: &'a str,
+    items: Vec<SellItem>,
+}
+
+#[derive(Debug, Serialize)]
+struct SellItem {
+    id: String,
+    count: u64,
+    scheme_id: u64,
+}
+
+#[derive(Debug, Deserialize)]
+struct SellResponse {
+    #[serde(flatten)]
+    error: ErrorResponse,
+}
+
 impl Tarkov {
     /// Get a list of all traders.
     pub async fn get_traders(&self) -> Result<Vec<Trader>> {
@@ -310,6 +334,26 @@ impl Tarkov {
                 count: quantity,
                 scheme_id: 0,
                 scheme_items: barter_items,
+            }],
+            tm: 0,
+        };
+
+        let res: TradeResponse = self.post_json(&url, &body).await?;
+        self.handle_error(res.error, Some(()))
+    }
+
+    pub async fn sell_item(&self, trader_id: &str, item_id: &str, quantity: u64) -> Result<()> {
+        let url = format!("{}/client/game/profile/items/moving", PROD_ENDPOINT);
+        let body = MoveItemRequest {
+            data: vec![SellItemRequest {
+                action: "TradingConfirm",
+                trade_type: "sell_to_trader",
+                trader_id,
+                items: vec![SellItem {
+                    id: item_id.to_string(),
+                    count: quantity,
+                    scheme_id: 0,
+                }],
             }],
             tm: 0,
         };

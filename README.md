@@ -6,12 +6,11 @@ This library is currently in alpha. Everything may change significantly in futur
 ## Features
 - [x] Authentication
 - [x] Flea market
-- [x] Friends
-- [ ] Hideout
-- [ ] Inventory management (examine, move, delete, etc)
-- [ ] Quests
 - [x] Traders
+- [ ] Hideout
+- [ ] Inventory management (equip, move, delete, etc)
 - [ ] Messenger
+- [ ] Quests
 
 ## Getting Started
 
