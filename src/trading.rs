@@ -10,6 +10,7 @@ pub enum TradingError {
     TransactionError,
 }
 
+/// Trader info.
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Trader {
     #[serde(rename = "_id")]
@@ -39,6 +40,7 @@ pub struct Trader {
     pub sell_category: Vec<serde_json::Value>,
 }
 
+/// Trader's repair stats.
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Repair {
     pub availability: bool,
@@ -50,6 +52,7 @@ pub struct Repair {
     pub price_rate: u64,
 }
 
+/// Trader currency.
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 pub enum Currency {
     #[serde(rename = "RUB")]
@@ -60,6 +63,7 @@ pub enum Currency {
     Euro,
 }
 
+/// Trader's insurance offer.
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Insurance {
     pub availability: bool,
@@ -70,6 +74,7 @@ pub struct Insurance {
     pub excluded_category: Vec<String>,
 }
 
+/// Trader loyalty.
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Loyalty {
@@ -79,6 +84,7 @@ pub struct Loyalty {
     pub loyalty_levels: HashMap<String, LoyaltyLevel>,
 }
 
+/// Trader loyalty level.
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct LoyaltyLevel {
@@ -101,6 +107,7 @@ struct TraderResponse {
     data: Option<Trader>,
 }
 
+/// In-game item.
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Item {
@@ -115,6 +122,7 @@ pub struct Item {
     // location: Option<Location>
 }
 
+/// Item options.
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Upd {
@@ -149,6 +157,7 @@ struct TraderPricesResponse {
     data: Option<HashMap<String, Vec<Vec<Price>>>>,
 }
 
+/// Trader item price.
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Price {
     #[serde(rename = "_tpl")]
@@ -156,6 +165,7 @@ pub struct Price {
     pub count: f64,
 }
 
+/// Item for trade.
 #[derive(Debug, Clone, PartialEq)]
 pub struct TraderItem {
     pub id: String,
@@ -179,7 +189,7 @@ struct TradeItemRequest<'a> {
     scheme_items: Vec<BarterItem>,
 }
 
-/// Inventory item for trading
+/// Inventory item for trading.
 #[derive(Debug, Serialize, Clone, PartialEq)]
 pub struct BarterItem {
     /// Item ID from your inventory.
