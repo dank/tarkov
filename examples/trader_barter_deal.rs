@@ -43,7 +43,7 @@ async fn main() -> Result<(), Error> {
             id: i.id,
             count: 1.0,
         })
-        .collect::<Vec<BarterItem>>()[..1];
+        .collect::<Vec<BarterItem>>()[..2];
 
     // Trade item
     t.trade_item(&trader.id, &painkiller.id, 1, barter_items.to_vec())

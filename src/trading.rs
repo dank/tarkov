@@ -179,9 +179,12 @@ struct TradeItemRequest<'a> {
     scheme_items: Vec<BarterItem>,
 }
 
+/// Inventory item for trading
 #[derive(Debug, Serialize, Clone, PartialEq)]
 pub struct BarterItem {
+    /// Item ID from your inventory.
     pub id: String,
+    /// Amount of items.
     pub count: f64,
 }
 
@@ -288,7 +291,10 @@ impl Tarkov {
         Ok(result)
     }
 
-    /// Trade item
+    /// Trade items with the specified trader.
+    ///
+    /// All trades, including cash trades, are considered bartering. `barter_items` expects a
+    /// list of items from your inventory that matches the item price.
     pub async fn trade_item(
         &self,
         trader_id: &str,
