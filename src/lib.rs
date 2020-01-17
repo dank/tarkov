@@ -175,9 +175,9 @@ impl Tarkov {
         }
     }
 
-    fn handle_error<T: DeserializeOwned>(&self, error: ErrorResponse, ret: T) -> Result<T> {
+    fn handle_error<T: DeserializeOwned>(&self, error: ErrorResponse, ret: Option<T>) -> Result<T> {
         match error.code {
-            0 => Ok(ret),
+            0 => Ok(ret.expect("API returned no errors but `data` is unavailable.")),
             201 => Err(Error::NotAuthorized)?,
             205 => Err(ProfileError::InvalidUserID)?,
             1514 => Err(TradingError::TransactionError)?,

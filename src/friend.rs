@@ -44,7 +44,6 @@ impl Tarkov {
         self.handle_error(
             res.error,
             res.data
-                .expect("API returned no errors but `data` is unavailable."),
         )
     }
 }

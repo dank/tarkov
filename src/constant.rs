@@ -1050,11 +1050,7 @@ impl Tarkov {
         let url = format!("{}/client/items", PROD_ENDPOINT);
         let res: ItemsResponse = self.post_json(&url, &Request { crc: 0 }).await?;
 
-        self.handle_error(
-            res.error,
-            res.data
-                .expect("API returned no errors but `data` is unavailable."),
-        )
+        self.handle_error(res.error, res.data)
     }
 
     /// Get a list of all locations/maps.
@@ -1062,11 +1058,7 @@ impl Tarkov {
         let url = format!("{}/client/locations", PROD_ENDPOINT);
         let res: LocationsResponse = self.post_json(&url, &Request { crc: 0 }).await?;
 
-        self.handle_error(
-            res.error,
-            res.data
-                .expect("API returned no errors but `data` is unavailable."),
-        )
+        self.handle_error(res.error, res.data)
     }
 
     /// Get the current forecast and time.
@@ -1074,12 +1066,7 @@ impl Tarkov {
         let url = format!("{}/client/weather", PROD_ENDPOINT);
         let res: WeatherResponse = self.post_json(&url, &{}).await?;
 
-        self.handle_error(
-            res.error,
-            res.data
-                .expect("API returned no errors but `data` is unavailable.")
-                .weather,
-        )
+        self.handle_error(res.error, res.data).map(|w| w.weather)
     }
 
     /// Get the localization table. Pass a valid ISO 639-1 language code.
@@ -1087,10 +1074,6 @@ impl Tarkov {
         let url = format!("{}/client/locale/{}", PROD_ENDPOINT, language);
         let res: LocalizationResponse = self.post_json(&url, &{}).await?;
 
-        self.handle_error(
-            res.error,
-            res.data
-                .expect("API returned no errors but `data` is unavailable."),
-        )
+        self.handle_error(res.error, res.data)
     }
 }

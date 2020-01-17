@@ -200,7 +200,6 @@ impl Tarkov {
         self.handle_error(
             res.error,
             res.data
-                .expect("API returned no errors but `data` is unavailable."),
         )
     }
 
@@ -215,7 +214,6 @@ impl Tarkov {
         self.handle_error(
             res.error,
             res.data
-                .expect("API returned no errors but `data` is unavailable."),
         )
     }
 
@@ -229,7 +227,6 @@ impl Tarkov {
         self.handle_error(
             res.error,
             res.data
-                .expect("API returned no errors but `data` is unavailable."),
         )
     }
 
@@ -246,7 +243,6 @@ impl Tarkov {
         self.handle_error(
             res.error,
             res.data
-                .expect("API returned no errors but `data` is unavailable."),
         )
     }
 
@@ -315,6 +311,6 @@ impl Tarkov {
         };
 
         let res: TradeResponse = self.post_json(&url, &body).await?;
-        self.handle_error(res.error, ())
+        self.handle_error(res.error, Some(()))
     }
 }
