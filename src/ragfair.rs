@@ -116,9 +116,6 @@ impl Tarkov {
         let url = format!("{}/client/ragfair/find", RAGFAIR_ENDPOINT);
         let res: SearchResponse = self.post_json(&url, &body).await?;
 
-        self.handle_error(
-            res.error,
-            res.data
-        )
+        self.handle_error(res.error, res.data)
     }
 }

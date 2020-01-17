@@ -41,9 +41,6 @@ impl Tarkov {
         let url = format!("{}/client/friend/list", PROD_ENDPOINT);
         let res: FriendResponse = self.post_json(&url, &{}).await?;
 
-        self.handle_error(
-            res.error,
-            res.data
-        )
+        self.handle_error(res.error, res.data)
     }
 }

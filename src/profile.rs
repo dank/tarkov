@@ -379,10 +379,7 @@ impl Tarkov {
         let url = format!("{}/client/game/profile/list", PROD_ENDPOINT);
         let res: ProfileResponse = self.post_json(&url, &{}).await?;
 
-        self.handle_error(
-            res.error,
-            res.data
-        )
+        self.handle_error(res.error, res.data)
     }
 
     /// Select a profile by user ID.
@@ -392,10 +389,7 @@ impl Tarkov {
             .post_json(&url, &SelectRequest { uid: user_id })
             .await?;
 
-        self.handle_error(
-            res.error,
-            res.data
-        )
+        self.handle_error(res.error, res.data)
     }
 }
 

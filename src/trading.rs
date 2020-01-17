@@ -200,10 +200,7 @@ impl Tarkov {
         let url = format!("{}/client/trading/api/getTradersList", TRADING_ENDPOINT);
         let res: TradersResponse = self.post_json(&url, &{}).await?;
 
-        self.handle_error(
-            res.error,
-            res.data
-        )
+        self.handle_error(res.error, res.data)
     }
 
     /// Get a trader by ID.
@@ -214,10 +211,7 @@ impl Tarkov {
         );
         let res: TraderResponse = self.post_json(&url, &{}).await?;
 
-        self.handle_error(
-            res.error,
-            res.data
-        )
+        self.handle_error(res.error, res.data)
     }
 
     async fn get_trader_items_raw(&self, trader_id: &str) -> Result<TraderItems> {
@@ -227,10 +221,7 @@ impl Tarkov {
         );
         let res: TraderItemsResponse = self.post_json(&url, &{}).await?;
 
-        self.handle_error(
-            res.error,
-            res.data
-        )
+        self.handle_error(res.error, res.data)
     }
 
     async fn get_trader_prices_raw(
@@ -243,10 +234,7 @@ impl Tarkov {
         );
         let res: TraderPricesResponse = self.post_json(&url, &{}).await?;
 
-        self.handle_error(
-            res.error,
-            res.data
-        )
+        self.handle_error(res.error, res.data)
     }
 
     /// Get a list of items for sale by trader ID.

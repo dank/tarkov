@@ -6,9 +6,9 @@ use actix_web::client::Client;
 use actix_web::http::StatusCode;
 use flate2::read::ZlibDecoder;
 use log::debug;
+use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 use std::io::Read;
-use serde::de::DeserializeOwned;
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]

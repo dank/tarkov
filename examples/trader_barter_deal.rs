@@ -36,7 +36,6 @@ async fn main() -> Result<(), Error> {
     let barter_items = &profile
         .inventory
         .items
-        .clone()
         .into_iter()
         .filter(|i| i.schema_id == painkiller.price.get(0).unwrap().schema_id)
         .map(|i| BarterItem {
