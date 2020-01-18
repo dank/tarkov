@@ -40,7 +40,7 @@ async fn main() -> Result<(), Error> {
         })
         .unwrap();
 
-    println!("{:?}", painkiller);
+    println!("{:#?}", painkiller);
 
     Ok(())
 }
