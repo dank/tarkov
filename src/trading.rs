@@ -3,6 +3,7 @@ use crate::{ErrorResponse, Result, Tarkov, PROD_ENDPOINT, TRADING_ENDPOINT};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
+/// Trading error
 #[derive(Debug, err_derive::Error)]
 pub enum TradingError {
     /// Transaction error

@@ -339,6 +339,7 @@ pub struct Ragfair {
     // offers: []
 }
 
+/// Profile error.
 #[derive(Debug, err_derive::Error)]
 pub enum ProfileError {
     /// Invalid user ID selected.
