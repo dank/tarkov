@@ -313,7 +313,7 @@ impl Tarkov {
         Ok(result)
     }
 
-    /// Trade items with the specified trader.
+    /// Trade items with traders.
     ///
     /// All trades, including cash trades, are considered bartering. `barter_items` expects a
     /// list of items from your inventory that matches the item price.
@@ -326,7 +326,7 @@ impl Tarkov {
     ) -> Result<()> {
         let url = format!("{}/client/game/profile/items/moving", PROD_ENDPOINT);
         let body = MoveItemRequest {
-            data: vec![TradeItemRequest {
+            data: &[TradeItemRequest {
                 action: "TradingConfirm",
                 trade_type: "buy_from_trader",
                 trader_id,
@@ -345,7 +345,7 @@ impl Tarkov {
     pub async fn sell_item(&self, trader_id: &str, item_id: &str, quantity: u64) -> Result<()> {
         let url = format!("{}/client/game/profile/items/moving", PROD_ENDPOINT);
         let body = MoveItemRequest {
-            data: vec![SellItemRequest {
+            data: &[SellItemRequest {
                 action: "TradingConfirm",
                 trade_type: "sell_to_trader",
                 trader_id,

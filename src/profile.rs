@@ -5,8 +5,8 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 #[derive(Debug, Serialize)]
-pub(crate) struct MoveItemRequest<T> {
-    pub(crate) data: Vec<T>,
+pub(crate) struct MoveItemRequest<'a, T> {
+    pub(crate) data: &'a [T],
     pub(crate) tm: u64,
 }
 
