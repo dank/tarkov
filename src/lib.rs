@@ -106,10 +106,35 @@ pub struct Tarkov {
 
 impl Tarkov {
     /// Login with an email and password.
-    pub async fn from_email_and_password(email: &str, password: &str, captcha: Option<&str>, hwid: &str) -> Result<Self> {
+    pub async fn login(
+        email: &str,
+        password: &str,
+        captcha: Option<&str>,
+        hwid: &str,
+    ) -> Result<Self> {
         let client = Client::new();
 
         let user = auth::login(&client, email, password, captcha, &hwid).await?;
+        let session = auth::exchange_access_token(&client, &user.access_token, &hwid).await?;
+
+        Ok(Tarkov {
+            client,
+            hwid: hwid.to_string(),
+            session: session.session,
+        })
+    }
+
+    /// Login with an email, password and 2FA code.
+    pub async fn login_with_2fa(
+        email: &str,
+        password: &str,
+        code: &str,
+        hwid: &str,
+    ) -> Result<Self> {
+        let client = Client::new();
+
+        let _ = auth::activate_hardware(&client, email, code, &hwid).await?;
+        let user = auth::login(&client, email, password, None, &hwid).await?;
         let session = auth::exchange_access_token(&client, &user.access_token, &hwid).await?;
 
         Ok(Tarkov {

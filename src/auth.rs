@@ -22,30 +22,18 @@ struct LoginRequest<'a> {
 /// Authenticated user.
 #[derive(Debug, Deserialize)]
 pub(crate) struct Auth {
-    // TODO: Why did I use default here?
-    #[serde(default)]
     pub aid: String,
-    #[serde(default)]
     pub lang: String,
-    #[serde(default)]
-    pub region: String,
-    #[serde(default)]
+    pub region: Option<String>,
     #[serde(rename = "gameVersion")]
-    pub game_version: String,
-    #[serde(default)]
+    pub game_version: Option<String>,
     #[serde(rename = "dataCenters")]
     pub data_centers: Vec<String>,
-    #[serde(default)]
     #[serde(rename = "ipRegion")]
     pub ip_region: String,
-    // XXX: Not a mistake. Tarkov developers are inconsistent.
-    #[serde(default)]
     pub token_type: String,
-    #[serde(default)]
     pub expires_in: u64,
-    #[serde(default)]
     pub access_token: String,
-    #[serde(default)]
     pub refresh_token: String,
 }
 
@@ -67,10 +55,11 @@ pub enum LoginError {
     TwoFactorRequired,
     /// Captcha response is required to continue authentication.
     #[error(display = "captcha is required")]
-    Captcha,
+    CaptchaRequired,
+    /// Incorrect 2FA code.
+    #[error(display = "incorrect 2FA code")]
+    BadTwoFactorCode,
 }
-
-// TODO: Implement refresh_tokens.
 
 pub(crate) async fn login(
     client: &Client,
@@ -111,6 +100,61 @@ pub(crate) async fn login(
         StatusCode::OK => {
             let res = serde_json::from_slice::<LoginResponse>(body.as_bytes())?;
             handle_auth_error(res.error, res.data)
+        }
+        _ => Err(Error::Status(res.status())),
+    }
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct SecurityLoginRequest<'a> {
+    email: &'a str,
+    hw_code: &'a str,
+    activate_code: &'a str,
+}
+
+#[derive(Debug, Deserialize)]
+struct SecurityLoginResponse {
+    #[serde(flatten)]
+    error: ErrorResponse,
+}
+
+pub(crate) async fn activate_hardware(
+    client: &Client,
+    email: &str,
+    code: &str,
+    hwid: &str,
+) -> Result<()> {
+    if email.is_empty() || code.is_empty() || hwid.is_empty() {
+        return Err(LoginError::MissingParameters)?;
+    }
+
+    let url = format!(
+        "{}/launcher/hardwareCode/activate?launcherVersion={}",
+        LAUNCHER_ENDPOINT, LAUNCHER_VERSION
+    );
+    let req = SecurityLoginRequest {
+        email,
+        hw_code: hwid,
+        activate_code: code,
+    };
+
+    debug!("Sending request to {}...", url);
+    let mut res = client
+        .post(url)
+        .header("User-Agent", format!("BSG Launcher {}", LAUNCHER_VERSION))
+        .send_json(&req)
+        .await?;
+    let body = res.body().await?;
+    let mut decode = ZlibDecoder::new(&body[..]);
+    let mut body = String::new();
+    decode.read_to_string(&mut body)?;
+    debug!("Response: {}", body);
+
+    match res.status() {
+        StatusCode::OK => {
+            let res = serde_json::from_slice::<SecurityLoginResponse>(body.as_bytes())?;
+            handle_auth_error(res.error, Some(()))
         }
         _ => Err(Error::Status(res.status())),
     }
@@ -191,7 +235,8 @@ fn handle_auth_error<T: DeserializeOwned>(error: ErrorResponse, ret: Option<T>) 
         201 => Err(Error::NotAuthorized)?,
         207 => Err(LoginError::MissingParameters)?,
         209 => Err(LoginError::TwoFactorRequired)?,
-        214 => Err(LoginError::Captcha)?,
+        211 => Err(LoginError::BadTwoFactorCode)?,
+        214 => Err(LoginError::CaptchaRequired)?,
         _ => Err(Error::UnknownAPIError(error.code)),
     }
 }

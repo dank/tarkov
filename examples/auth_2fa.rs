@@ -14,11 +14,11 @@ async fn main() -> Result<(), Error> {
     let t = match Tarkov::login(email, password, None, &hwid).await {
         Ok(t) => Ok(t),
         Err(Error::LoginError(e)) => match e {
-            // Captcha required!
-            LoginError::CaptchaRequired => {
-                // Solve captcha here and try again
-                let captcha = "03AOLTBLQ952pO-qQYPeLr53N5nK9Co14iXyCp...";
-                Tarkov::login(email, password, Some(captcha), &hwid).await
+            // 2FA required!
+            LoginError::TwoFactorRequired => {
+                // Get 2FA from email (or generate TOTP) then continue...
+                let code = "XYZ";
+                Tarkov::login_with_2fa(email, password, code, &hwid).await
             }
             _ => Err(e)?,
         },
