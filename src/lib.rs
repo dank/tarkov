@@ -31,9 +31,10 @@ const PROD_ENDPOINT: &str = "https://prod.escapefromtarkov.com";
 const TRADING_ENDPOINT: &str = "https://trading.escapefromtarkov.com";
 const RAGFAIR_ENDPOINT: &str = "https://ragfair.escapefromtarkov.com";
 
-mod auth;
 mod bad_json;
 
+/// Structs for authentication.
+pub mod auth;
 /// Structs for game constants API.
 pub mod constant;
 /// Structs for the Friend API.
@@ -74,12 +75,13 @@ pub enum Error {
     /// Not authorized to API or profile is not selected.
     #[error(display = "not authorized or game profile not selected")]
     NotAuthorized,
-    #[doc(hidden)]
+    /// Authentication API error.
     #[error(display = "login api error: {}", _0)]
     LoginError(#[error(source)] LoginError),
-    /// `Profile` API error.
+    /// Profile API error.
     #[error(display = "profile api error: {}", _0)]
     ProfileError(#[error(source)] ProfileError),
+    /// Trading API error.
     #[error(display = "trading api error: {}", _0)]
     TradingError(#[error(source)] TradingError),
 }
@@ -104,10 +106,10 @@ pub struct Tarkov {
 
 impl Tarkov {
     /// Login with an email and password.
-    pub async fn from_email_and_password(email: &str, password: &str, hwid: &str) -> Result<Self> {
+    pub async fn from_email_and_password(email: &str, password: &str, captcha: Option<&str>, hwid: &str) -> Result<Self> {
         let client = Client::new();
 
-        let user = auth::login(&client, email, password, &hwid).await?;
+        let user = auth::login(&client, email, password, captcha, &hwid).await?;
         let session = auth::exchange_access_token(&client, &user.access_token, &hwid).await?;
 
         Ok(Tarkov {

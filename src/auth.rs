@@ -56,6 +56,7 @@ struct LoginResponse {
     data: Option<Auth>,
 }
 
+/// Login error
 #[derive(Debug, err_derive::Error)]
 pub enum LoginError {
     /// Invalid or missing parameters.
@@ -75,6 +76,7 @@ pub(crate) async fn login(
     client: &Client,
     email: &str,
     password: &str,
+    captcha: Option<&str>,
     hwid: &str,
 ) -> Result<Auth> {
     if email.is_empty() || password.is_empty() || hwid.is_empty() {
@@ -90,7 +92,7 @@ pub(crate) async fn login(
         email,
         pass: &password,
         hw_code: hwid,
-        captcha: None,
+        captcha,
     };
 
     debug!("Sending request to {}...", url);

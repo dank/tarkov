@@ -6,7 +6,7 @@ async fn main() -> Result<(), Error> {
     std::env::set_var("RUST_LOG", "tarkov=info");
     env_logger::init();
 
-    let t = Tarkov::from_email_and_password("me@example.com", "password", generate_hwid().as_str())
+    let t = Tarkov::from_email_and_password("me@example.com", "password", None, generate_hwid().as_str())
         .await?;
     println!("{}", t.session);
 
