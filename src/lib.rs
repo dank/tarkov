@@ -34,14 +34,14 @@ const RAGFAIR_ENDPOINT: &str = "https://ragfair.escapefromtarkov.com";
 mod auth;
 mod bad_json;
 
-/// Flea market search helpers.
-pub mod market_filter;
 /// Structs for game constants API.
 pub mod constant;
 /// Structs for the Friend API.
 pub mod friend;
 /// Helper functions for hardware ID.
 pub mod hwid;
+/// Flea market search helpers.
+pub mod market_filter;
 /// Structs for the Profile API.
 pub mod profile;
 /// Structs for the Flea Market (Ragfair) API.

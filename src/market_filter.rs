@@ -2,7 +2,7 @@ use serde_repr::Serialize_repr;
 
 /// Search filter for the flea market.
 #[derive(Debug)]
-pub struct MarketFilter {
+pub struct MarketFilter<'a> {
     /// Sort type.
     pub sort_type: SortBy,
     /// Sort direction.
@@ -10,31 +10,31 @@ pub struct MarketFilter {
     /// Offer currency type.
     pub currency: Currency,
     /// Minimum item price.
-    pub price_from: Option<u64>,
+    pub min_price: Option<u64>,
     /// Maximum item price.
-    pub price_to: Option<u64>,
+    pub max_price: Option<u64>,
     /// Minimum item quantity.
-    pub quantity_from: Option<u64>,
+    pub min_quantity: Option<u64>,
     /// Maximum item quantity.
-    pub quantity_to: Option<u64>,
+    pub max_quantity: Option<u64>,
     /// Minimum item condition percentage.
-    pub condition_from: Option<u64>,
+    pub min_condition: Option<u64>,
     /// Maximum item condition percentage.
-    pub condition_to: Option<u64>,
+    pub max_condition: Option<u64>,
     /// Show offers expiring soon.
     pub expiring_within_hour: bool,
     /// Hide offers asking for items for trade.
     pub hide_bartering_offers: bool,
     /// Offer owner type.
-    pub offer_owner: OfferOwner,
+    pub owner_type: Owner,
     /// Hide inoperable weapons.
     pub hide_inoperable_weapons: bool,
     /// Search by market category ID.
-    pub handbook_id: Option<String>,
+    pub handbook_id: Option<&'a str>,
     /// Search item related to item ID.
-    pub linked_search_id: Option<String>,
+    pub linked_search_id: Option<&'a str>,
     /// Search items that can be traded for item ID.
-    pub required_search_id: Option<String>,
+    pub required_search_id: Option<&'a str>,
 }
 
 /// Sort by categories.
@@ -69,27 +69,27 @@ pub enum Currency {
 /// Item listed by.
 #[derive(Serialize_repr, PartialEq, Debug)]
 #[repr(u8)]
-pub enum OfferOwner {
+pub enum Owner {
     Any = 0,
     Traders = 1,
     Player = 2,
 }
 
-impl Default for MarketFilter {
+impl<'a> Default for MarketFilter<'a> {
     fn default() -> Self {
         Self {
             sort_type: SortBy::Price,
             sort_direction: SortDirection::Ascending,
             currency: Currency::Any,
-            price_from: None,
-            price_to: None,
-            quantity_from: None,
-            quantity_to: None,
-            condition_from: None,
-            condition_to: Some(100),
+            min_price: None,
+            max_price: None,
+            min_quantity: None,
+            max_quantity: None,
+            min_condition: None,
+            max_condition: Some(100),
             expiring_within_hour: false,
             hide_bartering_offers: false,
-            offer_owner: OfferOwner::Any,
+            owner_type: Owner::Any,
             hide_inoperable_weapons: true,
             handbook_id: None,
             linked_search_id: None,
