@@ -106,11 +106,7 @@ pub struct Tarkov {
 
 impl Tarkov {
     /// Login with email and password.
-    pub async fn login(
-        email: &str,
-        password: &str,
-        hwid: &str,
-    ) -> Result<Self> {
+    pub async fn login(email: &str, password: &str, hwid: &str) -> Result<Self> {
         let client = Client::new();
 
         let user = auth::login(&client, email, password, None, &hwid).await?;
