@@ -11,7 +11,7 @@ async fn main() -> Result<(), Error> {
     let password = "password";
     let hwid = generate_hwid();
 
-    let t = match Tarkov::login(email, password, None, &hwid).await {
+    let t = match Tarkov::login(email, password, &hwid).await {
         Ok(t) => Ok(t),
         Err(Error::LoginError(e)) => match e {
             // 2FA required!

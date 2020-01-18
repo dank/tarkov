@@ -11,14 +11,14 @@ async fn main() -> Result<(), Error> {
     let password = "password";
     let hwid = generate_hwid();
 
-    let t = match Tarkov::login(email, password, None, &hwid).await {
+    let t = match Tarkov::login(email, password, &hwid).await {
         Ok(t) => Ok(t),
         Err(Error::LoginError(e)) => match e {
             // Captcha required!
             LoginError::CaptchaRequired => {
                 // Solve captcha here and try again
                 let captcha = "03AOLTBLQ952pO-qQYPeLr53N5nK9Co14iXyCp...";
-                Tarkov::login(email, password, Some(captcha), &hwid).await
+                Tarkov::login_with_captcha(email, password, captcha, &hwid).await
             }
             _ => Err(e)?,
         },
