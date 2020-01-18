@@ -1,7 +1,7 @@
 //! EFT API returns a lot of inconsistent and bad JSON. Serde deserializers to fix those broken JSON.
 
 use serde::de::Visitor;
-use serde::{Deserialize, Deserializer};
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use serde_json::Value;
 use std::fmt;
 

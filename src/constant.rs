@@ -1,6 +1,6 @@
 use crate::{ErrorResponse, Result, Tarkov, PROD_ENDPOINT};
 
-use crate::badjson::StringOrInt;
+use crate::bad_json::StringOrInt;
 use crate::profile::Side;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;

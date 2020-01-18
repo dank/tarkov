@@ -32,8 +32,10 @@ const TRADING_ENDPOINT: &str = "https://trading.escapefromtarkov.com";
 const RAGFAIR_ENDPOINT: &str = "https://ragfair.escapefromtarkov.com";
 
 mod auth;
-mod badjson;
+mod bad_json;
 
+/// Flea market search helpers.
+pub mod market_filter;
 /// Structs for game constants API.
 pub mod constant;
 /// Structs for the Friend API.
