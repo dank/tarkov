@@ -124,7 +124,7 @@ impl Tarkov {
         &self,
         page: u64,
         limit: u64,
-        filter: MarketFilter<'a>,
+        filter: MarketFilter<'_>,
     ) -> Result<SearchResult> {
         let body = SearchRequest {
             page,
