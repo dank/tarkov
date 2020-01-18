@@ -1,4 +1,4 @@
-use crate::{ErrorResponse, Result, Tarkov, RAGFAIR_ENDPOINT};
+use crate::{ErrorResponse, Result, Tarkov, PROD_ENDPOINT, RAGFAIR_ENDPOINT};
 
 use crate::market_filter::{Currency, MarketFilter, Owner, SortBy, SortDirection};
 use crate::profile::MoveItemRequest;
@@ -33,7 +33,7 @@ struct SearchRequest<'a> {
     tm: u64,
 }
 
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct SearchResponse {
     #[serde(flatten)]
@@ -64,6 +64,9 @@ pub struct Offer {
     pub requirements_cost: u64,
     pub summary_cost: u64,
     pub sell_in_one_piece: bool,
+    /// Time when item was listed on the market.
+    ///
+    /// Add 60 seconds for the true start time, when the item will be available for purchase.
     pub start_time: u64,
     pub end_time: u64,
     pub loyalty_level: u64,
@@ -99,13 +102,20 @@ struct BuyItemRequest<'a> {
 struct BuyOffer<'a> {
     id: &'a str,
     count: u64,
-    items: Vec<BuyItem>,
+    items: &'a [BarterItem],
 }
 
 #[derive(Debug, Serialize)]
 struct BuyItem {
     item: String,
     count: f64,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct BuyItemResponse {
+    #[serde(flatten)]
+    error: ErrorResponse,
 }
 
 impl Tarkov {
@@ -148,31 +158,25 @@ impl Tarkov {
     /// Buy items from the flea market.
     pub async fn buy_item(
         &self,
-        item_schema_id: &str,
+        offer_id: &str,
         quantity: u64,
         barter_items: &[BarterItem],
     ) -> Result<()> {
-        let url = format!("{}/client/ragfair/find", RAGFAIR_ENDPOINT);
+        let url = format!("{}/client/game/profile/items/moving", PROD_ENDPOINT);
         let body = &MoveItemRequest {
             data: &[BuyItemRequest {
                 action: "RagFairBuyOffer",
                 offers: &[BuyOffer {
-                    id: item_schema_id,
+                    id: offer_id,
                     count: quantity,
-                    items: barter_items
-                        .into_iter()
-                        .map(|i| BuyItem {
-                            item: i.id.to_string(),
-                            count: i.count,
-                        })
-                        .collect::<Vec<BuyItem>>(),
+                    items: barter_items,
                 }],
             }],
-            tm: 0,
+            tm: 2,
         };
-        self.post_json(&url, body).await?;
 
-        Ok(())
+        let res: BuyItemResponse = self.post_json(&url, body).await?;
+        self.handle_error(res.error, Some(()))
     }
 
     /// List an item for sale on the flea market.
