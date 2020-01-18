@@ -3,6 +3,10 @@ name = "tarkov"
 version = "0.1.0-alpha.1"
 authors = ["Dan Kyung <dan@kyung.ca>"]
 edition = "2018"
+readme = "README.md"
+license = "MIT"
+keywords = ["escapefromtarkov", "eft", "tarkov", "sdk", "api"]
+include = ["src/**/*", "Cargo.toml", "LICENSE"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
