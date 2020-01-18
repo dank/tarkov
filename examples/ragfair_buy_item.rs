@@ -19,13 +19,21 @@ async fn main() -> Result<(), Error> {
         .unwrap();
     t.select_profile(&profile.id).await?;
 
-    // Get Rouble item ID from my inventory
-    let rouble = &profile
-        .inventory
-        .items
-        .into_iter()
-        .find(|i| i.schema_id == "5449016a4bdc2d6f028b456f")
-        .unwrap();
+    // Fetch the translation table for market categories.
+    let locale = t.get_i18n("en").await?;
+
+    // Get the "Barter items" category ID.
+    let barter_item_category_id: Option<String> = {
+        let mut id = None;
+        for (k, v) in locale.handbook {
+            if v == "Barter items" {
+                id = Some(k);
+                break;
+            }
+        }
+
+        id
+    };
 
     // Search flea market.
     let offers = t
@@ -34,7 +42,7 @@ async fn main() -> Result<(), Error> {
             15,
             MarketFilter {
                 max_price: Some(2000),
-                handbook_id: Some("5b47574386f77428ca22b33e"), // "Barter items" category TODO
+                handbook_id: barter_item_category_id.as_deref(),
                 owner_type: Owner::Player,
                 hide_bartering_offers: true,
                 currency: Currency::Rouble,
@@ -50,6 +58,14 @@ async fn main() -> Result<(), Error> {
         .offers
         .into_iter()
         .find(|o| o.start_time + 60 <= epoch_time && o.end_time >= epoch_time)
+        .unwrap();
+
+    // Get Rouble item ID from my inventory
+    let rouble = &profile
+        .inventory
+        .items
+        .into_iter()
+        .find(|i| i.schema_id == "5449016a4bdc2d6f028b456f")
         .unwrap();
 
     // Buy the item.
