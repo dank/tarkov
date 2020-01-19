@@ -109,7 +109,7 @@ pub struct User {
 }
 
 /// Offer requirement
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Requirement {
     /// Item localization schema ID
@@ -174,6 +174,33 @@ pub struct Price {
     pub avg: f64,
 }
 
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct SellItemRequest<'a> {
+    #[serde(rename = "Action")]
+    action: &'a str,
+    sell_in_one_piece: bool,
+    items: &'a [&'a str],
+    requirements: &'a [SellRequirement],
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct SellRequirement {
+    #[serde(flatten)]
+    requirement: Requirement,
+    level: u64,
+    side: u8,
+    only_functional: bool,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct SellItemResponse {
+    #[serde(flatten)]
+    error: ErrorResponse,
+}
+
 impl Tarkov {
     /// Search the flea market.
     pub async fn search_market<'a>(
@@ -215,7 +242,7 @@ impl Tarkov {
     pub async fn get_item_price(&self, schema_id: &str) -> Result<Price> {
         let url = format!("{}/client/ragfair/itemMarketPrice", RAGFAIR_ENDPOINT);
         let body = GetPriceRequest {
-            template_id: schema_id
+            template_id: schema_id,
         };
 
         let res: GetPriceResponse = self.post_json(&url, &body).await?;
@@ -247,7 +274,32 @@ impl Tarkov {
     }
 
     /// List an item for sale on the flea market.
-    pub async fn offer_item(&self) -> Result<()> {
-        Ok(())
+    pub async fn offer_item(
+        &self,
+        items: &[&str],
+        requirements: &[Requirement],
+        sell_all: bool,
+    ) -> Result<()> {
+        let url = format!("{}/client/game/profile/items/moving", PROD_ENDPOINT);
+        let body = &MoveItemRequest {
+            data: &[SellItemRequest {
+                action: "RagFairAddOffer",
+                sell_in_one_piece: sell_all,
+                items,
+                requirements: &requirements
+                    .into_iter()
+                    .map(|r| SellRequirement {
+                        requirement: r.to_owned(),
+                        level: 0,
+                        side: 0,
+                        only_functional: false,
+                    })
+                    .collect::<Vec<SellRequirement>>(),
+            }],
+            tm: 2,
+        };
+
+        let res: SellItemResponse = self.post_json(&url, body).await?;
+        self.handle_error(res.error, Some(()))
     }
 }

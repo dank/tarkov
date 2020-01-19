@@ -17,7 +17,7 @@ async fn main() -> Result<(), Error> {
     t.select_profile(&profile.id).await?;
 
     let _ = t.get_items().await?;
-    let _ = t.get_prices().await?;
+    let _ = t.get_item_prices().await?;
     let _ = t.get_locations().await?;
     let _ = t.get_weather().await?;
     let _ = t.get_i18n("en").await?;

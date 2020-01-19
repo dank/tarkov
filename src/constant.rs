@@ -1691,7 +1691,7 @@ impl Tarkov {
     }
 
     /// Get a list of all in-game item prices.
-    pub async fn get_prices(&self) -> Result<HashMap<String, u64>> {
+    pub async fn get_item_prices(&self) -> Result<HashMap<String, u64>> {
         let url = format!("{}/client/items/prices", PROD_ENDPOINT);
         let res: PricesResponse = self.post_json(&url, &Request { crc: 0 }).await?;
 
