@@ -4,7 +4,7 @@ use tarkov::{Error, Tarkov};
 
 #[actix_rt::main]
 async fn main() -> Result<(), Error> {
-    std::env::set_var("RUST_LOG", "tarkov=debug");
+    std::env::set_var("RUST_LOG", "tarkov=info");
     env_logger::init();
 
     let t = Tarkov::from_session("e1bc65a216325f0ad0db8518fa299db2");
