@@ -9,6 +9,8 @@
 //!
 //! For examples, see the `examples` directory in the source tree.
 
+#![warn(missing_docs)]
+
 use crate::auth::LoginError;
 use crate::hwid::generate_hwid;
 use crate::profile::ProfileError;
@@ -100,7 +102,9 @@ struct ErrorResponse {
 /// Client for the EFT API.
 pub struct Tarkov {
     client: Client,
+    /// Hardware ID
     pub hwid: String,
+    /// Session cookie
     pub session: String,
 }
 
