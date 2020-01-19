@@ -41,10 +41,15 @@ pub struct MarketFilter<'a> {
 #[derive(Serialize_repr, PartialEq, Debug)]
 #[repr(u8)]
 pub enum SortBy {
+    /// Sort by ID
     ID = 0,
+    /// Sort by bartering offers
     BarteringOffers = 2,
+    /// Sort by merchant rating
     MerchantRating = 3,
+    /// Sort by price (default)
     Price = 5,
+    /// Sort by expiry
     Expiry = 6,
 }
 
@@ -52,7 +57,9 @@ pub enum SortBy {
 #[derive(Serialize_repr, PartialEq, Debug)]
 #[repr(u8)]
 pub enum SortDirection {
+    /// Sort ascending (default)
     Ascending = 0,
+    /// Sort descending
     Descending = 1,
 }
 
@@ -60,9 +67,13 @@ pub enum SortDirection {
 #[derive(Serialize_repr, PartialEq, Debug)]
 #[repr(u8)]
 pub enum Currency {
+    /// Any currency (default)
     Any = 0,
+    /// Rouble
     Rouble = 1,
+    /// US dollar
     Dollar = 2,
+    /// Euro
     Euro = 3,
 }
 
@@ -70,8 +81,11 @@ pub enum Currency {
 #[derive(Serialize_repr, PartialEq, Debug)]
 #[repr(u8)]
 pub enum Owner {
+    /// Any owner (default)
     Any = 0,
+    /// Item listed by traders
     Traders = 1,
+    /// Item listed by players
     Player = 2,
 }
 
