@@ -16,7 +16,7 @@ async fn main() -> Result<(), Error> {
     .await?;
     println!("{}", t.session);
 
-    let t = Tarkov::from_session("e1bc65a216325f0ad0db8518fa299db1").await?;
+    let t = Tarkov::from_session("e1bc65a216325f0ad0db8518fa299db1");
     println!("{}", t.session);
 
     Ok(())

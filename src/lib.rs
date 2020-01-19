@@ -175,14 +175,14 @@ impl Tarkov {
     }
 
     /// Login with a cookie session (AKA `PHPSESSID`).
-    pub async fn from_session(session: &str) -> Result<Self> {
+    pub fn from_session(session: &str) -> Self {
         let client = Client::new();
 
-        Ok(Tarkov {
+        Tarkov {
             client,
             hwid: generate_hwid(),
             session: session.to_string(),
-        })
+        }
     }
 
     async fn post_json<S: serde::Serialize + ?Sized, T: DeserializeOwned>(
