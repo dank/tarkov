@@ -3,7 +3,7 @@ use tarkov::{Error, Tarkov};
 
 #[actix_rt::main]
 async fn main() -> Result<(), Error> {
-    std::env::set_var("RUST_LOG", "tarkov=debug");
+    std::env::set_var("RUST_LOG", "tarkov=info");
     env_logger::init();
 
     let t = Tarkov::from_session("e1bc65a216325f0ad0db8518fa299db2");
@@ -16,9 +16,9 @@ async fn main() -> Result<(), Error> {
         .unwrap();
     t.select_profile(&profile.id).await?;
 
-        let _ = t.keep_alive().await?;
-    let _ = t.get_all_items().await?;
-    let _ = t.get_all_locations().await?;
+    let _ = t.get_items().await?;
+    let _ = t.get_prices().await?;
+    let _ = t.get_locations().await?;
     let _ = t.get_weather().await?;
     let _ = t.get_i18n("en").await?;
     let _ = t.get_friends().await?;

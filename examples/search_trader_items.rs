@@ -27,7 +27,7 @@ async fn main() -> Result<(), Error> {
         .unwrap();
 
     // Fetch all items to map item ID to item name/descriptor.
-    let items = t.get_all_items().await?;
+    let items = t.get_items().await?;
 
     // Find trader's item by name
     let trader_items = t.get_trader_items(&trader.id).await?;

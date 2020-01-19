@@ -1673,17 +1673,33 @@ pub struct TraderLocalization {
     pub description: String,
 }
 
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct PricesResponse {
+    #[serde(flatten)]
+    error: ErrorResponse,
+    data: Option<HashMap<String, u64>>,
+}
+
 impl Tarkov {
     /// Get a list of all in-game items.
-    pub async fn get_all_items(&self) -> Result<HashMap<String, Item>> {
+    pub async fn get_items(&self) -> Result<HashMap<String, Item>> {
         let url = format!("{}/client/items", PROD_ENDPOINT);
         let res: ItemsResponse = self.post_json(&url, &Request { crc: 0 }).await?;
 
         self.handle_error(res.error, res.data)
     }
 
+    /// Get a list of all in-game item prices.
+    pub async fn get_prices(&self) -> Result<HashMap<String, u64>> {
+        let url = format!("{}/client/items/prices", PROD_ENDPOINT);
+        let res: PricesResponse = self.post_json(&url, &Request { crc: 0 }).await?;
+
+        self.handle_error(res.error, res.data)
+    }
+
     /// Get a list of all locations/maps.
-    pub async fn get_all_locations(&self) -> Result<Locations> {
+    pub async fn get_locations(&self) -> Result<Locations> {
         let url = format!("{}/client/locations", PROD_ENDPOINT);
         let res: LocationsResponse = self.post_json(&url, &Request { crc: 0 }).await?;
 
