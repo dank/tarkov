@@ -1,4 +1,8 @@
 # Tarkov
+[![Crates.io](https://img.shields.io/crates/v/tarkov)](https://crates.io/crates/tarkov)
+[![Documentation](https://docs.rs/tarkov/badge.svg)](https://docs.rs/tarkov)
+[![Crates.io](https://img.shields.io/crates/l/tarkov)](LICENSE)
+
 An unofficial client library for the [Escape from Tarkov](https://escapefromtarkov.com) (EFT) API.
 
 This library is currently in alpha. Everything may change significantly in future releases.
