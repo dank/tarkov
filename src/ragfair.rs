@@ -146,6 +146,34 @@ struct BuyItemResponse {
     error: ErrorResponse,
 }
 
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct GetPriceRequest<'a> {
+    template_id: &'a str,
+}
+
+#[derive(Debug, Deserialize)]
+struct GetPriceResponse {
+    #[serde(flatten)]
+    error: ErrorResponse,
+    data: Option<Price>,
+}
+
+/// Price data
+#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct Price {
+    /// Item localization schema ID
+    #[serde(rename = "templateId")]
+    pub schema_id: String,
+    /// Minimum item price
+    pub min: f64,
+    /// Maximum item price
+    pub max: f64,
+    /// Average item price
+    pub avg: f64,
+}
+
 impl Tarkov {
     /// Search the flea market.
     pub async fn search_market<'a>(
@@ -180,6 +208,17 @@ impl Tarkov {
         let url = format!("{}/client/ragfair/find", RAGFAIR_ENDPOINT);
         let res: SearchResponse = self.post_json(&url, &body).await?;
 
+        self.handle_error(res.error, res.data)
+    }
+
+    /// Get the item price data from the flea market.
+    pub async fn get_item_price(&self, schema_id: &str) -> Result<Price> {
+        let url = format!("{}/client/ragfair/itemMarketPrice", RAGFAIR_ENDPOINT);
+        let body = GetPriceRequest {
+            template_id: schema_id
+        };
+
+        let res: GetPriceResponse = self.post_json(&url, &body).await?;
         self.handle_error(res.error, res.data)
     }
 
