@@ -295,7 +295,7 @@ struct TradeItemRequest<'a> {
     item_id: &'a str,
     count: u64,
     scheme_id: u64,
-    scheme_items: Vec<BarterItem>,
+    scheme_items: &'a [BarterItem],
 }
 
 /// Inventory item for trading.
@@ -321,7 +321,7 @@ struct SellItemRequest<'a> {
     trade_type: &'a str,
     #[serde(rename = "tid")]
     trader_id: &'a str,
-    items: Vec<SellItem>,
+    items: &'a [SellItem],
 }
 
 #[derive(Debug, Serialize)]
@@ -431,7 +431,7 @@ impl Tarkov {
         trader_id: &str,
         item_id: &str,
         quantity: u64,
-        barter_items: Vec<BarterItem>,
+        barter_items: &[BarterItem],
     ) -> Result<()> {
         let url = format!("{}/client/game/profile/items/moving", PROD_ENDPOINT);
         let body = MoveItemRequest {
@@ -459,7 +459,7 @@ impl Tarkov {
                 action: "TradingConfirm",
                 trade_type: "sell_to_trader",
                 trader_id,
-                items: vec![SellItem {
+                items: &[SellItem {
                     id: item_id.to_string(),
                     count: quantity,
                     scheme_id: 0,

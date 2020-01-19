@@ -45,7 +45,7 @@ async fn main() -> Result<(), Error> {
         &trader.id,
         &painkiller.id,
         1,
-        vec![BarterItem {
+        &[BarterItem {
             id: rouble.id.clone(),
             count: 3990.0,
         }],
