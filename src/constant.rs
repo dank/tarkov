@@ -1,4 +1,4 @@
-use crate::{ErrorResponse, Result, Tarkov, PROD_ENDPOINT};
+use crate::{handle_error, ErrorResponse, Result, Tarkov, PROD_ENDPOINT};
 
 use crate::bad_json::{deserialize_integer_to_option_string, StringOrInt};
 use crate::profile::Side;
@@ -1687,7 +1687,7 @@ impl Tarkov {
         let url = format!("{}/client/items", PROD_ENDPOINT);
         let res: ItemsResponse = self.post_json(&url, &Request { crc: 0 }).await?;
 
-        self.handle_error(res.error, res.data)
+        handle_error(res.error, res.data)
     }
 
     /// Get a list of all in-game item prices.
@@ -1695,7 +1695,7 @@ impl Tarkov {
         let url = format!("{}/client/items/prices", PROD_ENDPOINT);
         let res: PricesResponse = self.post_json(&url, &Request { crc: 0 }).await?;
 
-        self.handle_error(res.error, res.data)
+        handle_error(res.error, res.data)
     }
 
     /// Get a list of all locations/maps.
@@ -1703,7 +1703,7 @@ impl Tarkov {
         let url = format!("{}/client/locations", PROD_ENDPOINT);
         let res: LocationsResponse = self.post_json(&url, &Request { crc: 0 }).await?;
 
-        self.handle_error(res.error, res.data)
+        handle_error(res.error, res.data)
     }
 
     /// Get the current forecast and time.
@@ -1711,7 +1711,7 @@ impl Tarkov {
         let url = format!("{}/client/weather", PROD_ENDPOINT);
         let res: WeatherResponse = self.post_json(&url, &{}).await?;
 
-        self.handle_error(res.error, res.data).map(|w| w.weather)
+        handle_error(res.error, res.data).map(|w| w.weather)
     }
 
     /// Get the localization table. Pass a valid ISO 639-1 language code.
@@ -1719,6 +1719,6 @@ impl Tarkov {
         let url = format!("{}/client/locale/{}", PROD_ENDPOINT, language);
         let res: LocalizationResponse = self.post_json(&url, &{}).await?;
 
-        self.handle_error(res.error, res.data)
+        handle_error(res.error, res.data)
     }
 }

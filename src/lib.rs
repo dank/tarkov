@@ -77,6 +77,9 @@ pub enum Error {
     /// Not authorized to API or profile is not selected.
     #[error(display = "not authorized or game profile not selected")]
     NotAuthorized,
+    /// EFT API is down for maintenance.
+    #[error(display = "api is down for maintenance")]
+    Maintenance,
     /// Authentication API error.
     #[error(display = "login api error: {}", _0)]
     LoginError(#[error(source)] LoginError),
@@ -223,14 +226,19 @@ impl Tarkov {
             _ => Err(Error::Status(res.status())),
         }
     }
+}
 
-    fn handle_error<T: DeserializeOwned>(&self, error: ErrorResponse, ret: Option<T>) -> Result<T> {
-        match error.code {
-            0 => Ok(ret.expect("API returned no errors but `data` is unavailable.")),
-            201 => Err(Error::NotAuthorized)?,
-            205 => Err(ProfileError::InvalidUserID)?,
-            1514 => Err(TradingError::TransactionError)?,
-            _ => Err(Error::UnknownAPIError(error.code)),
-        }
+pub(crate) fn handle_error<T: DeserializeOwned>(error: ErrorResponse, ret: Option<T>) -> Result<T> {
+    match error.code {
+        0 => Ok(ret.expect("API returned no errors but `data` is unavailable.")),
+        201 => Err(Error::NotAuthorized)?,
+        205 => Err(ProfileError::InvalidUserID)?,
+        207 => Err(LoginError::MissingParameters)?,
+        209 => Err(LoginError::TwoFactorRequired)?,
+        211 => Err(LoginError::BadTwoFactorCode)?,
+        214 => Err(LoginError::CaptchaRequired)?,
+        263 => Err(Error::Maintenance)?,
+        1514 => Err(TradingError::TransactionError)?,
+        _ => Err(Error::UnknownAPIError(error.code)),
     }
 }

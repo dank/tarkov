@@ -1,4 +1,4 @@
-use crate::{ErrorResponse, Result, Tarkov, PROD_ENDPOINT};
+use crate::{handle_error, ErrorResponse, Result, Tarkov, PROD_ENDPOINT};
 
 use crate::profile::Side;
 use serde::Deserialize;
@@ -53,6 +53,6 @@ impl Tarkov {
         let url = format!("{}/client/friend/list", PROD_ENDPOINT);
         let res: FriendResponse = self.post_json(&url, &{}).await?;
 
-        self.handle_error(res.error, res.data)
+        handle_error(res.error, res.data)
     }
 }

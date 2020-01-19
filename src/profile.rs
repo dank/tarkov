@@ -1,4 +1,4 @@
-use crate::{ErrorResponse, Result, Tarkov, PROD_ENDPOINT};
+use crate::{handle_error, ErrorResponse, Result, Tarkov, PROD_ENDPOINT};
 
 use crate::bad_json::deserialize_integer_to_string;
 use crate::ragfair::Offer;
@@ -541,7 +541,7 @@ impl Tarkov {
         let url = format!("{}/client/game/profile/list", PROD_ENDPOINT);
         let res: ProfileResponse = self.post_json(&url, &{}).await?;
 
-        self.handle_error(res.error, res.data)
+        handle_error(res.error, res.data)
     }
 
     /// Select a profile by user ID.
@@ -551,6 +551,6 @@ impl Tarkov {
             .post_json(&url, &SelectRequest { uid: user_id })
             .await?;
 
-        self.handle_error(res.error, res.data)
+        handle_error(res.error, res.data)
     }
 }

@@ -1,4 +1,4 @@
-use crate::{ErrorResponse, Result, Tarkov, PROD_ENDPOINT, RAGFAIR_ENDPOINT};
+use crate::{handle_error, ErrorResponse, Result, Tarkov, PROD_ENDPOINT, RAGFAIR_ENDPOINT};
 
 use crate::market_filter::{Currency, MarketFilter, Owner, SortBy, SortDirection};
 use crate::profile::MoveItemRequest;
@@ -235,7 +235,7 @@ impl Tarkov {
         let url = format!("{}/client/ragfair/find", RAGFAIR_ENDPOINT);
         let res: SearchResponse = self.post_json(&url, &body).await?;
 
-        self.handle_error(res.error, res.data)
+        handle_error(res.error, res.data)
     }
 
     /// Get the item price data from the flea market.
@@ -246,7 +246,7 @@ impl Tarkov {
         };
 
         let res: GetPriceResponse = self.post_json(&url, &body).await?;
-        self.handle_error(res.error, res.data)
+        handle_error(res.error, res.data)
     }
 
     /// Buy items from the flea market.
@@ -270,7 +270,7 @@ impl Tarkov {
         };
 
         let res: BuyItemResponse = self.post_json(&url, body).await?;
-        self.handle_error(res.error, Some(()))
+        handle_error(res.error, Some(()))
     }
 
     /// List an item for sale on the flea market.
@@ -300,6 +300,6 @@ impl Tarkov {
         };
 
         let res: SellItemResponse = self.post_json(&url, body).await?;
-        self.handle_error(res.error, Some(()))
+        handle_error(res.error, Some(()))
     }
 }

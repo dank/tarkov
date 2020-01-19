@@ -1,12 +1,11 @@
 use crate::{
-    Error, ErrorResponse, Result, Tarkov, GAME_VERSION, LAUNCHER_ENDPOINT, LAUNCHER_VERSION,
-    PROD_ENDPOINT,
+    handle_error, Error, ErrorResponse, Result, Tarkov, GAME_VERSION, LAUNCHER_ENDPOINT,
+    LAUNCHER_VERSION, PROD_ENDPOINT,
 };
 use actix_web::client::Client;
 use actix_web::http::StatusCode;
 use flate2::read::ZlibDecoder;
 use log::debug;
-use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 use std::io::Read;
 
@@ -99,7 +98,7 @@ pub(crate) async fn login(
             debug!("Response: {}", body);
 
             let res = serde_json::from_slice::<LoginResponse>(body.as_bytes())?;
-            handle_auth_error(res.error, res.data)
+            handle_error(res.error, res.data)
         }
         _ => Err(Error::Status(res.status())),
     }
@@ -155,7 +154,7 @@ pub(crate) async fn activate_hardware(
             debug!("Response: {}", body);
 
             let res = serde_json::from_slice::<SecurityLoginResponse>(body.as_bytes())?;
-            handle_auth_error(res.error, Some(()))
+            handle_error(res.error, Some(()))
         }
         _ => Err(Error::Status(res.status())),
     }
@@ -226,21 +225,9 @@ pub(crate) async fn exchange_access_token(
             debug!("Response: {}", body);
 
             let res = serde_json::from_slice::<ExchangeResponse>(body.as_bytes())?;
-            handle_auth_error(res.error, res.data)
+            handle_error(res.error, res.data)
         }
         _ => Err(Error::Status(res.status())),
-    }
-}
-
-fn handle_auth_error<T: DeserializeOwned>(error: ErrorResponse, ret: Option<T>) -> Result<T> {
-    match error.code {
-        0 => Ok(ret.expect("API returned no errors but `data` is unavailable.")),
-        201 => Err(Error::NotAuthorized)?,
-        207 => Err(LoginError::MissingParameters)?,
-        209 => Err(LoginError::TwoFactorRequired)?,
-        211 => Err(LoginError::BadTwoFactorCode)?,
-        214 => Err(LoginError::CaptchaRequired)?,
-        _ => Err(Error::UnknownAPIError(error.code)),
     }
 }
 

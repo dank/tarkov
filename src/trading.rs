@@ -1,6 +1,6 @@
 use crate::bad_json::deserialize_bad_location_as_none;
 use crate::profile::MoveItemRequest;
-use crate::{ErrorResponse, Result, Tarkov, PROD_ENDPOINT, TRADING_ENDPOINT};
+use crate::{handle_error, ErrorResponse, Result, Tarkov, PROD_ENDPOINT, TRADING_ENDPOINT};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -343,7 +343,7 @@ impl Tarkov {
         let url = format!("{}/client/trading/api/getTradersList", TRADING_ENDPOINT);
         let res: TradersResponse = self.post_json(&url, &{}).await?;
 
-        self.handle_error(res.error, res.data)
+        handle_error(res.error, res.data)
     }
 
     /// Get a trader by ID.
@@ -354,7 +354,7 @@ impl Tarkov {
         );
         let res: TraderResponse = self.post_json(&url, &{}).await?;
 
-        self.handle_error(res.error, res.data)
+        handle_error(res.error, res.data)
     }
 
     async fn get_trader_items_raw(&self, trader_id: &str) -> Result<TraderItems> {
@@ -364,7 +364,7 @@ impl Tarkov {
         );
         let res: TraderItemsResponse = self.post_json(&url, &{}).await?;
 
-        self.handle_error(res.error, res.data)
+        handle_error(res.error, res.data)
     }
 
     async fn get_trader_prices_raw(
@@ -377,7 +377,7 @@ impl Tarkov {
         );
         let res: TraderPricesResponse = self.post_json(&url, &{}).await?;
 
-        self.handle_error(res.error, res.data)
+        handle_error(res.error, res.data)
     }
 
     /// Get a list of items for sale by trader ID.
@@ -448,7 +448,7 @@ impl Tarkov {
         };
 
         let res: TradeResponse = self.post_json(&url, &body).await?;
-        self.handle_error(res.error, Some(()))
+        handle_error(res.error, Some(()))
     }
 
     /// Sell items to trader.
@@ -469,6 +469,6 @@ impl Tarkov {
         };
 
         let res: TradeResponse = self.post_json(&url, &body).await?;
-        self.handle_error(res.error, Some(()))
+        handle_error(res.error, Some(()))
     }
 }
