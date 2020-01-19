@@ -207,17 +207,19 @@ impl Tarkov {
             .send_json(&body)
             .await?;
 
-        let body = res
-            .body()
-            .limit(10_000_000) // 10 MB
-            .await?;
-        let mut decode = ZlibDecoder::new(&body[..]);
-        let mut body = String::new();
-        decode.read_to_string(&mut body)?;
-        debug!("Response: {}", body);
-
         match res.status() {
-            StatusCode::OK => Ok(serde_json::from_slice::<T>(body.as_bytes())?),
+            StatusCode::OK => {
+                let body = res
+                    .body()
+                    .limit(10_000_000) // 10 MB
+                    .await?;
+                let mut decode = ZlibDecoder::new(&body[..]);
+                let mut body = String::new();
+                decode.read_to_string(&mut body)?;
+                debug!("Response: {}", body);
+
+                Ok(serde_json::from_slice::<T>(body.as_bytes())?)
+            }
             _ => Err(Error::Status(res.status())),
         }
     }

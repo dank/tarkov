@@ -89,14 +89,15 @@ pub(crate) async fn login(
         .header("User-Agent", format!("BSG Launcher {}", LAUNCHER_VERSION))
         .send_json(&req)
         .await?;
-    let body = res.body().await?;
-    let mut decode = ZlibDecoder::new(&body[..]);
-    let mut body = String::new();
-    decode.read_to_string(&mut body)?;
-    debug!("Response: {}", body);
 
     match res.status() {
         StatusCode::OK => {
+            let body = res.body().await?;
+            let mut decode = ZlibDecoder::new(&body[..]);
+            let mut body = String::new();
+            decode.read_to_string(&mut body)?;
+            debug!("Response: {}", body);
+
             let res = serde_json::from_slice::<LoginResponse>(body.as_bytes())?;
             handle_auth_error(res.error, res.data)
         }
@@ -144,14 +145,15 @@ pub(crate) async fn activate_hardware(
         .header("User-Agent", format!("BSG Launcher {}", LAUNCHER_VERSION))
         .send_json(&req)
         .await?;
-    let body = res.body().await?;
-    let mut decode = ZlibDecoder::new(&body[..]);
-    let mut body = String::new();
-    decode.read_to_string(&mut body)?;
-    debug!("Response: {}", body);
 
     match res.status() {
         StatusCode::OK => {
+            let body = res.body().await?;
+            let mut decode = ZlibDecoder::new(&body[..]);
+            let mut body = String::new();
+            decode.read_to_string(&mut body)?;
+            debug!("Response: {}", body);
+
             let res = serde_json::from_slice::<SecurityLoginResponse>(body.as_bytes())?;
             handle_auth_error(res.error, Some(()))
         }
@@ -214,14 +216,15 @@ pub(crate) async fn exchange_access_token(
         .bearer_auth(access_token)
         .send_json(&req)
         .await?;
-    let body = res.body().await?;
-    let mut decode = ZlibDecoder::new(&body[..]);
-    let mut body = String::new();
-    decode.read_to_string(&mut body)?;
-    debug!("Response: {}", body);
 
     match res.status() {
         StatusCode::OK => {
+            let body = res.body().await?;
+            let mut decode = ZlibDecoder::new(&body[..]);
+            let mut body = String::new();
+            decode.read_to_string(&mut body)?;
+            debug!("Response: {}", body);
+
             let res = serde_json::from_slice::<ExchangeResponse>(body.as_bytes())?;
             handle_auth_error(res.error, res.data)
         }
