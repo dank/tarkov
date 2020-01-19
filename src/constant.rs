@@ -899,12 +899,19 @@ pub struct CartridgeFilter {
 /// Item armor zone
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 pub enum ArmorZone {
+    /// Head
     Head,
+    /// Chest
     Chest,
+    /// Stomach
     Stomach,
+    /// Left arm
     LeftArm,
+    /// Right arm
     RightArm,
+    /// Left leg
     LeftLeg,
+    /// Right leg
     RightLeg,
 }
 
@@ -912,8 +919,11 @@ pub enum ArmorZone {
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum FireMode {
+    /// Single fire
     Single,
+    /// Burst mode
     Burst,
+    /// Full auto
     FullAuto,
 }
 
@@ -961,51 +971,77 @@ pub struct ChamberFilter {
 /// RGB color
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Color {
+    /// Red
     pub r: u8,
+    /// Green
     pub g: u8,
+    /// Blue
     pub b: u8,
+    /// Alpha
     pub a: u8,
 }
 
 /// 3D Coordinate
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Coordinate {
+    /// x plane
     pub x: f64,
+    /// y plane
     pub y: f64,
+    /// z plane
     pub z: f64,
 }
 
 /// Head parts
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 pub enum HeadSegment {
+    /// Top of head
     Top,
+    /// Nape
     Nape,
+    /// Ears
     Ears,
+    /// Eyes
     Eyes,
+    /// Jaws
     Jaws,
 }
 
 /// Health effects on player
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct HealthEffects {
+    /// Body effects
     pub common: Health,
+    /// Head effects
     pub head: Health,
+    /// Left arm effects
     pub arm_left: Health,
+    /// Right arm effects
     pub arm_right: Health,
+    /// Chest effects
     pub chest: Health,
+    /// Stomach effects
     pub tummy: Health,
+    /// Left leg effects
     pub leg_left: Health,
+    /// Right leg effects
     pub leg_right: Health,
+    /// Energy effects
     pub energy: Health,
+    /// Hydration effects
     pub hydration: Health,
 }
 
 /// Health effect
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Health {
+    /// Effect value
     pub value: i64,
+    /// Effect percent
     pub percent: bool,
+    /// ?
     pub time: u64,
+    /// Effect duration
     pub duration: u64,
 }
 
@@ -1013,11 +1049,17 @@ pub struct Health {
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct DamageEffects {
+    /// Bloodloss effect
     pub bloodloss: Damage,
+    /// Fracture effect
     pub fracture: Damage,
+    /// Pain effect
     pub pain: Damage,
+    /// Contusion effect
     pub contusion: Damage,
+    /// Toxication effect
     pub toxication: Damage,
+    /// Radiation exposure
     #[serde(rename = "radExposure")]
     pub radiation_exposure: Damage,
 }
@@ -1026,12 +1068,19 @@ pub struct DamageEffects {
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Damage {
+    /// ?
     pub remove: bool,
+    /// ?
     pub time: u64,
+    /// Damage effect duration
     pub duration: u64,
+    /// ?
     pub fade_out: Option<u64>,
+    /// ?
     pub cost: Option<u64>,
+    /// Damage minimum health penalty
     pub health_penalty_min: Option<u64>,
+    /// Damage maximum health penalty
     pub health_penalty_max: Option<u64>,
 }
 
@@ -1039,19 +1088,28 @@ pub struct Damage {
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct SpeedEffects {
+    /// Mobility effect
     pub mobility: Speed,
+    /// Recoil effect
     pub recoil: Speed,
+    /// Reload effect
     pub reload_speed: Speed,
+    /// Loot effect
     pub loot_speed: Speed,
+    /// Unlock effect
     pub unlock_speed: Speed,
 }
 
 /// Speed effect
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Speed {
+    /// Effect value
     pub value: i64,
+    /// Effect percent
     pub percent: bool,
+    /// ?
     pub time: u64,
+    /// Effect duration
     pub duration: u64,
 }
 
@@ -1420,9 +1478,14 @@ pub struct BossSpawn {
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum BotDifficulty {
+    /// Easy difficulty
     Easy,
+    /// Normal difficulty
     Normal,
+    /// Hard difficulty
     Hard,
+    /// Impossible difficulty
+    Impossible,
 }
 
 /// Location banner
@@ -1513,11 +1576,13 @@ pub struct Localization {
     pub preset: HashMap<String, Preset>,
     /// Localization table for flea market categories.
     pub handbook: HashMap<String, String>,
+    /// Localization table for seasons.
     pub season: HashMap<String, String>,
     /// Localization table for items.
     pub templates: HashMap<String, ItemLocalization>,
     /// Localization table for locations/maps.
     pub locations: HashMap<String, LocationLocalization>,
+    /// Localization table for banners.
     pub banners: HashMap<String, BannerLocalization>,
     /// Localization table for traders.
     #[serde(rename = "trading")]
@@ -1550,6 +1615,7 @@ pub struct Quest {
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Preset {
+    /// Preset name
     pub name: Option<String>,
 }
 
