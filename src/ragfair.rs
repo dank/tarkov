@@ -41,53 +41,81 @@ struct SearchResponse {
     data: Option<SearchResult>,
 }
 
+/// Market search result
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct SearchResult {
+    /// Market categories
     pub categories: HashMap<String, u64>,
+    /// Available offers
     pub offers: Vec<Offer>,
+    /// Number of items for sale
     pub offers_count: u64,
+    /// Selected category ID
     pub selected_category: String,
 }
 
+/// Market offer
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Offer {
+    /// Offer ID
     #[serde(rename = "_id")]
     pub id: String,
+    /// ?
     pub int_id: String,
+    /// Merchant profile
     pub user: User,
+    /// ?
     pub root: String,
+    /// Items for sale
     pub items: Vec<Item>,
+    /// Items cost
     pub items_cost: u64,
+    /// Items wanted in return
     pub requirements: Vec<Requirement>,
+    /// Requirement items cost
     pub requirements_cost: u64,
+    /// Summary cost
     pub summary_cost: u64,
+    /// ?
     pub sell_in_one_piece: bool,
     /// Time when item was listed on the market.
     ///
     /// Add 60 seconds for the true start time, when the item will be available for purchase.
     pub start_time: u64,
+    /// Offer expiry time
     pub end_time: u64,
+    /// Merchant loyalty level
     pub loyalty_level: u64,
 }
 
+/// Merchant profile
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct User {
+    /// Merchant ID
     pub id: String,
+    /// Merchant member type
     pub member_type: u64,
+    /// Merchant nickname
     pub nickname: Option<String>,
+    /// Merchant rating
     pub rating: Option<f64>,
+    /// Merchant rating is growing
     pub is_rating_growing: Option<bool>,
+    /// Merchant avatar
     pub avatar: Option<String>,
 }
 
+/// Offer requirement
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Requirement {
+    /// Item localization schema ID
     #[serde(rename = "_tpl")]
     pub schema_id: String,
+    /// Item count
     pub count: f64,
 }
 
