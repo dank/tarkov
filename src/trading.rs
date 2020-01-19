@@ -1,4 +1,4 @@
-use crate::profile::{MoveItemRequest, UpdLight, UpdMedkit, UpdRepairable};
+use crate::profile::MoveItemRequest;
 use crate::{ErrorResponse, Result, Tarkov, PROD_ENDPOINT, TRADING_ENDPOINT};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -14,28 +14,49 @@ pub enum TradingError {
 /// Trader info.
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Trader {
+    /// Trader ID
     #[serde(rename = "_id")]
     pub id: String,
+    /// Trader is working
     pub working: bool,
+    /// ?
     pub customization_seller: bool,
+    /// Trader name
     pub name: String,
+    /// Trader surname
     pub surname: String,
+    /// Trader nickname
     pub nickname: String,
+    /// Trader location
     pub location: String,
+    /// Trader avatar
     pub avatar: String,
+    /// Trader rouble balance
     pub balance_rub: u64,
+    /// Trader dollar balance
     pub balance_dol: u64,
+    /// Trader euro balance
     pub balance_eur: u64,
+    /// ?
     pub display: bool,
+    /// Trader discount
     pub discount: i64,
+    /// Trader discount expiry
     pub discount_end: i64,
+    /// ?
     pub buyer_up: bool,
+    /// Trader currency
     pub currency: Currency,
+    /// Resupply time
     pub supply_next_time: u64,
+    /// Trader repair offer
     pub repair: Repair,
+    /// Trader insurance offer
     pub insurance: Insurance,
+    /// Trader grid height
     #[serde(rename = "gridHeight")]
     pub grid_height: u64,
+    /// Trader loyalty
     pub loyalty: Loyalty,
     /// Unknown type
     pub sell_category: Vec<serde_json::Value>,
@@ -44,22 +65,32 @@ pub struct Trader {
 /// Trader's repair stats.
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Repair {
+    /// Repair is available
     pub availability: bool,
+    /// Repair quality
     pub quality: String,
+    /// Item IDs excluded from repair.
     pub excluded_id_list: Vec<String>,
+    /// Category IDs excluded from repair.
     pub excluded_category: Vec<String>,
+    /// Currency
     pub currency: Option<String>,
+    /// ?
     pub currency_coefficient: Option<u64>,
+    /// Repair price rate
     pub price_rate: u64,
 }
 
 /// Trader currency.
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 pub enum Currency {
+    /// Rouble
     #[serde(rename = "RUB")]
     Rouble,
+    /// US Dollar
     #[serde(rename = "USD")]
     Dollar,
+    /// Euro
     #[serde(rename = "EUR")]
     Euro,
 }
@@ -67,11 +98,17 @@ pub enum Currency {
 /// Trader's insurance offer.
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Insurance {
+    /// Insurance is available
     pub availability: bool,
+    /// Minimum cost to insure
     pub min_payment: u64,
+    /// Minimum return time in hours.
     pub min_return_hour: u64,
+    /// Maximum return time in hours.
     pub max_return_hour: u64,
+    /// Maximum storage time in hours.
     pub max_storage_time: u64,
+    /// Categories IDs excluded from insurance.
     pub excluded_category: Vec<String>,
 }
 
@@ -79,9 +116,13 @@ pub struct Insurance {
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Loyalty {
+    /// Current loyalty level
     pub current_level: u64,
+    /// Current loyalty standing
     pub current_standing: f64,
+    /// Amount spent on trader
     pub current_sales_sum: u64,
+    /// All loyalty levels
     pub loyalty_levels: HashMap<String, LoyaltyLevel>,
 }
 
@@ -89,8 +130,11 @@ pub struct Loyalty {
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct LoyaltyLevel {
+    /// Minimum level
     pub min_level: u64,
+    /// Minimum sales amount
     pub min_sales_sum: u64,
+    /// Minimum standing
     pub min_standing: f64,
 }
 
@@ -108,33 +152,88 @@ struct TraderResponse {
     data: Option<Trader>,
 }
 
-/// In-game item.
+/// In-game item
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Item {
+    /// Item ID
     #[serde(rename = "_id")]
     pub id: String,
+    /// Item localization schema ID
     #[serde(rename = "_tpl")]
     pub schema_id: String,
+    /// Item parent ID
     pub parent_id: Option<String>,
+    /// Item slot ID
     pub slot_id: Option<String>,
+    /// Item attachments/options
     pub upd: Option<Upd>,
     // XXX: This type can be both Integer and `Location`...
     // location: Option<Location>
+}
+
+/// Item location
+#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct ItemLocation {
+    /// Inventory slot x
+    pub x: u64,
+    /// Inventory slot y
+    pub y: u64,
+    /// Inventory slot rotation
+    pub r: u64,
+    /// Item is searched (if searchable)
+    pub is_searched: Option<bool>,
 }
 
 /// Item options.
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Upd {
+    /// Item stack count
     pub stack_objects_count: Option<u64>,
+    /// Item spawned in session
     pub spawned_in_session: Option<bool>,
+    /// Item is medkit
     pub med_kit: Option<UpdMedkit>,
+    /// Item is repairable
     pub repairable: Option<UpdRepairable>,
+    /// Item has a light attachment
     pub light: Option<UpdLight>,
+    /// Unlimited stack
     pub unlimited_count: Option<bool>,
+    /// ?
     pub buy_restriction_max: Option<u64>,
+    /// ?
     pub buy_restriction_current: Option<u64>,
+}
+
+/// Medkit item info
+#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[serde(rename_all = "PascalCase")]
+pub struct UpdMedkit {
+    /// Health
+    pub hp_resource: u64,
+}
+
+/// Repairable item info
+#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[serde(rename_all = "PascalCase")]
+pub struct UpdRepairable {
+    /// Maximum durability
+    pub max_durability: f64,
+    /// Current durability
+    pub durability: f64,
+}
+
+/// Light attachment info
+#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[serde(rename_all = "PascalCase")]
+pub struct UpdLight {
+    /// Light is active
+    pub is_active: bool,
+    /// Light mode
+    pub selected_mode: u64,
 }
 
 #[derive(Debug, Deserialize)]
@@ -161,18 +260,25 @@ struct TraderPricesResponse {
 /// Trader item price.
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Price {
+    /// Item localization schema ID
     #[serde(rename = "_tpl")]
     pub schema_id: String,
+    /// Item count
     pub count: f64,
 }
 
 /// Item for trade.
 #[derive(Debug, Clone, PartialEq)]
 pub struct TraderItem {
+    /// Item ID
     pub id: String,
+    /// Item localization schema ID
     pub schema_id: String,
+    /// Item attachments/options
     pub upd: Option<Upd>,
+    /// Item price
     pub price: Vec<Price>,
+    /// Loyalty level
     pub loyalty_level: u8,
 }
 
@@ -343,6 +449,7 @@ impl Tarkov {
         self.handle_error(res.error, Some(()))
     }
 
+    /// Sell items to trader.
     pub async fn sell_item(&self, trader_id: &str, item_id: &str, quantity: u64) -> Result<()> {
         let url = format!("{}/client/game/profile/items/moving", PROD_ENDPOINT);
         let body = MoveItemRequest {
