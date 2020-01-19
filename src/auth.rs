@@ -19,7 +19,6 @@ struct LoginRequest<'a> {
     captcha: Option<&'a str>,
 }
 
-/// Authenticated user.
 #[derive(Debug, Deserialize)]
 pub(crate) struct Auth {
     pub aid: String,
@@ -185,7 +184,8 @@ struct ExchangeResponse {
 /// Authenticated user session.
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Session {
-    pub queued: bool,
+    queued: bool,
+    /// Session cookie.
     pub session: String,
 }
 
