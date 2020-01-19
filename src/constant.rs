@@ -1,6 +1,6 @@
 use crate::{ErrorResponse, Result, Tarkov, PROD_ENDPOINT};
 
-use crate::bad_json::StringOrInt;
+use crate::bad_json::{deserialize_integer_to_option_string, StringOrInt};
 use crate::profile::Side;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -348,8 +348,13 @@ pub struct Props {
     /// Item armor zone
     #[serde(rename = "armorZone")]
     pub armor_zone: Option<Vec<ArmorZone>>,
-    // #[serde(rename = "armorClass")]
-    // pub armor_class: Option<u64>, // XXX: armorClass can be both String and int...
+    /// Item armor class
+    #[serde(
+        default,
+        rename = "armorClass",
+        deserialize_with = "deserialize_integer_to_option_string"
+    )]
+    pub armor_class: Option<String>,
     /// ?
     #[serde(rename = "mousePenalty")]
     pub mouse_penalty: Option<i64>,
@@ -568,7 +573,8 @@ pub struct Props {
     pub overdose_recovery: Option<u64>,
     /// ?
     pub addiction_recovery: Option<u64>,
-    // pub buffs: Option<serde_json::Value>, XXX: bad devs, multiple types...
+    /// Unknown type
+    pub buffs: Option<serde_json::Value>,
     /// ?
     #[serde(rename = "apResource")]
     pub ap_resource: Option<u64>,

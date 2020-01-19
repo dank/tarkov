@@ -16,9 +16,10 @@ struct FriendResponse {
 pub struct FriendResult {
     /// Friends
     pub friends: Vec<Friend>,
-    // XXX: Find types for these
-    // ignore: []
-    // in_ignore_list: []
+    /// Muted friend IDs
+    pub ignore: Vec<String>,
+    /// ?
+    pub in_ignore_list: Vec<String>,
 }
 
 /// Friend

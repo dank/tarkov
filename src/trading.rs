@@ -1,3 +1,4 @@
+use crate::bad_json::deserialize_bad_location_as_none;
 use crate::profile::MoveItemRequest;
 use crate::{ErrorResponse, Result, Tarkov, PROD_ENDPOINT, TRADING_ENDPOINT};
 use serde::{Deserialize, Serialize};
@@ -168,14 +169,15 @@ pub struct Item {
     pub slot_id: Option<String>,
     /// Item attachments/options
     pub upd: Option<Upd>,
-    // XXX: This type can be both Integer and `Location`...
-    // location: Option<Location>
+    /// Item location
+    #[serde(default, deserialize_with = "deserialize_bad_location_as_none")]
+    pub location: Option<Location>,
 }
 
 /// Item location
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
-pub struct ItemLocation {
+pub struct Location {
     /// Inventory slot x
     pub x: u64,
     /// Inventory slot y

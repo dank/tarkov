@@ -1,5 +1,7 @@
 use crate::{ErrorResponse, Result, Tarkov, PROD_ENDPOINT};
 
+use crate::bad_json::deserialize_integer_to_string;
+use crate::ragfair::Offer;
 use crate::trading::Item;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -19,57 +21,53 @@ struct ProfileResponse {
 
 /// Profile
 #[derive(Debug, Deserialize, Clone, PartialEq)]
+#[serde(rename_all = "PascalCase")]
 pub struct Profile {
     /// Profile ID
     #[serde(rename = "_id")]
     pub id: String,
     /// ?
+    #[serde(rename = "aid")]
     pub aid: u64,
     /// SCAV profile ID
+    #[serde(rename = "savage")]
     pub savage: Option<String>,
     /// Profile info
-    #[serde(rename = "Info")]
     pub info: Info,
     /// Character customization
-    #[serde(rename = "Customization")]
     pub customization: Customization,
     /// Character health
-    #[serde(rename = "Health")]
     pub health: Health,
     /// Inventory
-    #[serde(rename = "Inventory")]
     pub inventory: Inventory,
     /// Skills
-    #[serde(rename = "Skills")]
     pub skills: Skills,
     /// Stats
-    #[serde(rename = "Stats")]
     pub stats: Stats,
     /// Encyclopedia
-    #[serde(rename = "Encyclopedia")]
     pub encyclopedia: HashMap<String, bool>,
     /// ?
-    #[serde(rename = "ConditionCounters")]
     pub condition_counters: ConditionCounters,
     /// ?
-    #[serde(rename = "BackendCounters")]
     pub backend_counters: HashMap<String, BackendCounter>,
-    // XXX: Find types for these
-    // insured_items: [],
-    // hideout: {},
-    // notes: {},
+    /// Insured items
+    pub insured_items: Vec<InsuredItem>,
+    /// Unimplemented type
+    pub hideout: serde_json::Value,
+    /// Unknown type
+    pub notes: serde_json::Value,
     /// Bonuses?
-    #[serde(rename = "Bonuses")]
     pub bonuses: Vec<Bonus>,
     /// Active quests
-    #[serde(rename = "Quests")]
     pub quests: Vec<Quest>,
     /// Flea market stats
     #[serde(rename = "RagfairInfo")]
     pub ragfair: Ragfair,
-    // XXX: Find types for these
-    // trader_standings: [],
-    // wish_list: [],
+    /// Unknown type
+    pub trader_standings: serde_json::Value,
+    /// Item wishlist
+    #[serde(rename = "WishList")]
+    pub wishlist: Vec<String>,
 }
 
 /// Profile info
@@ -94,8 +92,9 @@ pub struct Info {
     pub game_version: String,
     /// Profile type
     pub account_type: u64,
-    // XXX: Bad devs! This field can be both String and integer, ignoring for now.
-    // member_category: String,
+    /// ?
+    #[serde(deserialize_with = "deserialize_integer_to_string")]
+    pub member_category: String,
     /// ?
     #[serde(rename = "lockedMoveCommands")]
     pub locked_move_commands: bool,
@@ -111,8 +110,8 @@ pub struct Info {
     pub global_wipe: bool,
     /// Profile nickname change timestamp
     pub nickname_change_date: u64,
-    // XXX: find types
-    //    pub bans: []
+    /// Unknown type
+    pub bans: serde_json::Value,
 }
 
 /// Faction, team or side.
@@ -266,8 +265,8 @@ pub struct Inventory {
     pub quest_raid_items: String,
     /// ?
     pub quest_stash_items: String,
-    // XXX: Find types for these
-    // first_panel: {},
+    /// Unknown type
+    pub fast_panel: serde_json::Value,
 }
 
 /// Player skills
@@ -328,11 +327,14 @@ pub struct Stats {
     pub total_in_game_time: u64,
     /// Survivor class
     pub survivor_class: String,
-    // XXX: Find types for these
-    // dropped_items: [], Vec<serde_json::Value>
-    // found_in_raid_items: [],
-    // victims: [],
-    // carried_quest_items: []
+    /// Unknown type
+    pub dropped_items: serde_json::Value,
+    /// Unknown type
+    pub found_in_raid_items: serde_json::Value,
+    /// Unknown type
+    pub victims: Vec<Victim>,
+    /// Unknown type
+    pub carried_quest_items: serde_json::Value,
 }
 
 /// Session stats counter
@@ -361,7 +363,7 @@ pub struct SessionItem {
     pub value: u64,
 }
 
-/// ?
+/// Aggressor
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Aggressor {
@@ -377,6 +379,24 @@ pub struct Aggressor {
     pub weapon_name: String,
     /// Aggressor category
     pub category: String,
+}
+
+/// Victim
+#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[serde(rename_all = "PascalCase")]
+pub struct Victim {
+    /// Victim name
+    pub name: String,
+    /// Victim side
+    pub side: Side,
+    /// Victim death time
+    pub time: String,
+    /// Victim level
+    pub level: u64,
+    /// Body part shot
+    pub body_part: String,
+    /// Weapon used to kill
+    pub weapon: String,
 }
 
 /// ?
@@ -407,6 +427,17 @@ pub struct BackendCounter {
     pub qid: String,
     /// Counter value
     pub value: u64,
+}
+
+/// Insured item
+#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct InsuredItem {
+    /// Insurance ID
+    #[serde(rename = "tid")]
+    id: String,
+    /// Insured item ID
+    item_id: String,
 }
 
 /// Bonus?
@@ -457,9 +488,8 @@ pub struct Ragfair {
     pub rating: f64,
     /// Market rating is growing
     pub is_rating_growing: bool,
-    // Active offers (items for sale)
-    // XXX: Find types for these
-    // offers: []
+    /// Active offers (items for sale)
+    pub offers: Vec<Offer>,
 }
 
 /// Profile error.
@@ -524,35 +554,3 @@ impl Tarkov {
         self.handle_error(res.error, res.data)
     }
 }
-
-// XXX: I shouldn't have to do this if tarkov devs know what types are.
-//struct LocationVisitor;
-//
-//impl<'de> de::Visitor<'de> for LocationVisitor {
-//    type Value = Option<Location>;
-//
-//    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-//        formatter.write_str("Location struct")
-//    }
-//
-//    fn visit_none<E>(self) -> std::result::Result<Self::Value, E>
-//        where
-//            E: de::Error,
-//    {
-//        Ok(None)
-//    }
-//
-//    fn visit_some<D>(self, d: D) -> std::result::Result<Self::Value, D::Error>
-//        where
-//            D: de::Deserializer<'de>,
-//    {
-//        Ok(None)
-//    }
-//}
-//
-//pub fn deserialize_location_or_none<'de, D>(d: D) -> std::result::Result<Option<Location>, D::Error>
-//    where
-//        D: de::Deserializer<'de>,
-//{
-//    d.deserialize_option(LocationVisitor)
-//}

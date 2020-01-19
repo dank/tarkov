@@ -1,36 +1,47 @@
 //! EFT API returns a lot of inconsistent and bad JSON. Serde deserializers to fix those broken JSON.
 
-use serde::de::Visitor;
+use crate::trading::Location;
+use serde::de::{Error, Visitor};
 use serde::{Deserialize, Deserializer};
 use serde_json::Value;
 use std::fmt;
 
-fn deserialize_integer_to_string<'de, D>(de: D) -> Result<String, D::Error>
+pub(crate) fn deserialize_integer_to_string<'de, D>(de: D) -> Result<String, D::Error>
 where
     D: Deserializer<'de>,
 {
     let json: serde_json::Value = Deserialize::deserialize(de)?;
     match json {
         Value::Number(i) => Ok(i.to_string()),
-        _ => Err(serde::de::Error::custom("Unexpected value")),
+        Value::String(s) => Ok(s),
+        _ => Err(Error::custom("Unexpected value")),
     }
 }
 
-fn deserialize_empty_as_none<'de, D>(deserializer: D) -> Result<Option<String>, D::Error>
+pub(crate) fn deserialize_integer_to_option_string<'de, D>(
+    de: D,
+) -> Result<Option<String>, D::Error>
 where
     D: Deserializer<'de>,
 {
-    let s = match String::deserialize(deserializer) {
-        Ok(s) => s,
-        Err(_) => {
-            return Ok(None);
-        }
-    };
+    let json: serde_json::Value = Deserialize::deserialize(de)?;
+    match json {
+        Value::Number(i) => Ok(Some(i.to_string())),
+        Value::String(s) => Ok(Some(s)),
+        _ => Ok(None),
+    }
+}
 
-    if s.is_empty() {
-        Ok(None)
-    } else {
-        Ok(Some(s))
+pub(crate) fn deserialize_bad_location_as_none<'de, D>(de: D) -> Result<Option<Location>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let json: serde_json::Value = Deserialize::deserialize(de)?;
+    match json {
+        Value::Object(_) => Ok(Some(
+            serde_json::from_value(json).map_err(|_| Error::custom("Unexpected value"))?,
+        )),
+        _ => Ok(None),
     }
 }
 
