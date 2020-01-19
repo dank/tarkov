@@ -10,28 +10,39 @@ struct FriendResponse {
     data: Option<FriendResult>,
 }
 
+/// Friend list
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct FriendResult {
+    /// Friends
     pub friends: Vec<Friend>,
+    // XXX: Find types for these
     // ignore: []
     // in_ignore_list: []
 }
 
+/// Friend
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Friend {
+    /// Friend ID
     #[serde(rename = "_id")]
     pub id: String,
+    /// Friend info
     pub info: Info,
 }
 
+/// Friend info
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Info {
+    /// Friend nickname
     pub nickname: String,
+    /// Friend side
     pub side: Side,
+    /// Friend level
     pub level: u64,
+    /// ?
     pub member_category: String,
 }
 
