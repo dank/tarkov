@@ -19,7 +19,7 @@ struct ItemsResponse {
     data: Option<HashMap<String, Item>>,
 }
 
-/// In-game item.
+/// Localization item
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Item {
     /// Item ID
