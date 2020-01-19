@@ -221,7 +221,7 @@ pub struct UpdMedkit {
 #[serde(rename_all = "PascalCase")]
 pub struct UpdRepairable {
     /// Maximum durability
-    pub max_durability: f64,
+    pub max_durability: Option<f64>,
     /// Current durability
     pub durability: f64,
 }
