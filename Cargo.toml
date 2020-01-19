@@ -9,6 +9,7 @@ license = "MIT"
 keywords = ["escapefromtarkov", "eft", "tarkov", "sdk", "api"]
 include = ["src/**/*", "Cargo.toml", "LICENSE"]
 repository = "https://github.com/dank/tarkov"
+documentation = "https://docs.rs/tarkov"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
