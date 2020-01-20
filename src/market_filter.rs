@@ -29,7 +29,7 @@ pub struct MarketFilter<'a> {
     pub owner_type: Owner,
     /// Hide inoperable weapons.
     pub hide_inoperable_weapons: bool,
-    /// Search by market category ID.
+    /// Search by market category or item ID.
     pub handbook_id: Option<&'a str>,
     /// Search item related to item ID.
     pub linked_search_id: Option<&'a str>,

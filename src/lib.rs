@@ -23,6 +23,7 @@ use log::debug;
 use serde::de::DeserializeOwned;
 use serde::Deserialize;
 use std::io::Read;
+use crate::ragfair::RagfairError;
 
 const GAME_VERSION: &str = "0.12.2.5485";
 const LAUNCHER_VERSION: &str = "0.9.1.935";
@@ -89,6 +90,9 @@ pub enum Error {
     /// Trading API error.
     #[error(display = "trading api error: {}", _0)]
     TradingError(#[error(source)] TradingError),
+    /// Ragfair API error.
+    #[error(display = "trading api error: {}", _0)]
+    RagfairError(#[error(source)] RagfairError),
 }
 
 /// `Result` alias type.
@@ -238,6 +242,7 @@ pub(crate) fn handle_error<T: DeserializeOwned>(error: ErrorResponse, ret: Optio
         211 => Err(LoginError::BadTwoFactorCode)?,
         214 => Err(LoginError::CaptchaRequired)?,
         263 => Err(Error::Maintenance)?,
+        1512 => Err(RagfairError::OfferNotAvailableYet)?,
         1514 => Err(TradingError::TransactionError)?,
         _ => Err(Error::UnknownAPIError(error.code)),
     }

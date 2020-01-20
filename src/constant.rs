@@ -1585,7 +1585,8 @@ pub struct Localization {
     /// Localization table for seasons.
     pub season: HashMap<String, String>,
     /// Localization table for items.
-    pub templates: HashMap<String, ItemLocalization>,
+    #[serde(rename = "templates")]
+    pub items: HashMap<String, ItemLocalization>,
     /// Localization table for locations/maps.
     pub locations: HashMap<String, LocationLocalization>,
     /// Localization table for banners.

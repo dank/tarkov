@@ -6,6 +6,14 @@ use crate::trading::{BarterItem, Item};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
+/// Ragfair error
+#[derive(Debug, err_derive::Error)]
+pub enum RagfairError {
+    /// Offer is not available yet.
+    #[error(display = "offer not available yet")]
+    OfferNotAvailableYet,
+}
+
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 struct SearchRequest<'a> {
