@@ -39,6 +39,7 @@ pub(crate) struct Auth {
 struct LoginResponse {
     #[serde(flatten)]
     error: ErrorResponse,
+    #[serde(default)]
     data: Option<Auth>,
 }
 
@@ -232,7 +233,7 @@ pub(crate) async fn exchange_access_token(
 }
 
 impl Tarkov {
-    /// Keep the current session alive
+    /// Keep the current session alive. Session expires after 30 seconds of idling.
     pub async fn keep_alive(&self) -> Result<()> {
         let url = format!("{}/client/game/keepalive", PROD_ENDPOINT);
         let res: ErrorResponse = self.post_json(&url, &{}).await?;
