@@ -73,7 +73,7 @@ async fn main() -> Result<(), Error> {
         &offer.id,
         1,
         &[BarterItem {
-            id: rouble.id.clone(),
+            id: rouble.id.to_owned(),
             count: offer.requirements_cost as f64,
         }],
     )

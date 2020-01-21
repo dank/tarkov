@@ -46,7 +46,7 @@ async fn main() -> Result<(), Error> {
         &painkiller.id,
         1,
         &[BarterItem {
-            id: rouble.id.clone(),
+            id: rouble.id.to_owned(),
             count: 3990.0,
         }],
     )
