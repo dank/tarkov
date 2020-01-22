@@ -26,7 +26,7 @@ use serde::Deserialize;
 use std::io::Read;
 
 const GAME_VERSION: &str = "0.12.2.5485";
-const LAUNCHER_VERSION: &str = "0.9.1.935";
+const LAUNCHER_VERSION: &str = "0.9.2.970";
 const UNITY_VERSION: &str = "2018.4.13f1";
 
 const LAUNCHER_ENDPOINT: &str = "https://launcher.escapefromtarkov.com";
