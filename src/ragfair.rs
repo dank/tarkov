@@ -169,10 +169,10 @@ struct BuyItemResponse {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
-struct RagfairResponseData {
-    items: serde_json::Value,
+pub(crate) struct RagfairResponseData {
+    pub(crate) items: serde_json::Value,
     #[serde(rename = "badRequest")]
-    errors: Vec<ErrorResponse>,
+    pub(crate) errors: Vec<ErrorResponse>,
 }
 
 /// Changes to the player's inventory after interacting with traders or the flea market.

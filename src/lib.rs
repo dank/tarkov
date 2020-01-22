@@ -250,6 +250,7 @@ pub(crate) fn handle_error2(error: ErrorResponse) -> Result<()> {
         263 => Err(Error::Maintenance)?,
         1501 => Err(RagfairError::MaxOfferCount)?,
         1502 => Err(RagfairError::InsufficientTaxFunds)?,
+        1510 => Err(TradingError::BadLoyaltyLevel)?,
         1512 => Err(RagfairError::OfferNotAvailableYet)?,
         1514 => Err(TradingError::TransactionError)?,
         _ => Err(Error::UnknownAPIError(error.code)),

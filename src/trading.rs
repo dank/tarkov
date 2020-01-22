@@ -1,8 +1,9 @@
 use crate::bad_json::deserialize_bad_location_as_none;
 use crate::profile::MoveItemRequest;
-use crate::{handle_error, ErrorResponse, Result, Tarkov, PROD_ENDPOINT, TRADING_ENDPOINT};
+use crate::{handle_error, ErrorResponse, Result, Tarkov, PROD_ENDPOINT, TRADING_ENDPOINT, handle_error2, Error};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use crate::ragfair::{InventoryUpdate, RagfairResponseData};
 
 /// Trading error
 #[derive(Debug, err_derive::Error)]
@@ -10,6 +11,9 @@ pub enum TradingError {
     /// Transaction error
     #[error(display = "transaction error")]
     TransactionError,
+    /// Loyalty level is not high enough to purchase this item.
+    #[error(display = "bad loyalty level")]
+    BadLoyaltyLevel,
 }
 
 /// Trader info.
@@ -321,6 +325,7 @@ pub struct BarterItem {
 struct TradeResponse {
     #[serde(flatten)]
     error: ErrorResponse,
+    data: serde_json::Value,
 }
 
 #[derive(Debug, Serialize)]
@@ -442,7 +447,7 @@ impl Tarkov {
         item_id: &str,
         quantity: u64,
         barter_items: &[BarterItem],
-    ) -> Result<()> {
+    ) -> Result<InventoryUpdate> {
         let url = format!("{}/client/game/profile/items/moving", PROD_ENDPOINT);
         let body = MoveItemRequest {
             data: &[TradeItemRequest {
@@ -458,7 +463,16 @@ impl Tarkov {
         };
 
         let res: TradeResponse = self.post_json(&url, &body).await?;
-        handle_error(res.error, Some(()))
+        handle_error2(res.error)?;
+
+        let res: RagfairResponseData = Deserialize::deserialize(res.data)?;
+        if !res.errors.is_empty() {
+            let error = &res.errors[0];
+            return Err(Error::UnknownAPIError(error.code));
+        }
+
+        let items: InventoryUpdate = Deserialize::deserialize(res.items)?;
+        Ok(items)
     }
 
     /// Sell items to trader.
