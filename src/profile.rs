@@ -170,9 +170,9 @@ pub struct Health {
 #[serde(rename_all = "PascalCase")]
 pub struct HealthLevel {
     /// Current health
-    pub current: u64,
+    pub current: f64,
     /// Maximum health
-    pub maximum: u64,
+    pub maximum: f64,
 }
 
 /// Body health
