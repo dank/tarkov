@@ -1,4 +1,4 @@
-use crate::{handle_error, ErrorResponse, Result, Tarkov, PROD_ENDPOINT, RAGFAIR_ENDPOINT};
+use crate::{handle_error, ErrorResponse, Result, Tarkov, PROD_ENDPOINT, RAGFAIR_ENDPOINT, Error, handle_error2};
 
 use crate::market_filter::{Currency, MarketFilter, Owner, SortBy, SortDirection};
 use crate::profile::MoveItemRequest;
@@ -12,6 +12,9 @@ pub enum RagfairError {
     /// Offer is not available yet.
     #[error(display = "offer not available yet")]
     OfferNotAvailableYet,
+    /// Offer was not found.
+    #[error(display = "offer not found")]
+    OfferNotFound,
     /// Provided `BarterItem` is invalid, not enough quantities available or not found.
     #[error(display = "barter items provided cannot be found")]
     InvalidBarterItems,
@@ -155,6 +158,25 @@ struct BuyItem {
 struct BuyItemResponse {
     #[serde(flatten)]
     error: ErrorResponse,
+    data: serde_json::Value,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct BuyItemResponseData {
+    items: serde_json::Value,
+    #[serde(rename = "badRequest")]
+    error: Vec<ErrorResponse>,
+}
+
+/// Changes to player's inventory after acquiring items from traders or flea market.
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct BoughtItems {
+    /// New items in inventory.
+    pub new: Vec<Item>,
+    /// Changed items in inventory.
+    pub change: Vec<Item>,
 }
 
 #[derive(Debug, Serialize)]
@@ -266,7 +288,7 @@ impl Tarkov {
         offer_id: &str,
         quantity: u64,
         barter_items: &[BarterItem],
-    ) -> Result<()> {
+    ) -> Result<BoughtItems> {
         let url = format!("{}/client/game/profile/items/moving", PROD_ENDPOINT);
         let body = &MoveItemRequest {
             data: &[BuyItemRequest {
@@ -281,7 +303,19 @@ impl Tarkov {
         };
 
         let res: BuyItemResponse = self.post_json(&url, body).await?;
-        handle_error(res.error, Some(()))
+        handle_error2(res.error)?;
+
+        let res: BuyItemResponseData = Deserialize::deserialize(res.data)?;
+        if !res.error.is_empty() {
+            let error = &res.error[0];
+            match error.code {
+                1503 | 1506 => return Err(RagfairError::OfferNotFound)?,
+                _ => return Err(Error::UnknownAPIError(error.code)),
+            }
+        }
+
+        let items: BoughtItems = Deserialize::deserialize(res.items)?;
+        Ok(items)
     }
 
     /// List an item for sale on the flea market.

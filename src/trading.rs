@@ -208,6 +208,8 @@ pub struct Upd {
     pub buy_restriction_max: Option<u64>,
     /// ?
     pub buy_restriction_current: Option<u64>,
+    /// Key info
+    pub key: Option<UpdKey>
 }
 
 /// Medkit item info
@@ -236,6 +238,14 @@ pub struct UpdLight {
     pub is_active: bool,
     /// Light mode
     pub selected_mode: u64,
+}
+
+/// Key info
+#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[serde(rename_all = "PascalCase")]
+pub struct UpdKey {
+    /// Number of usage
+    pub number_of_usages: u64,
 }
 
 #[derive(Debug, Deserialize)]
@@ -301,7 +311,7 @@ struct TradeItemRequest<'a> {
 /// Inventory item for trading.
 #[derive(Debug, Serialize, Clone, PartialEq)]
 pub struct BarterItem {
-    /// Item ID from your inventory.
+    /// Item ID from player's inventory.
     pub id: String,
     /// Amount of items.
     pub count: f64,

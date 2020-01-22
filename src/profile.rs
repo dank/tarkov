@@ -536,7 +536,7 @@ pub struct Notifier {
 }
 
 impl Tarkov {
-    /// Get a list of your profiles.
+    /// Get a list of account's profiles.
     pub async fn get_profiles(&self) -> Result<Vec<Profile>> {
         let url = format!("{}/client/game/profile/list", PROD_ENDPOINT);
         let res: ProfileResponse = self.post_json(&url, &{}).await?;

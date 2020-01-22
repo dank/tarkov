@@ -74,7 +74,7 @@ pub struct Props {
     pub prefab: Option<Prefab>,
     /// Item prefab?
     pub use_prefab: Option<Prefab>,
-    /// ?
+    /// Item stack count
     pub stack_objects_count: Option<u64>,
     /// ?
     pub not_shown_in_slot: Option<bool>,

@@ -7,13 +7,13 @@ use serde::Deserialize;
 struct FriendResponse {
     #[serde(flatten)]
     error: ErrorResponse,
-    data: Option<FriendResult>,
+    data: Option<Friends>,
 }
 
 /// Friend list
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
-pub struct FriendResult {
+pub struct Friends {
     /// Friends
     pub friends: Vec<Friend>,
     /// Muted friend IDs
@@ -48,8 +48,8 @@ pub struct Info {
 }
 
 impl Tarkov {
-    /// Get a list of your friends.
-    pub async fn get_friends(&self) -> Result<FriendResult> {
+    /// Get a list of account's friends.
+    pub async fn get_friends(&self) -> Result<Friends> {
         let url = format!("{}/client/friend/list", PROD_ENDPOINT);
         let res: FriendResponse = self.post_json(&url, &{}).await?;
 

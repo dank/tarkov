@@ -233,8 +233,13 @@ impl Tarkov {
 }
 
 pub(crate) fn handle_error<T: DeserializeOwned>(error: ErrorResponse, ret: Option<T>) -> Result<T> {
+    handle_error2(error)?;
+    Ok(ret.expect("API returned no errors but `data` is unavailable."))
+}
+
+pub(crate) fn handle_error2(error: ErrorResponse) -> Result<()> {
     match error.code {
-        0 => Ok(ret.expect("API returned no errors but `data` is unavailable.")),
+        0 => Ok(()),
         201 => Err(Error::NotAuthorized)?,
         205 => Err(ProfileError::InvalidUserID)?,
         207 => Err(LoginError::MissingParameters)?,
