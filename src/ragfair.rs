@@ -18,6 +18,12 @@ pub enum RagfairError {
     /// Provided `BarterItem` is invalid, not enough quantities available or not found.
     #[error(display = "barter items provided cannot be found")]
     InvalidBarterItems,
+    /// Maximum outstanding offer count of 3 was reached.
+    #[error(display = "maximum offer count of 3 was reached")]
+    MaxOfferCount,
+    /// Insufficient funds to pay the flea market fee.
+    #[error(display = "insufficient funds to pay market fee")]
+    InsufficientTaxFunds,
 }
 
 #[derive(Debug, Serialize)]
@@ -163,20 +169,31 @@ struct BuyItemResponse {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
-struct BuyItemResponseData {
+struct RagfairResponseData {
     items: serde_json::Value,
     #[serde(rename = "badRequest")]
-    error: Vec<ErrorResponse>,
+    errors: Vec<ErrorResponse>,
 }
 
-/// Changes to player's inventory after acquiring items from traders or flea market.
+/// Changes to the player's inventory after interacting with traders or the flea market.
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct BoughtItems {
+pub struct InventoryUpdate {
     /// New items in inventory.
-    pub new: Vec<Item>,
+    pub new: Option<Vec<Item>>,
     /// Changed items in inventory.
-    pub change: Vec<Item>,
+    pub change: Option<Vec<Item>>,
+    /// Deleted items in inventory.
+    pub del: Option<Vec<DeletedItem>>,
+}
+
+/// Item deleted from inventory.
+#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct DeletedItem {
+    /// Item ID
+    #[serde(rename = "_id")]
+    pub id: String,
 }
 
 #[derive(Debug, Serialize)]
@@ -232,6 +249,7 @@ struct SellRequirement {
 struct SellItemResponse {
     #[serde(flatten)]
     error: ErrorResponse,
+    data: serde_json::Value,
 }
 
 impl Tarkov {
@@ -288,7 +306,7 @@ impl Tarkov {
         offer_id: &str,
         quantity: u64,
         barter_items: &[BarterItem],
-    ) -> Result<BoughtItems> {
+    ) -> Result<InventoryUpdate> {
         let url = format!("{}/client/game/profile/items/moving", PROD_ENDPOINT);
         let body = &MoveItemRequest {
             data: &[BuyItemRequest {
@@ -305,16 +323,16 @@ impl Tarkov {
         let res: BuyItemResponse = self.post_json(&url, body).await?;
         handle_error2(res.error)?;
 
-        let res: BuyItemResponseData = Deserialize::deserialize(res.data)?;
-        if !res.error.is_empty() {
-            let error = &res.error[0];
+        let res: RagfairResponseData = Deserialize::deserialize(res.data)?;
+        if !res.errors.is_empty() {
+            let error = &res.errors[0];
             match error.code {
                 1503 | 1506 => return Err(RagfairError::OfferNotFound)?,
                 _ => return Err(Error::UnknownAPIError(error.code)),
             }
         }
 
-        let items: BoughtItems = Deserialize::deserialize(res.items)?;
+        let items: InventoryUpdate = Deserialize::deserialize(res.items)?;
         Ok(items)
     }
 
@@ -324,7 +342,7 @@ impl Tarkov {
         items: &[&str],
         requirements: &[Requirement],
         sell_all: bool,
-    ) -> Result<()> {
+    ) -> Result<InventoryUpdate> {
         let url = format!("{}/client/game/profile/items/moving", PROD_ENDPOINT);
         let body = &MoveItemRequest {
             data: &[SellItemRequest {
@@ -345,6 +363,15 @@ impl Tarkov {
         };
 
         let res: SellItemResponse = self.post_json(&url, body).await?;
-        handle_error(res.error, Some(()))
+        handle_error2(res.error)?;
+
+        let res: RagfairResponseData = Deserialize::deserialize(res.data)?;
+        if !res.errors.is_empty() {
+            let error = &res.errors[0];
+            return Err(Error::UnknownAPIError(error.code));
+        }
+
+        let items: InventoryUpdate = Deserialize::deserialize(res.items)?;
+        Ok(items)
     }
 }
