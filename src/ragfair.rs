@@ -1,4 +1,7 @@
-use crate::{handle_error, ErrorResponse, Result, Tarkov, PROD_ENDPOINT, RAGFAIR_ENDPOINT, Error, handle_error2};
+use crate::{
+    handle_error, handle_error2, Error, ErrorResponse, Result, Tarkov, PROD_ENDPOINT,
+    RAGFAIR_ENDPOINT,
+};
 
 use crate::market_filter::{Currency, MarketFilter, Owner, SortBy, SortDirection};
 use crate::profile::MoveItemRequest;
