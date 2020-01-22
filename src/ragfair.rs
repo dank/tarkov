@@ -300,7 +300,7 @@ impl Tarkov {
         if !res.errors.is_empty() {
             let error = &res.errors[0];
             match error.code {
-                1503 | 1506 => return Err(RagfairError::OfferNotFound)?,
+                1503 | 1506 | 1507 => return Err(RagfairError::OfferNotFound)?,
                 _ => return Err(Error::UnknownAPIError(error.code)),
             }
         }
