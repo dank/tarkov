@@ -498,6 +498,9 @@ pub enum ProfileError {
     /// Invalid user ID selected.
     #[error(display = "invalid user id selected")]
     InvalidUserID,
+    /// Failed selecting profile.
+    #[error(display = "select profile failed")]
+    SelectProfileFail,
 }
 
 #[derive(Debug, Serialize)]
@@ -509,13 +512,13 @@ struct SelectRequest<'a> {
 struct SelectResponse {
     #[serde(flatten)]
     error: ErrorResponse,
-    data: Option<SelectResult>,
+    data: Option<ProfileSelected>,
 }
 
 /// Profile select result
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
-pub struct SelectResult {
+struct ProfileSelected {
     /// Profile status
     pub status: String,
     /// Profile notifier
@@ -545,12 +548,17 @@ impl Tarkov {
     }
 
     /// Select a profile by user ID.
-    pub async fn select_profile(&self, user_id: &str) -> Result<SelectResult> {
+    pub async fn select_profile(&self, user_id: &str) -> Result<()> {
         let url = format!("{}/client/game/profile/select", PROD_ENDPOINT);
         let res: SelectResponse = self
             .post_json(&url, &SelectRequest { uid: user_id })
             .await?;
 
-        handle_error(res.error, res.data)
+        let res = handle_error(res.error, res.data)?;
+        if res.status != "ok" {
+            return Err(ProfileError::SelectProfileFail)?;
+        }
+
+        Ok(())
     }
 }
