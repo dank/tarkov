@@ -1,6 +1,6 @@
 //! EFT API returns a lot of inconsistent and bad JSON. Serde deserializers to fix those broken JSON.
 
-use crate::trading::Location;
+use crate::inventory::Location;
 use serde::de::{Error, Visitor};
 use serde::{Deserialize, Deserializer};
 use serde_json::Value;

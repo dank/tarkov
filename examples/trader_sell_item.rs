@@ -3,10 +3,10 @@ use tarkov::{Error, Tarkov};
 
 #[actix_rt::main]
 async fn main() -> Result<(), Error> {
-    std::env::set_var("RUST_LOG", "tarkov=info");
+    std::env::set_var("RUST_LOG", "tarkov=debug");
     env_logger::init();
 
-    let t = Tarkov::from_session("e1bc65a216325f0ad0db8518fa299db2");
+    let t = Tarkov::from_session("da3902b29e442da4972f8ce499834ee7");
 
     // Find and select PMC profile to complete login.
     let profiles = t.get_profiles().await?;
@@ -32,7 +32,7 @@ async fn main() -> Result<(), Error> {
         .unwrap();
 
     // Trade item
-    t.sell_item(&trader.id, &painkiller.id, 1).await?;
+    println!("{:?}", t.sell_item(&trader.id, &painkiller.id, 1).await);
 
     Ok(())
 }

@@ -3,9 +3,8 @@ use crate::{
     RAGFAIR_ENDPOINT,
 };
 
+use crate::inventory::{BarterItem, InventoryUpdate, Item, MoveItemRequest, RagfairResponseData};
 use crate::market_filter::{Currency, MarketFilter, Owner, SortBy, SortDirection};
-use crate::profile::MoveItemRequest;
-use crate::trading::{BarterItem, Item};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -170,35 +169,6 @@ struct BuyItemResponse {
     data: serde_json::Value,
 }
 
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub(crate) struct RagfairResponseData {
-    pub(crate) items: serde_json::Value,
-    #[serde(rename = "badRequest")]
-    pub(crate) errors: Vec<ErrorResponse>,
-}
-
-/// Changes to the player's inventory after interacting with traders or the flea market.
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct InventoryUpdate {
-    /// New items in inventory.
-    pub new: Option<Vec<Item>>,
-    /// Changed items in inventory.
-    pub change: Option<Vec<Item>>,
-    /// Deleted items in inventory.
-    pub del: Option<Vec<DeletedItem>>,
-}
-
-/// Item deleted from inventory.
-#[derive(Debug, Deserialize, Clone, PartialEq)]
-#[serde(rename_all = "camelCase")]
-pub struct DeletedItem {
-    /// Item ID
-    #[serde(rename = "_id")]
-    pub id: String,
-}
-
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 struct GetPriceRequest<'a> {
@@ -212,7 +182,7 @@ struct GetPriceResponse {
     data: Option<Price>,
 }
 
-/// Price data
+/// Ragfair item price
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Price {

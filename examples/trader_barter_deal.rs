@@ -1,5 +1,5 @@
+use tarkov::inventory::BarterItem;
 use tarkov::profile::Side;
-use tarkov::trading::BarterItem;
 use tarkov::{Error, Tarkov};
 
 #[actix_rt::main]

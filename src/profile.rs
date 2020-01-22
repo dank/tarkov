@@ -1,16 +1,10 @@
 use crate::{handle_error, ErrorResponse, Result, Tarkov, PROD_ENDPOINT};
 
 use crate::bad_json::deserialize_integer_to_string;
+use crate::inventory::Item;
 use crate::ragfair::Offer;
-use crate::trading::Item;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-
-#[derive(Debug, Serialize)]
-pub(crate) struct MoveItemRequest<'a, T> {
-    pub(crate) data: &'a [T],
-    pub(crate) tm: u64,
-}
 
 #[derive(Debug, Deserialize)]
 struct ProfileResponse {

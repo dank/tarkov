@@ -44,6 +44,8 @@ pub mod constant;
 pub mod friend;
 /// Helper functions for hardware ID.
 pub mod hwid;
+/// Structs for inventory and items.
+pub mod inventory;
 /// Flea market search helpers.
 pub mod market_filter;
 /// Structs for the Profile API.

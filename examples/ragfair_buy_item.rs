@@ -1,7 +1,7 @@
 use std::time::{SystemTime, UNIX_EPOCH};
+use tarkov::inventory::BarterItem;
 use tarkov::market_filter::{Currency, MarketFilter, Owner};
 use tarkov::profile::Side;
-use tarkov::trading::BarterItem;
 use tarkov::{Error, Tarkov};
 
 #[actix_rt::main]

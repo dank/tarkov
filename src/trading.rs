@@ -1,6 +1,6 @@
-use crate::bad_json::deserialize_bad_location_as_none;
-use crate::profile::MoveItemRequest;
-use crate::ragfair::{InventoryUpdate, RagfairResponseData};
+use crate::inventory::{
+    BarterItem, InventoryUpdate, Item, MoveItemRequest, RagfairResponseData, Upd,
+};
 use crate::{
     handle_error, handle_error2, Error, ErrorResponse, Result, Tarkov, PROD_ENDPOINT,
     TRADING_ENDPOINT,
@@ -19,7 +19,7 @@ pub enum TradingError {
     BadLoyaltyLevel,
 }
 
-/// Trader info.
+/// Trader info
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Trader {
     /// Trader ID
@@ -70,7 +70,7 @@ pub struct Trader {
     pub sell_category: Vec<serde_json::Value>,
 }
 
-/// Trader's repair stats.
+/// Trader's repair stats
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Repair {
     /// Repair is available
@@ -89,7 +89,7 @@ pub struct Repair {
     pub price_rate: u64,
 }
 
-/// Trader currency.
+/// Trader currency
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 pub enum Currency {
     /// Rouble
@@ -103,7 +103,7 @@ pub enum Currency {
     Euro,
 }
 
-/// Trader's insurance offer.
+/// Trader's insurance offer
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Insurance {
     /// Insurance is available
@@ -120,7 +120,7 @@ pub struct Insurance {
     pub excluded_category: Vec<String>,
 }
 
-/// Trader loyalty.
+/// Trader loyalty
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Loyalty {
@@ -134,7 +134,7 @@ pub struct Loyalty {
     pub loyalty_levels: HashMap<String, LoyaltyLevel>,
 }
 
-/// Trader loyalty level.
+/// Trader loyalty level
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct LoyaltyLevel {
@@ -160,101 +160,6 @@ struct TraderResponse {
     data: Option<Trader>,
 }
 
-/// In-game item
-#[derive(Debug, Deserialize, Clone, PartialEq)]
-#[serde(rename_all = "camelCase")]
-pub struct Item {
-    /// Item ID
-    #[serde(rename = "_id")]
-    pub id: String,
-    /// Item localization schema ID
-    #[serde(rename = "_tpl")]
-    pub schema_id: String,
-    /// Item parent ID
-    pub parent_id: Option<String>,
-    /// Item slot ID
-    pub slot_id: Option<String>,
-    /// Item attachments/options
-    pub upd: Option<Upd>,
-    /// Item location
-    #[serde(default, deserialize_with = "deserialize_bad_location_as_none")]
-    pub location: Option<Location>,
-}
-
-/// Item location
-#[derive(Debug, Deserialize, Clone, PartialEq)]
-#[serde(rename_all = "camelCase")]
-pub struct Location {
-    /// Inventory slot x
-    pub x: u64,
-    /// Inventory slot y
-    pub y: u64,
-    /// Inventory slot rotation
-    pub r: u64,
-    /// Item is searched (if searchable)
-    pub is_searched: Option<bool>,
-}
-
-/// Item options.
-#[derive(Debug, Deserialize, Clone, PartialEq)]
-#[serde(rename_all = "PascalCase")]
-pub struct Upd {
-    /// Item stack count
-    pub stack_objects_count: Option<u64>,
-    /// Item spawned in session
-    pub spawned_in_session: Option<bool>,
-    /// Item is medkit
-    pub med_kit: Option<UpdMedkit>,
-    /// Item is repairable
-    pub repairable: Option<UpdRepairable>,
-    /// Item has a light attachment
-    pub light: Option<UpdLight>,
-    /// Unlimited stack
-    pub unlimited_count: Option<bool>,
-    /// ?
-    pub buy_restriction_max: Option<u64>,
-    /// ?
-    pub buy_restriction_current: Option<u64>,
-    /// Key info
-    pub key: Option<UpdKey>,
-}
-
-/// Medkit item info
-#[derive(Debug, Deserialize, Clone, PartialEq)]
-#[serde(rename_all = "PascalCase")]
-pub struct UpdMedkit {
-    /// Health
-    pub hp_resource: u64,
-}
-
-/// Repairable item info
-#[derive(Debug, Deserialize, Clone, PartialEq)]
-#[serde(rename_all = "PascalCase")]
-pub struct UpdRepairable {
-    /// Maximum durability
-    pub max_durability: Option<f64>,
-    /// Current durability
-    pub durability: f64,
-}
-
-/// Light attachment info
-#[derive(Debug, Deserialize, Clone, PartialEq)]
-#[serde(rename_all = "PascalCase")]
-pub struct UpdLight {
-    /// Light is active
-    pub is_active: bool,
-    /// Light mode
-    pub selected_mode: u64,
-}
-
-/// Key info
-#[derive(Debug, Deserialize, Clone, PartialEq)]
-#[serde(rename_all = "PascalCase")]
-pub struct UpdKey {
-    /// Number of usage
-    pub number_of_usages: u64,
-}
-
 #[derive(Debug, Deserialize)]
 struct TraderItemsResponse {
     #[serde(flatten)]
@@ -276,7 +181,7 @@ struct TraderPricesResponse {
     data: Option<HashMap<String, Vec<Vec<Price>>>>,
 }
 
-/// Trader item price.
+/// Trader item price
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Price {
     /// Item localization schema ID
@@ -286,7 +191,7 @@ pub struct Price {
     pub count: f64,
 }
 
-/// Item for trade.
+/// Item for trade
 #[derive(Debug, Clone, PartialEq)]
 pub struct TraderItem {
     /// Item ID
@@ -313,15 +218,6 @@ struct TradeItemRequest<'a> {
     count: u64,
     scheme_id: u64,
     scheme_items: &'a [BarterItem],
-}
-
-/// Inventory item for trading.
-#[derive(Debug, Serialize, Clone, PartialEq)]
-pub struct BarterItem {
-    /// Item ID from player's inventory.
-    pub id: String,
-    /// Amount of items.
-    pub count: f64,
 }
 
 #[derive(Debug, Deserialize)]
