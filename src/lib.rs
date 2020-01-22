@@ -14,6 +14,7 @@
 use crate::auth::LoginError;
 use crate::hwid::generate_hwid;
 use crate::profile::ProfileError;
+use crate::ragfair::RagfairError;
 use crate::trading::TradingError;
 use actix_web::client::Client;
 use actix_web::http::StatusCode;
@@ -23,7 +24,6 @@ use log::debug;
 use serde::de::DeserializeOwned;
 use serde::Deserialize;
 use std::io::Read;
-use crate::ragfair::RagfairError;
 
 const GAME_VERSION: &str = "0.12.2.5485";
 const LAUNCHER_VERSION: &str = "0.9.1.935";
@@ -241,6 +241,7 @@ pub(crate) fn handle_error<T: DeserializeOwned>(error: ErrorResponse, ret: Optio
         209 => Err(LoginError::TwoFactorRequired)?,
         211 => Err(LoginError::BadTwoFactorCode)?,
         214 => Err(LoginError::CaptchaRequired)?,
+        228 => Err(RagfairError::InvalidBarterItems)?,
         263 => Err(Error::Maintenance)?,
         1512 => Err(RagfairError::OfferNotAvailableYet)?,
         1514 => Err(TradingError::TransactionError)?,

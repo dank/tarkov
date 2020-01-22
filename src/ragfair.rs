@@ -12,6 +12,9 @@ pub enum RagfairError {
     /// Offer is not available yet.
     #[error(display = "offer not available yet")]
     OfferNotAvailableYet,
+    /// Provided `BarterItem` is invalid, not enough quantities available or not found.
+    #[error(display = "barter items provided cannot be found")]
+    InvalidBarterItems,
 }
 
 #[derive(Debug, Serialize)]
