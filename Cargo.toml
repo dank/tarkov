@@ -14,16 +14,18 @@ documentation = "https://docs.rs/tarkov"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-actix-web = { version = "2.0", features = ["openssl"] }
 md5 = "0.7"
 err-derive = "0.2"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-actix-rt = "1.0"
 flate2 = { version = "1.0", features = ["zlib"], default-features = false }
 rand = "0.7"
 log = "0.4"
 serde_repr = "0.1"
+hyper = "0.13"
+hyper-tls = "0.4"
+http = "0.2"
 
 [dev-dependencies]
 env_logger = "0.7"
+tokio = { version = "0.2", features = ["macros"] }

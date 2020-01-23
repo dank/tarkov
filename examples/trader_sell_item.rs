@@ -1,7 +1,7 @@
 use tarkov::profile::Side;
 use tarkov::{Error, Tarkov};
 
-#[actix_rt::main]
+#[tokio::main]
 async fn main() -> Result<(), Error> {
     std::env::set_var("RUST_LOG", "tarkov=debug");
     env_logger::init();

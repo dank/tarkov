@@ -1,11 +1,17 @@
 use crate::{
-    handle_error, Error, ErrorResponse, Result, Tarkov, GAME_VERSION, LAUNCHER_ENDPOINT,
-    LAUNCHER_VERSION, PROD_ENDPOINT,
+    handle_error, handle_error2, Error, ErrorResponse, Result, Tarkov, GAME_VERSION,
+    LAUNCHER_ENDPOINT, LAUNCHER_VERSION, PROD_ENDPOINT,
 };
-use actix_web::client::Client;
-use actix_web::http::StatusCode;
 use flate2::read::ZlibDecoder;
+use hyper::body::Buf;
+use hyper::client::connect::dns::GaiResolver;
+use hyper::client::{Client, HttpConnector};
+use hyper::Request;
+use hyper::StatusCode;
+use hyper::{Body, Method};
+use hyper_tls::HttpsConnector;
 use log::debug;
+use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 use std::io::Read;
 
@@ -46,9 +52,6 @@ struct LoginResponse {
 /// Login error
 #[derive(Debug, err_derive::Error)]
 pub enum LoginError {
-    /// Invalid or missing parameters.
-    #[error(display = "invalid or missing login parameters")]
-    MissingParameters,
     /// 2FA code is required to continue authentication.
     #[error(display = "2fa is required")]
     TwoFactorRequired,
@@ -61,14 +64,14 @@ pub enum LoginError {
 }
 
 pub(crate) async fn login(
-    client: &Client,
+    client: &Client<HttpsConnector<HttpConnector<GaiResolver>>, Body>,
     email: &str,
     password: &str,
     captcha: Option<&str>,
     hwid: &str,
 ) -> Result<Auth> {
     if email.is_empty() || password.is_empty() || hwid.is_empty() {
-        return Err(LoginError::MissingParameters)?;
+        return Err(Error::InvalidParameters);
     }
 
     let url = format!(
@@ -76,33 +79,16 @@ pub(crate) async fn login(
         LAUNCHER_ENDPOINT, LAUNCHER_VERSION
     );
     let password = format!("{:x}", md5::compute(&password));
-    let req = LoginRequest {
+
+    let body = LoginRequest {
         email,
         pass: &password,
         hw_code: hwid,
         captcha,
     };
 
-    debug!("Sending request to {}...", url);
-    let mut res = client
-        .post(url)
-        .header("User-Agent", format!("BSG Launcher {}", LAUNCHER_VERSION))
-        .send_json(&req)
-        .await?;
-
-    match res.status() {
-        StatusCode::OK => {
-            let body = res.body().await?;
-            let mut decode = ZlibDecoder::new(&body[..]);
-            let mut body = String::new();
-            decode.read_to_string(&mut body)?;
-            debug!("Response: {}", body);
-
-            let res = serde_json::from_slice::<LoginResponse>(body.as_bytes())?;
-            handle_error(res.error, res.data)
-        }
-        _ => Err(Error::Status(res.status())),
-    }
+    let res: LoginResponse = post_json(client, &url, &body).await?;
+    handle_error(res.error, res.data)
 }
 
 #[derive(Debug, Serialize)]
@@ -120,45 +106,28 @@ struct SecurityLoginResponse {
 }
 
 pub(crate) async fn activate_hardware(
-    client: &Client,
+    client: &Client<HttpsConnector<HttpConnector<GaiResolver>>, Body>,
     email: &str,
     code: &str,
     hwid: &str,
 ) -> Result<()> {
     if email.is_empty() || code.is_empty() || hwid.is_empty() {
-        return Err(LoginError::MissingParameters)?;
+        return Err(Error::InvalidParameters);
     }
 
     let url = format!(
         "{}/launcher/hardwareCode/activate?launcherVersion={}",
         LAUNCHER_ENDPOINT, LAUNCHER_VERSION
     );
-    let req = SecurityLoginRequest {
+
+    let body = SecurityLoginRequest {
         email,
         hw_code: hwid,
         activate_code: code,
     };
 
-    debug!("Sending request to {}...", url);
-    let mut res = client
-        .post(url)
-        .header("User-Agent", format!("BSG Launcher {}", LAUNCHER_VERSION))
-        .send_json(&req)
-        .await?;
-
-    match res.status() {
-        StatusCode::OK => {
-            let body = res.body().await?;
-            let mut decode = ZlibDecoder::new(&body[..]);
-            let mut body = String::new();
-            decode.read_to_string(&mut body)?;
-            debug!("Response: {}", body);
-
-            let res = serde_json::from_slice::<SecurityLoginResponse>(body.as_bytes())?;
-            handle_error(res.error, Some(()))
-        }
-        _ => Err(Error::Status(res.status())),
-    }
+    let res: SecurityLoginResponse = post_json(client, &url, &body).await?;
+    handle_error2(res.error)
 }
 
 #[derive(Debug, Serialize)]
@@ -192,7 +161,7 @@ pub struct Session {
 }
 
 pub(crate) async fn exchange_access_token(
-    client: &Client,
+    client: &Client<HttpsConnector<HttpConnector<GaiResolver>>, Body>,
     access_token: &str,
     hwid: &str,
 ) -> Result<Session> {
@@ -200,7 +169,8 @@ pub(crate) async fn exchange_access_token(
         "{}/launcher/game/start?launcherVersion={}&branch=live",
         PROD_ENDPOINT, LAUNCHER_VERSION
     );
-    let req = ExchangeRequest {
+
+    let body = ExchangeRequest {
         version: ExchangeVersion {
             major: GAME_VERSION,
             game: "live",
@@ -209,24 +179,54 @@ pub(crate) async fn exchange_access_token(
         hw_code: hwid,
     };
 
-    debug!("Sending request to {}...", url);
-    let mut res = client
-        .post(url)
+    debug!("Sending request to {} ({:?})", url, body);
+    let req = Request::builder()
+        .uri(url)
+        .method(Method::POST)
+        .header("Content-Type", "application/json")
         .header("User-Agent", format!("BSG Launcher {}", LAUNCHER_VERSION))
-        .bearer_auth(access_token)
-        .send_json(&req)
-        .await?;
+        .header("Authorization", format!("Bearer {}", access_token))
+        .body(Body::from(serde_json::to_string(&body)?))?;
+    let res = client.request(req).await?;
 
     match res.status() {
         StatusCode::OK => {
-            let body = res.body().await?;
-            let mut decode = ZlibDecoder::new(&body[..]);
+            let body = hyper::body::to_bytes(res.into_body()).await?;
+            let mut decode = ZlibDecoder::new(body.bytes());
             let mut body = String::new();
             decode.read_to_string(&mut body)?;
             debug!("Response: {}", body);
 
             let res = serde_json::from_slice::<ExchangeResponse>(body.as_bytes())?;
             handle_error(res.error, res.data)
+        }
+        _ => Err(Error::Status(res.status())),
+    }
+}
+
+async fn post_json<S: serde::Serialize + ?Sized + std::fmt::Debug, T: DeserializeOwned>(
+    client: &Client<HttpsConnector<HttpConnector<GaiResolver>>, Body>,
+    url: &str,
+    body: &S,
+) -> Result<T> {
+    debug!("Sending request to {} ({:?})", url, body);
+    let req = Request::builder()
+        .uri(url)
+        .method(Method::POST)
+        .header("Content-Type", "application/json")
+        .header("User-Agent", format!("BSG Launcher {}", LAUNCHER_VERSION))
+        .body(Body::from(serde_json::to_string(&body)?))?;
+    let res = client.request(req).await?;
+
+    match res.status() {
+        StatusCode::OK => {
+            let body = hyper::body::to_bytes(res.into_body()).await?;
+            let mut decode = ZlibDecoder::new(body.bytes());
+            let mut body = String::new();
+            decode.read_to_string(&mut body)?;
+            debug!("Response: {}", body);
+
+            Ok(serde_json::from_slice::<T>(body.as_bytes())?)
         }
         _ => Err(Error::Status(res.status())),
     }
