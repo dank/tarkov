@@ -216,6 +216,11 @@ impl Tarkov {
         body: &S,
     ) -> Result<T> {
         debug!("Sending request to {} ({:?})", url, body);
+        let body = match serde_json::to_string(&body) {
+            Ok(body) => Ok(Body::from(if body == "null" { "{}".to_string() } else { body })),
+            Err(e) => Err(e),
+        }?;
+
         let req = Request::builder()
             .uri(url)
             .method(Method::POST)
@@ -230,7 +235,7 @@ impl Tarkov {
             .header("App-Version", format!("EFT Client {}", GAME_VERSION))
             .header("X-Unity-Version", UNITY_VERSION)
             .header("Cookie", format!("PHPSESSID={}", self.session))
-            .body(Body::from(serde_json::to_string(&body)?))?;
+            .body(body)?;
         let res = self.client.request(req).await?;
 
         match res.status() {
