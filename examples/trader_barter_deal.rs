@@ -45,8 +45,11 @@ async fn main() -> Result<(), Error> {
         .collect::<Vec<BarterItem>>()[..2];
 
     // Trade item
-    t.trade_item(&trader.id, &painkiller.id, 1, barter_items)
-        .await?;
+    println!(
+        "{:#?}",
+        t.trade_item(&trader.id, &painkiller.id, 1, barter_items)
+            .await?
+    );
 
     Ok(())
 }

@@ -42,7 +42,7 @@ async fn main() -> Result<(), Error> {
 
     // Trade item
     println!(
-        "{:?}",
+        "{:#?}",
         t.trade_item(
             &trader.id,
             "5e064f5deb009468d90baef1",

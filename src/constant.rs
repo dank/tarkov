@@ -1,4 +1,4 @@
-use crate::{handle_error, ErrorResponse, Result, Tarkov, PROD_ENDPOINT, Error};
+use crate::{handle_error, Error, ErrorResponse, Result, Tarkov, PROD_ENDPOINT};
 
 use crate::bad_json::{deserialize_integer_to_option_string, StringOrInt};
 use crate::profile::Side;
@@ -1718,7 +1718,7 @@ impl Tarkov {
     /// Get the localization table. Pass a valid ISO 639-1 language code.
     pub async fn get_i18n(&self, language: &str) -> Result<Localization> {
         if language.is_empty() {
-            return Err(Error::InvalidParameters)
+            return Err(Error::InvalidParameters);
         }
 
         let url = format!("{}/client/locale/{}", PROD_ENDPOINT, language);

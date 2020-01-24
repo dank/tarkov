@@ -69,15 +69,18 @@ async fn main() -> Result<(), Error> {
         .unwrap();
 
     // Buy the item.
-    t.buy_item(
-        &offer.id,
-        1,
-        &[BarterItem {
-            id: rouble.id.to_owned(),
-            count: offer.requirements_cost as f64,
-        }],
-    )
-    .await?;
+    println!(
+        "{:#?}",
+        t.buy_item(
+            &offer.id,
+            1,
+            &[BarterItem {
+                id: rouble.id.to_owned(),
+                count: offer.requirements_cost as f64,
+            }],
+        )
+        .await?
+    );
 
     Ok(())
 }

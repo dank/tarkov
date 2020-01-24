@@ -66,7 +66,7 @@ pub enum LoginError {
     BadTwoFactorCode,
     /// Rate limited after too many bad login attempts.
     #[error(display = "too many login attempts")]
-    RateLimited
+    RateLimited,
 }
 
 pub(crate) async fn login(

@@ -32,7 +32,7 @@ async fn main() -> Result<(), Error> {
         .unwrap();
 
     // Trade item
-    println!("{:?}", t.sell_item(&trader.id, &painkiller.id, 1).await);
+    println!("{:#?}", t.sell_item(&trader.id, &painkiller.id, 1).await);
 
     Ok(())
 }
