@@ -2,9 +2,9 @@ use tarkov::inventory::BarterItem;
 use tarkov::profile::Side;
 use tarkov::{Error, Tarkov};
 
-#[actix_rt::main]
+#[tokio::main]
 async fn main() -> Result<(), Error> {
-    std::env::set_var("RUST_LOG", "tarkov=debug");
+    std::env::set_var("RUST_LOG", "tarkov=info");
     env_logger::init();
 
     let t = Tarkov::from_session("3e463058dd4884ab0c4a6035dc56066b");
@@ -32,8 +32,6 @@ async fn main() -> Result<(), Error> {
         .find(|i| i.id == "5e064f5deb009468d90baef7")
         .unwrap();
 
-    println!(">> {:?}", painkiller);
-
     // Get Rouble item ID from my inventory
     let rouble = &profile
         .inventory
@@ -44,10 +42,10 @@ async fn main() -> Result<(), Error> {
 
     // Trade item
     println!(
-        "{:?}",
+        "{:#?}",
         t.trade_item(
             &trader.id,
-            "5e064f5deb009468d90baef1",
+            "5e064f5deb009468d90baef7",
             1,
             &[BarterItem {
                 id: rouble.id.to_owned(),

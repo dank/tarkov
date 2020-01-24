@@ -1,9 +1,9 @@
 use tarkov::profile::Side;
 use tarkov::{Error, Tarkov};
 
-#[actix_rt::main]
+#[tokio::main]
 async fn main() -> Result<(), Error> {
-    std::env::set_var("RUST_LOG", "tarkov=debug");
+    std::env::set_var("RUST_LOG", "tarkov=info");
     env_logger::init();
 
     let t = Tarkov::from_session("da3902b29e442da4972f8ce499834ee7");
@@ -31,8 +31,8 @@ async fn main() -> Result<(), Error> {
         .find(|i| i.schema_id == "544fb37f4bdc2dee738b4567")
         .unwrap();
 
-    // Trade item
-    println!("{:?}", t.sell_item(&trader.id, &painkiller.id, 1).await);
+    // Sell item
+    println!("{:#?}", t.sell_item(&trader.id, &painkiller.id, 1).await);
 
     Ok(())
 }

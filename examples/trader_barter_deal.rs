@@ -2,7 +2,7 @@ use tarkov::inventory::BarterItem;
 use tarkov::profile::Side;
 use tarkov::{Error, Tarkov};
 
-#[actix_rt::main]
+#[tokio::main]
 async fn main() -> Result<(), Error> {
     std::env::set_var("RUST_LOG", "tarkov=info");
     env_logger::init();
@@ -45,8 +45,11 @@ async fn main() -> Result<(), Error> {
         .collect::<Vec<BarterItem>>()[..2];
 
     // Trade item
-    t.trade_item(&trader.id, &painkiller.id, 1, barter_items)
-        .await?;
+    println!(
+        "{:#?}",
+        t.trade_item(&trader.id, &painkiller.id, 1, barter_items)
+            .await?
+    );
 
     Ok(())
 }

@@ -2,7 +2,7 @@ use tarkov::profile::Side;
 use tarkov::ragfair::Requirement;
 use tarkov::{Error, Tarkov};
 
-#[actix_rt::main]
+#[tokio::main]
 async fn main() -> Result<(), Error> {
     std::env::set_var("RUST_LOG", "tarkov=info");
     env_logger::init();
@@ -29,15 +29,18 @@ async fn main() -> Result<(), Error> {
     let price = t.get_item_price(&painkiller.schema_id).await?;
 
     // Put the painkiller on market for average price
-    t.offer_item(
-        &[&painkiller.id],
-        &[Requirement {
-            schema_id: "5449016a4bdc2d6f028b456f".to_string(),
-            count: price.avg.round(),
-        }],
-        false,
-    )
-    .await?;
+    println!(
+        "{:#?}",
+        t.offer_item(
+            &[&painkiller.id],
+            &[Requirement {
+                schema_id: "5449016a4bdc2d6f028b456f".to_string(),
+                count: price.avg.round(),
+            }],
+            false,
+        )
+        .await?
+    );
 
     Ok(())
 }

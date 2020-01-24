@@ -16,10 +16,15 @@ use crate::hwid::generate_hwid;
 use crate::profile::ProfileError;
 use crate::ragfair::RagfairError;
 use crate::trading::TradingError;
-use actix_web::client::Client;
-use actix_web::http::StatusCode;
 use err_derive::Error;
 use flate2::read::ZlibDecoder;
+use hyper::body::Buf;
+use hyper::client::connect::dns::GaiResolver;
+use hyper::client::{Client, HttpConnector};
+use hyper::Body;
+use hyper::Request;
+use hyper::{Method, StatusCode};
+use hyper_tls::HttpsConnector;
 use log::debug;
 use serde::de::DeserializeOwned;
 use serde::Deserialize;
@@ -61,18 +66,21 @@ pub enum Error {
     /// A `std::io` error
     #[error(display = "io error: {}", _0)]
     Io(#[error(source)] std::io::Error),
-    /// An `actix-web` error sending request.
-    #[error(display = "send request error: {}", _0)]
-    SendRequestError(#[error(from)] actix_web::client::SendRequestError),
-    /// An `actix-web` error parsing response.
-    #[error(display = "payload error: {}", _0)]
-    PayloadError(#[error(from)] actix_web::client::PayloadError),
+    /// HTTP request error.
+    #[error(display = "http error: {}", _0)]
+    Http(#[error(source)] http::Error),
+    /// A `hyper` crate error.
+    #[error(display = "hyper error: {}", _0)]
+    Hyper(#[error(source)] hyper::Error),
     /// A `serde_json` error.
     #[error(display = "json error: {}", _0)]
     Json(#[error(source)] serde_json::error::Error),
     /// Generic non-success response from the API.
     #[error(display = "non-success response from api: {}", _0)]
     Status(StatusCode),
+    /// Invalid or missing parameters.
+    #[error(display = "invalid or missing login parameters")]
+    InvalidParameters,
 
     /// Unidentified error within the EFT API.
     #[error(display = "unidentified login error with error code: {}", _0)]
@@ -83,6 +91,9 @@ pub enum Error {
     /// EFT API is down for maintenance.
     #[error(display = "api is down for maintenance")]
     Maintenance,
+    /// Backend error. No other information is given.
+    #[error(display = "backend error")]
+    BackendError,
     /// Authentication API error.
     #[error(display = "login api error: {}", _0)]
     LoginError(#[error(source)] LoginError),
@@ -110,7 +121,7 @@ struct ErrorResponse {
 
 /// Client for the EFT API.
 pub struct Tarkov {
-    client: Client,
+    client: Client<HttpsConnector<HttpConnector<GaiResolver>>, Body>,
     /// Hardware ID
     pub hwid: String,
     /// Session cookie
@@ -120,7 +131,12 @@ pub struct Tarkov {
 impl Tarkov {
     /// Login with email and password.
     pub async fn login(email: &str, password: &str, hwid: &str) -> Result<Self> {
-        let client = Client::new();
+        if email.is_empty() || password.is_empty() || hwid.is_empty() {
+            return Err(Error::InvalidParameters);
+        }
+
+        let https = HttpsConnector::new();
+        let client = Client::builder().build::<_, Body>(https);
 
         let user = auth::login(&client, email, password, None, &hwid).await?;
         let session = auth::exchange_access_token(&client, &user.access_token, &hwid).await?;
@@ -139,7 +155,12 @@ impl Tarkov {
         captcha: &str,
         hwid: &str,
     ) -> Result<Self> {
-        let client = Client::new();
+        if email.is_empty() || password.is_empty() || captcha.is_empty() || hwid.is_empty() {
+            return Err(Error::InvalidParameters);
+        }
+
+        let https = HttpsConnector::new();
+        let client = Client::builder().build::<_, Body>(https);
 
         let user = auth::login(&client, email, password, Some(captcha), &hwid).await?;
         let session = auth::exchange_access_token(&client, &user.access_token, &hwid).await?;
@@ -158,7 +179,12 @@ impl Tarkov {
         code: &str,
         hwid: &str,
     ) -> Result<Self> {
-        let client = Client::new();
+        if email.is_empty() || password.is_empty() || code.is_empty() || hwid.is_empty() {
+            return Err(Error::InvalidParameters);
+        }
+
+        let https = HttpsConnector::new();
+        let client = Client::builder().build::<_, Body>(https);
 
         let _ = auth::activate_hardware(&client, email, code, &hwid).await?;
         let user = auth::login(&client, email, password, None, &hwid).await?;
@@ -173,7 +199,12 @@ impl Tarkov {
 
     /// Login with a Bearer token.
     pub async fn from_access_token(access_token: &str, hwid: &str) -> Result<Self> {
-        let client = Client::new();
+        if access_token.is_empty() || hwid.is_empty() {
+            return Err(Error::InvalidParameters);
+        }
+
+        let https = HttpsConnector::new();
+        let client = Client::builder().build::<_, Body>(https);
         let session = auth::exchange_access_token(&client, &access_token, &hwid).await?;
 
         Ok(Tarkov {
@@ -185,7 +216,8 @@ impl Tarkov {
 
     /// Login with a cookie session (AKA `PHPSESSID`).
     pub fn from_session(session: &str) -> Self {
-        let client = Client::new();
+        let https = HttpsConnector::new();
+        let client = Client::builder().build::<_, Body>(https);
 
         Tarkov {
             client,
@@ -194,15 +226,25 @@ impl Tarkov {
         }
     }
 
-    async fn post_json<S: serde::Serialize + ?Sized, T: DeserializeOwned>(
+    async fn post_json<S: serde::Serialize + ?Sized + std::fmt::Debug, T: DeserializeOwned>(
         &self,
         url: &str,
         body: &S,
     ) -> Result<T> {
-        debug!("Sending request to {}...", url);
-        let mut res = self
-            .client
-            .post(url)
+        debug!("Sending request to {} ({:?})", url, body);
+        let body = match serde_json::to_string(&body) {
+            Ok(body) => Ok(Body::from(if body == "null" {
+                "{}".to_string()
+            } else {
+                body
+            })),
+            Err(e) => Err(e),
+        }?;
+
+        let req = Request::builder()
+            .uri(url)
+            .method(Method::POST)
+            .header("Content-Type", "application/json")
             .header(
                 "User-Agent",
                 format!(
@@ -213,16 +255,13 @@ impl Tarkov {
             .header("App-Version", format!("EFT Client {}", GAME_VERSION))
             .header("X-Unity-Version", UNITY_VERSION)
             .header("Cookie", format!("PHPSESSID={}", self.session))
-            .send_json(&body)
-            .await?;
+            .body(body)?;
+        let res = self.client.request(req).await?;
 
         match res.status() {
             StatusCode::OK => {
-                let body = res
-                    .body()
-                    .limit(10_000_000) // 10 MB
-                    .await?;
-                let mut decode = ZlibDecoder::new(&body[..]);
+                let body = hyper::body::to_bytes(res.into_body()).await?;
+                let mut decode = ZlibDecoder::new(body.bytes());
                 let mut body = String::new();
                 decode.read_to_string(&mut body)?;
                 debug!("Response: {}", body);
@@ -244,12 +283,15 @@ pub(crate) fn handle_error2(error: ErrorResponse) -> Result<()> {
         0 => Ok(()),
         201 => Err(Error::NotAuthorized)?,
         205 => Err(ProfileError::InvalidUserID)?,
-        207 => Err(LoginError::MissingParameters)?,
+        206 => Err(LoginError::BadLogin)?,
+        207 => Err(Error::InvalidParameters)?,
         209 => Err(LoginError::TwoFactorRequired)?,
         211 => Err(LoginError::BadTwoFactorCode)?,
         214 => Err(LoginError::CaptchaRequired)?,
         228 => Err(RagfairError::InvalidBarterItems)?,
+        230 => Err(LoginError::RateLimited)?,
         263 => Err(Error::Maintenance)?,
+        1000 => Err(Error::BackendError)?,
         1501 => Err(RagfairError::MaxOfferCount)?,
         1502 => Err(RagfairError::InsufficientTaxFunds)?,
         1507 => Err(RagfairError::OfferNotFound)?,

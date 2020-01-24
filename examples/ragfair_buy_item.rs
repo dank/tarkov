@@ -4,7 +4,7 @@ use tarkov::market_filter::{Currency, MarketFilter, Owner};
 use tarkov::profile::Side;
 use tarkov::{Error, Tarkov};
 
-#[actix_rt::main]
+#[tokio::main]
 async fn main() -> Result<(), Error> {
     std::env::set_var("RUST_LOG", "tarkov=info");
     env_logger::init();
@@ -69,15 +69,18 @@ async fn main() -> Result<(), Error> {
         .unwrap();
 
     // Buy the item.
-    t.buy_item(
-        &offer.id,
-        1,
-        &[BarterItem {
-            id: rouble.id.to_owned(),
-            count: offer.requirements_cost as f64,
-        }],
-    )
-    .await?;
+    println!(
+        "{:#?}",
+        t.buy_item(
+            &offer.id,
+            1,
+            &[BarterItem {
+                id: rouble.id.to_owned(),
+                count: offer.requirements_cost as f64,
+            }],
+        )
+        .await?
+    );
 
     Ok(())
 }
