@@ -4,7 +4,7 @@ use tarkov::{Error, Tarkov};
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
-    std::env::set_var("RUST_LOG", "tarkov=debug");
+    std::env::set_var("RUST_LOG", "tarkov=info");
     env_logger::init();
 
     let t = Tarkov::from_session("3e463058dd4884ab0c4a6035dc56066b");
@@ -45,7 +45,7 @@ async fn main() -> Result<(), Error> {
         "{:#?}",
         t.trade_item(
             &trader.id,
-            "5e064f5deb009468d90baef1",
+            "5e064f5deb009468d90baef7",
             1,
             &[BarterItem {
                 id: rouble.id.to_owned(),

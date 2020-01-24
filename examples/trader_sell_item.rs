@@ -3,7 +3,7 @@ use tarkov::{Error, Tarkov};
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
-    std::env::set_var("RUST_LOG", "tarkov=debug");
+    std::env::set_var("RUST_LOG", "tarkov=info");
     env_logger::init();
 
     let t = Tarkov::from_session("da3902b29e442da4972f8ce499834ee7");
