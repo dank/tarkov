@@ -30,7 +30,7 @@ use serde::de::DeserializeOwned;
 use serde::Deserialize;
 use std::io::Read;
 
-const GAME_VERSION: &str = "0.12.2.5485";
+const GAME_VERSION: &str = "0.12.2.5633";
 const LAUNCHER_VERSION: &str = "0.9.2.970";
 const UNITY_VERSION: &str = "2018.4.13f1";
 
@@ -217,7 +217,11 @@ impl Tarkov {
     ) -> Result<T> {
         debug!("Sending request to {} ({:?})", url, body);
         let body = match serde_json::to_string(&body) {
-            Ok(body) => Ok(Body::from(if body == "null" { "{}".to_string() } else { body })),
+            Ok(body) => Ok(Body::from(if body == "null" {
+                "{}".to_string()
+            } else {
+                body
+            })),
             Err(e) => Err(e),
         }?;
 
