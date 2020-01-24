@@ -46,12 +46,15 @@ struct LoginResponse {
     #[serde(flatten)]
     error: ErrorResponse,
     #[serde(default)]
-    data: Option<Auth>,
+    data: serde_json::Value,
 }
 
 /// Login error
 #[derive(Debug, err_derive::Error)]
 pub enum LoginError {
+    /// Bad login, invalid email or password.
+    #[error(display = "bad login, wrong email or password.")]
+    BadLogin,
     /// 2FA code is required to continue authentication.
     #[error(display = "2fa is required")]
     TwoFactorRequired,
@@ -61,6 +64,9 @@ pub enum LoginError {
     /// Incorrect 2FA code.
     #[error(display = "incorrect 2FA code")]
     BadTwoFactorCode,
+    /// Rate limited after too many bad login attempts.
+    #[error(display = "too many login attempts")]
+    RateLimited
 }
 
 pub(crate) async fn login(
@@ -88,7 +94,9 @@ pub(crate) async fn login(
     };
 
     let res: LoginResponse = post_json(client, &url, &body).await?;
-    handle_error(res.error, res.data)
+    handle_error2(res.error)?;
+
+    Ok(Deserialize::deserialize(res.data)?)
 }
 
 #[derive(Debug, Serialize)]
