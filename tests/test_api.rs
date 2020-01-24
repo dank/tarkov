@@ -3,65 +3,69 @@ use tarkov::inventory::BarterItem;
 use tarkov::market_filter::{Currency, MarketFilter, Owner};
 use tarkov::profile::Side;
 use tarkov::ragfair::Requirement;
-use tarkov::Tarkov;
+use tarkov::{Result, Tarkov};
 
 const SESSION: &str = env!("TARKOV_SESSION");
 
 #[tokio::test]
-async fn test_profile() {
+async fn test_profile() -> Result<()> {
     let t = Tarkov::from_session(SESSION);
 
-    let profiles = t.get_profiles().await.unwrap();
+    let profiles = t.get_profiles().await?;
     let profile = profiles
         .into_iter()
         .find(|p| p.info.side != Side::Savage)
         .unwrap();
-    t.select_profile(&profile.id).await.unwrap();
+
+    t.select_profile(&profile.id).await?;
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn test_keep_alive() {
+async fn test_keep_alive() -> Result<()> {
     let t = Tarkov::from_session(SESSION);
 
-    t.keep_alive().await.unwrap();
+    t.keep_alive().await?;
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn test_constants() {
+async fn test_constants() -> Result<()> {
     let t = Tarkov::from_session(SESSION);
 
-    let _ = t.get_items().await.unwrap();
-    let _ = t.get_item_prices().await.unwrap();
-    let _ = t.get_locations().await.unwrap();
-    let _ = t.get_weather().await.unwrap();
-    let _ = t.get_i18n("en").await.unwrap();
+    let _ = t.get_items().await?;
+    let _ = t.get_item_prices().await?;
+    let _ = t.get_locations().await?;
+    let _ = t.get_weather().await?;
+    let _ = t.get_i18n("en").await?;
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn test_flea_market_getters() {
+async fn test_flea_market_getters() -> Result<()> {
     let t = Tarkov::from_session(SESSION);
 
-    let _ = t
-        .search_market(0, 15, MarketFilter::default())
-        .await
-        .unwrap();
+    let _ = t.search_market(0, 15, MarketFilter::default()).await?;
 
     // USD price
-    let _ = t.get_item_price("5696686a4bdc2da3298b456a");
+    let _ = t.get_item_price("5696686a4bdc2da3298b456a").await?;
+
+    Ok(())
 }
 
-// TODO
 #[tokio::test]
-async fn test_flea_market_buying() {
+async fn test_flea_market_buying() -> Result<()> {
     let t = Tarkov::from_session(SESSION);
 
-    let profiles = t.get_profiles().await.unwrap();
+    let profiles = t.get_profiles().await?;
     let profile = profiles
         .into_iter()
         .find(|p| p.info.side != Side::Savage)
         .unwrap();
 
-    // Search flea market.
     let offers = t
         .search_market(
             0,
@@ -75,8 +79,7 @@ async fn test_flea_market_buying() {
                 ..MarketFilter::default()
             },
         )
-        .await
-        .unwrap();
+        .await?;
 
     let current_time = SystemTime::now();
     let epoch_time = current_time.duration_since(UNIX_EPOCH).unwrap().as_secs();
@@ -102,15 +105,16 @@ async fn test_flea_market_buying() {
                 count: offer.requirements_cost as f64,
             }],
         )
-        .await
-        .unwrap();
+        .await?;
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn test_flea_market_selling() {
+async fn test_flea_market_selling() -> Result<()> {
     let t = Tarkov::from_session(SESSION);
 
-    let profiles = t.get_profiles().await.unwrap();
+    let profiles = t.get_profiles().await?;
     let profile = profiles
         .into_iter()
         .find(|p| p.info.side != Side::Savage)
@@ -132,32 +136,35 @@ async fn test_flea_market_selling() {
             }],
             false,
         )
-        .await
-        .unwrap();
+        .await?;
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn test_trader_getters() {
+async fn test_trader_getters() -> Result<()> {
     let t = Tarkov::from_session(SESSION);
 
-    let traders = t.get_traders().await.unwrap();
+    let traders = t.get_traders().await?;
     let trader = traders.get(0).unwrap();
-    let trader = t.get_trader(&trader.id).await.unwrap();
+    let trader = t.get_trader(&trader.id).await?;
 
-    let _ = t.get_trader_items(&trader.id).await.unwrap();
+    let _ = t.get_trader_items(&trader.id).await?;
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn test_trader_buying() {
+async fn test_trader_buying() -> Result<()> {
     let t = Tarkov::from_session(SESSION);
 
-    let profiles = t.get_profiles().await.unwrap();
+    let profiles = t.get_profiles().await?;
     let profile = profiles
         .into_iter()
         .find(|p| p.info.side != Side::Savage)
         .unwrap();
 
-    let traders = t.get_traders().await.unwrap();
+    let traders = t.get_traders().await?;
     let trader = traders
         .into_iter()
         .find(|t| t.nickname == "Терапевт")
@@ -183,21 +190,22 @@ async fn test_trader_buying() {
                 count: 3990.0, // Assume price is 3990₽.
             }],
         )
-        .await
-        .unwrap();
+        .await?;
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn test_trader_selling() {
+async fn test_trader_selling() -> Result<()> {
     let t = Tarkov::from_session(SESSION);
 
-    let profiles = t.get_profiles().await.unwrap();
+    let profiles = t.get_profiles().await?;
     let profile = profiles
         .into_iter()
         .find(|p| p.info.side != Side::Savage)
         .unwrap();
 
-    let traders = t.get_traders().await.unwrap();
+    let traders = t.get_traders().await?;
     let trader = traders
         .into_iter()
         .find(|t| t.nickname == "Терапевт")
@@ -210,5 +218,7 @@ async fn test_trader_selling() {
         .find(|i| i.schema_id == "544fb37f4bdc2dee738b4567")
         .unwrap();
 
-    let _ = t.sell_item(&trader.id, &painkiller.id, 1).await.unwrap();
+    let _ = t.sell_item(&trader.id, &painkiller.id, 1).await?;
+
+    Ok(())
 }
