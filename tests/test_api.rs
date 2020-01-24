@@ -72,7 +72,7 @@ async fn test_flea_market_buying() -> Result<()> {
             15,
             MarketFilter {
                 max_price: Some(2000),
-                handbook_id: Some("5b47574386f77428ca22b2ee"),
+                handbook_id: Some("5b47574386f77428ca22b33e"),
                 owner_type: Owner::Player,
                 hide_bartering_offers: true,
                 currency: Currency::Rouble,
@@ -183,7 +183,7 @@ async fn test_trader_buying() -> Result<()> {
     let _ = t
         .trade_item(
             &trader.id,
-            "5e064f5deb009468d90baef1", // ID might change.
+            "5e064f5deb009468d90baef7", // ID might change.
             1,
             &[BarterItem {
                 id: rouble.id.to_owned(),
