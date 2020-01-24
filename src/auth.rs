@@ -76,10 +76,6 @@ pub(crate) async fn login(
     captcha: Option<&str>,
     hwid: &str,
 ) -> Result<Auth> {
-    if email.is_empty() || password.is_empty() || hwid.is_empty() {
-        return Err(Error::InvalidParameters);
-    }
-
     let url = format!(
         "{}/launcher/login?launcherVersion={}&branch=live",
         LAUNCHER_ENDPOINT, LAUNCHER_VERSION
@@ -119,10 +115,6 @@ pub(crate) async fn activate_hardware(
     code: &str,
     hwid: &str,
 ) -> Result<()> {
-    if email.is_empty() || code.is_empty() || hwid.is_empty() {
-        return Err(Error::InvalidParameters);
-    }
-
     let url = format!(
         "{}/launcher/hardwareCode/activate?launcherVersion={}",
         LAUNCHER_ENDPOINT, LAUNCHER_VERSION

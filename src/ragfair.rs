@@ -233,6 +233,10 @@ impl Tarkov {
         limit: u64,
         filter: MarketFilter<'_>,
     ) -> Result<SearchResult> {
+        if limit == 0 {
+            return Err(Error::InvalidParameters);
+        }
+
         let body = SearchRequest {
             page,
             limit,
@@ -264,6 +268,10 @@ impl Tarkov {
 
     /// Get the item price data from the flea market.
     pub async fn get_item_price(&self, schema_id: &str) -> Result<Price> {
+        if schema_id.is_empty() {
+            return Err(Error::InvalidParameters);
+        }
+
         let url = format!("{}/client/ragfair/itemMarketPrice", RAGFAIR_ENDPOINT);
         let body = GetPriceRequest {
             template_id: schema_id,
@@ -280,6 +288,10 @@ impl Tarkov {
         quantity: u64,
         barter_items: &[BarterItem],
     ) -> Result<InventoryUpdate> {
+        if offer_id.is_empty() || quantity == 0 || barter_items.is_empty() {
+            return Err(Error::InvalidParameters);
+        }
+
         let url = format!("{}/client/game/profile/items/moving", PROD_ENDPOINT);
         let body = &MoveItemRequest {
             data: &[BuyItemRequest {
@@ -316,6 +328,10 @@ impl Tarkov {
         requirements: &[Requirement],
         sell_all: bool,
     ) -> Result<InventoryUpdate> {
+        if items.is_empty() || requirements.is_empty() {
+            return Err(Error::InvalidParameters);
+        }
+
         let url = format!("{}/client/game/profile/items/moving", PROD_ENDPOINT);
         let body = &MoveItemRequest {
             data: &[SellItemRequest {

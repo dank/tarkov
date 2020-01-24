@@ -262,6 +262,10 @@ impl Tarkov {
 
     /// Get a trader by ID.
     pub async fn get_trader(&self, trader_id: &str) -> Result<Trader> {
+        if trader_id.is_empty() {
+            return Err(Error::InvalidParameters);
+        }
+
         let url = format!(
             "{}/client/trading/api/getTrader/{}",
             TRADING_ENDPOINT, trader_id
@@ -296,6 +300,10 @@ impl Tarkov {
 
     /// Get a list of items for sale by trader ID.
     pub async fn get_trader_items(&self, trader_id: &str) -> Result<Vec<TraderItem>> {
+        if trader_id.is_empty() {
+            return Err(Error::InvalidParameters);
+        }
+
         let mut result: Vec<TraderItem> = Vec::new();
 
         let items = self.get_trader_items_raw(trader_id).await?;
@@ -347,6 +355,10 @@ impl Tarkov {
         quantity: u64,
         barter_items: &[BarterItem],
     ) -> Result<InventoryUpdate> {
+        if trader_id.is_empty() || item_id.is_empty() || quantity == 0 || barter_items.is_empty() {
+            return Err(Error::InvalidParameters);
+        }
+
         let url = format!("{}/client/game/profile/items/moving", PROD_ENDPOINT);
         let body = MoveItemRequest {
             data: &[TradeItemRequest {
@@ -381,6 +393,10 @@ impl Tarkov {
         item_id: &str,
         quantity: u64,
     ) -> Result<InventoryUpdate> {
+        if trader_id.is_empty() || item_id.is_empty() || quantity == 0 {
+            return Err(Error::InvalidParameters);
+        }
+
         let url = format!("{}/client/game/profile/items/moving", PROD_ENDPOINT);
         let body = MoveItemRequest {
             data: &[SellItemRequest {

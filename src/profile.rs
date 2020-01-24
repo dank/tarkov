@@ -1,4 +1,4 @@
-use crate::{handle_error, ErrorResponse, Result, Tarkov, PROD_ENDPOINT};
+use crate::{handle_error, ErrorResponse, Result, Tarkov, PROD_ENDPOINT, Error};
 
 use crate::bad_json::deserialize_integer_to_string;
 use crate::inventory::Item;
@@ -543,6 +543,10 @@ impl Tarkov {
 
     /// Select a profile by user ID.
     pub async fn select_profile(&self, user_id: &str) -> Result<()> {
+        if user_id.is_empty() {
+            return Err(Error::InvalidParameters);
+        }
+
         let url = format!("{}/client/game/profile/select", PROD_ENDPOINT);
         let res: SelectResponse = self
             .post_json(&url, &SelectRequest { uid: user_id })

@@ -131,6 +131,10 @@ pub struct Tarkov {
 impl Tarkov {
     /// Login with email and password.
     pub async fn login(email: &str, password: &str, hwid: &str) -> Result<Self> {
+        if email.is_empty() || password.is_empty() || hwid.is_empty() {
+            return Err(Error::InvalidParameters);
+        }
+
         let https = HttpsConnector::new();
         let client = Client::builder().build::<_, Body>(https);
 
@@ -151,6 +155,10 @@ impl Tarkov {
         captcha: &str,
         hwid: &str,
     ) -> Result<Self> {
+        if email.is_empty() || password.is_empty() || captcha.is_empty() || hwid.is_empty() {
+            return Err(Error::InvalidParameters);
+        }
+
         let https = HttpsConnector::new();
         let client = Client::builder().build::<_, Body>(https);
 
@@ -171,6 +179,10 @@ impl Tarkov {
         code: &str,
         hwid: &str,
     ) -> Result<Self> {
+        if email.is_empty() || password.is_empty() || code.is_empty() || hwid.is_empty() {
+            return Err(Error::InvalidParameters);
+        }
+
         let https = HttpsConnector::new();
         let client = Client::builder().build::<_, Body>(https);
 
@@ -187,6 +199,10 @@ impl Tarkov {
 
     /// Login with a Bearer token.
     pub async fn from_access_token(access_token: &str, hwid: &str) -> Result<Self> {
+        if access_token.is_empty() || hwid.is_empty() {
+            return Err(Error::InvalidParameters);
+        }
+
         let https = HttpsConnector::new();
         let client = Client::builder().build::<_, Body>(https);
         let session = auth::exchange_access_token(&client, &access_token, &hwid).await?;
