@@ -32,8 +32,6 @@ async fn main() -> Result<(), Error> {
         .find(|i| i.id == "5e064f5deb009468d90baef7")
         .unwrap();
 
-    println!(">> {:?}", painkiller);
-
     // Get Rouble item ID from my inventory
     let rouble = &profile
         .inventory
