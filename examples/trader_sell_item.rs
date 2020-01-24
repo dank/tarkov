@@ -31,7 +31,7 @@ async fn main() -> Result<(), Error> {
         .find(|i| i.schema_id == "544fb37f4bdc2dee738b4567")
         .unwrap();
 
-    // Trade item
+    // Sell item
     println!("{:#?}", t.sell_item(&trader.id, &painkiller.id, 1).await);
 
     Ok(())
