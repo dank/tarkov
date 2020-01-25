@@ -87,3 +87,9 @@ impl<'de> Deserialize<'de> for StringOrInt {
         deserializer.deserialize_any(StringOrIntVisitor)
     }
 }
+
+impl StringOrInt {
+    pub fn as_ref(&self) -> &str {
+        self.0.as_str()
+    }
+}
