@@ -27,3 +27,8 @@ pub fn generate_hwid() -> String {
         short_md5
     )
 }
+
+#[test]
+fn test_generate_hwid() {
+    assert_eq!(generate_hwid().len(), 258)
+}
