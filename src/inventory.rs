@@ -101,7 +101,7 @@ pub struct Upd {
 #[serde(rename_all = "PascalCase")]
 pub struct UpdMedkit {
     /// Health
-    pub hp_resource: u64,
+    pub hp_resource: f64,
 }
 
 /// Repairable item info
