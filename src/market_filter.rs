@@ -1,7 +1,7 @@
 use serde_repr::Serialize_repr;
 
 /// Search filter for the flea market.
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct MarketFilter<'a> {
     /// Sort type.
     pub sort_type: SortBy,
