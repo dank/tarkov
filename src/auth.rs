@@ -185,7 +185,7 @@ pub(crate) async fn exchange_access_token(
         .method(Method::POST)
         .header("Content-Type", "application/json")
         .header("User-Agent", format!("BSG Launcher {}", LAUNCHER_VERSION))
-        .header("Authorization", format!("Bearer {}", access_token))
+        .header("Authorization", access_token)
         .body(Body::from(serde_json::to_string(&body)?))?;
     let res = client.request(req).await?;
 
