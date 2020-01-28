@@ -284,7 +284,7 @@ pub struct CommonSkill {
     /// Skill progress
     pub progress: f64,
     /// Points earned during session
-    pub points_earned_during_session: f64,
+    pub points_earned_during_session: Option<f64>,
     /// ?
     pub last_access: i64,
 }
