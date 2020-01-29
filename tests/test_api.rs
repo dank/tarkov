@@ -1,3 +1,4 @@
+use std::env;
 use std::time::{SystemTime, UNIX_EPOCH};
 use tarkov::inventory::BarterItem;
 use tarkov::market_filter::{Currency, MarketFilter, Owner};
@@ -5,11 +6,10 @@ use tarkov::profile::Side;
 use tarkov::ragfair::Requirement;
 use tarkov::{Result, Tarkov};
 
-const SESSION: &str = env!("TARKOV_SESSION");
-
 #[tokio::test]
 async fn test_profile() -> Result<()> {
-    let t = Tarkov::from_session(SESSION);
+    let session = env::var("TARKOV_SESSION").unwrap();
+    let t = Tarkov::from_session(&session);
 
     let profiles = t.get_profiles().await?;
     let profile = profiles
@@ -24,7 +24,8 @@ async fn test_profile() -> Result<()> {
 
 #[tokio::test]
 async fn test_keep_alive() -> Result<()> {
-    let t = Tarkov::from_session(SESSION);
+    let session = env::var("TARKOV_SESSION").unwrap();
+    let t = Tarkov::from_session(&session);
 
     t.keep_alive().await?;
 
@@ -33,7 +34,8 @@ async fn test_keep_alive() -> Result<()> {
 
 #[tokio::test]
 async fn test_constants() -> Result<()> {
-    let t = Tarkov::from_session(SESSION);
+    let session = env::var("TARKOV_SESSION").unwrap();
+    let t = Tarkov::from_session(&session);
 
     let _ = t.get_items().await?;
     let _ = t.get_item_prices().await?;
@@ -46,7 +48,8 @@ async fn test_constants() -> Result<()> {
 
 #[tokio::test]
 async fn test_flea_market_getters() -> Result<()> {
-    let t = Tarkov::from_session(SESSION);
+    let session = env::var("TARKOV_SESSION").unwrap();
+    let t = Tarkov::from_session(&session);
 
     let _ = t.search_market(0, 15, MarketFilter::default()).await?;
 
@@ -58,7 +61,8 @@ async fn test_flea_market_getters() -> Result<()> {
 
 #[tokio::test]
 async fn test_flea_market_buying() -> Result<()> {
-    let t = Tarkov::from_session(SESSION);
+    let session = env::var("TARKOV_SESSION").unwrap();
+    let t = Tarkov::from_session(&session);
 
     let profiles = t.get_profiles().await?;
     let profile = profiles
@@ -112,7 +116,8 @@ async fn test_flea_market_buying() -> Result<()> {
 
 #[tokio::test]
 async fn test_flea_market_selling() -> Result<()> {
-    let t = Tarkov::from_session(SESSION);
+    let session = env::var("TARKOV_SESSION").unwrap();
+    let t = Tarkov::from_session(&session);
 
     let profiles = t.get_profiles().await?;
     let profile = profiles
@@ -143,7 +148,8 @@ async fn test_flea_market_selling() -> Result<()> {
 
 #[tokio::test]
 async fn test_trader_getters() -> Result<()> {
-    let t = Tarkov::from_session(SESSION);
+    let session = env::var("TARKOV_SESSION").unwrap();
+    let t = Tarkov::from_session(&session);
 
     let traders = t.get_traders().await?;
     let trader = traders.get(0).unwrap();
@@ -156,7 +162,8 @@ async fn test_trader_getters() -> Result<()> {
 
 #[tokio::test]
 async fn test_trader_buying() -> Result<()> {
-    let t = Tarkov::from_session(SESSION);
+    let session = env::var("TARKOV_SESSION").unwrap();
+    let t = Tarkov::from_session(&session);
 
     let profiles = t.get_profiles().await?;
     let profile = profiles
@@ -197,7 +204,8 @@ async fn test_trader_buying() -> Result<()> {
 
 #[tokio::test]
 async fn test_trader_selling() -> Result<()> {
-    let t = Tarkov::from_session(SESSION);
+    let session = env::var("TARKOV_SESSION").unwrap();
+    let t = Tarkov::from_session(&session);
 
     let profiles = t.get_profiles().await?;
     let profile = profiles
