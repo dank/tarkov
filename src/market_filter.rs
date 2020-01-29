@@ -38,7 +38,7 @@ pub struct MarketFilter<'a> {
 }
 
 /// Sort by categories.
-#[derive(Serialize_repr, PartialEq, Debug)]
+#[derive(Serialize_repr, Debug, Clone, PartialEq)]
 #[repr(u8)]
 pub enum SortBy {
     /// Sort by ID
@@ -54,7 +54,7 @@ pub enum SortBy {
 }
 
 /// Sort by direction.
-#[derive(Serialize_repr, PartialEq, Debug)]
+#[derive(Serialize_repr, Debug, Clone, PartialEq)]
 #[repr(u8)]
 pub enum SortDirection {
     /// Sort ascending (default)
@@ -64,7 +64,7 @@ pub enum SortDirection {
 }
 
 /// Currency types.
-#[derive(Serialize_repr, PartialEq, Debug)]
+#[derive(Serialize_repr, Debug, Clone, PartialEq)]
 #[repr(u8)]
 pub enum Currency {
     /// Any currency (default)
@@ -78,7 +78,7 @@ pub enum Currency {
 }
 
 /// Item listed by.
-#[derive(Serialize_repr, PartialEq, Debug)]
+#[derive(Serialize_repr, Debug, Clone, PartialEq)]
 #[repr(u8)]
 pub enum Owner {
     /// Any owner (default)
