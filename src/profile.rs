@@ -310,7 +310,7 @@ pub struct Stats {
     /// Session experience multiplier?
     pub session_experience_mult: f64,
     /// Experience bonus multiplier?
-    pub experience_bonus_mult: u64,
+    pub experience_bonus_mult: f64,
     /// Total session experience
     pub total_session_experience: u64,
     /// Last session timestamp
