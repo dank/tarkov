@@ -701,7 +701,7 @@ dependencies = [
 
 [[package]]
 name = "tarkov"
-version = "0.1.0-alpha.4"
+version = "0.1.0"
 dependencies = [
  "env_logger 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "err-derive 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
