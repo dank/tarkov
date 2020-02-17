@@ -226,11 +226,11 @@ impl Tarkov {
         }
     }
 
-    async fn post_json<S: serde::Serialize + ?Sized + std::fmt::Debug, T: DeserializeOwned>(
-        &self,
-        url: &str,
-        body: &S,
-    ) -> Result<T> {
+    async fn post_json<S, T>(&self, url: &str, body: &S) -> Result<T>
+    where
+        S: serde::Serialize + ?Sized + std::fmt::Debug,
+        T: DeserializeOwned,
+    {
         debug!("Sending request to {} ({:?})", url, body);
         let body = match serde_json::to_string(&body) {
             Ok(body) => Ok(Body::from(if body == "null" {
