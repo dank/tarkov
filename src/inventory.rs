@@ -17,7 +17,7 @@ pub(crate) struct RagfairResponseData {
 }
 
 /// Changes to the player's inventory after interacting with traders or the flea market.
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct InventoryUpdate {
     /// New items in inventory.
@@ -29,7 +29,7 @@ pub struct InventoryUpdate {
 }
 
 /// Item deleted from inventory.
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct DeletedItem {
     /// Item ID
@@ -38,7 +38,7 @@ pub struct DeletedItem {
 }
 
 /// In-game item
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Item {
     /// Item ID
@@ -59,7 +59,7 @@ pub struct Item {
 }
 
 /// Item location
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Location {
     /// Inventory slot x
@@ -73,7 +73,7 @@ pub struct Location {
 }
 
 /// Item options
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Upd {
     /// Item stack count
@@ -97,7 +97,7 @@ pub struct Upd {
 }
 
 /// Medkit item info
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct UpdMedkit {
     /// Health
@@ -105,7 +105,7 @@ pub struct UpdMedkit {
 }
 
 /// Repairable item info
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct UpdRepairable {
     /// Maximum durability
@@ -115,7 +115,7 @@ pub struct UpdRepairable {
 }
 
 /// Light attachment info
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct UpdLight {
     /// Light is active
@@ -125,7 +125,7 @@ pub struct UpdLight {
 }
 
 /// Key info
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct UpdKey {
     /// Number of usage
@@ -133,7 +133,7 @@ pub struct UpdKey {
 }
 
 /// Inventory item for trading.
-#[derive(Debug, Serialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct BarterItem {
     /// Item ID from player's inventory.
     pub id: String,

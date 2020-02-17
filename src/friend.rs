@@ -1,7 +1,7 @@
 use crate::{handle_error, ErrorResponse, Result, Tarkov, PROD_ENDPOINT};
 
 use crate::profile::Side;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize)]
 struct FriendResponse {
@@ -11,7 +11,7 @@ struct FriendResponse {
 }
 
 /// Friend list
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Friends {
     /// Friends
@@ -23,7 +23,7 @@ pub struct Friends {
 }
 
 /// Friend
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Friend {
     /// Friend ID
@@ -34,7 +34,7 @@ pub struct Friend {
 }
 
 /// Friend info
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Info {
     /// Friend nickname

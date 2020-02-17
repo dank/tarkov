@@ -27,7 +27,7 @@ use hyper::{Method, StatusCode};
 use hyper_tls::HttpsConnector;
 use log::debug;
 use serde::de::DeserializeOwned;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::io::Read;
 
 const GAME_VERSION: &str = "0.12.3.5834";
@@ -111,7 +111,7 @@ pub enum Error {
 /// `Result` alias type.
 pub type Result<T> = std::result::Result<T, Error>;
 
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 struct ErrorResponse {
     #[serde(rename = "err")]
     code: u64,

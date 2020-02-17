@@ -20,7 +20,7 @@ struct ItemsResponse {
 }
 
 /// Localization item
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct Item {
     /// Item ID
     #[serde(rename = "_id")]
@@ -43,7 +43,7 @@ pub struct Item {
 }
 
 /// All item properties.
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Props {
     /// Full item name
@@ -757,7 +757,7 @@ pub struct Props {
 }
 
 /// Item prefab
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct Prefab {
     /// Prefab path
     pub path: String,
@@ -766,7 +766,7 @@ pub struct Prefab {
 }
 
 /// Item grid
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct Grid {
     /// Grid ID
     #[serde(rename = "_id")]
@@ -786,7 +786,7 @@ pub struct Grid {
 }
 
 /// Item grid properties
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct GridProps {
     /// Grid filters
@@ -805,7 +805,7 @@ pub struct GridProps {
 }
 
 /// Item grid filter
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct GridFilter {
     /// Grid filters
@@ -815,7 +815,7 @@ pub struct GridFilter {
 }
 
 /// Item slot
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct Slot {
     /// Slot ID
     #[serde(rename = "_id")]
@@ -841,7 +841,7 @@ pub struct Slot {
 }
 
 /// Item slot properties
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct SlotProps {
     /// ?
@@ -853,7 +853,7 @@ pub struct SlotProps {
 }
 
 /// Item slot filter
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct SlotFilter {
     /// ?
@@ -865,7 +865,7 @@ pub struct SlotFilter {
 }
 
 /// Item cartridge/ammo
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct Cartridge {
     /// Cartridge ID
     #[serde(rename = "_id")]
@@ -888,14 +888,14 @@ pub struct Cartridge {
 }
 
 /// Cartridge properties
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct CartridgeProps {
     /// Cartridge filters
     pub filters: Vec<CartridgeFilter>,
 }
 
 /// Cartridge filter
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct CartridgeFilter {
     /// Cartridge filter filters?
@@ -903,7 +903,7 @@ pub struct CartridgeFilter {
 }
 
 /// Item armor zone
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub enum ArmorZone {
     /// Head
     Head,
@@ -922,7 +922,7 @@ pub enum ArmorZone {
 }
 
 /// Item fire mode
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum FireMode {
     /// Single fire
@@ -934,7 +934,7 @@ pub enum FireMode {
 }
 
 /// Item chamber
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct Chamber {
     /// Chamber ID
     #[serde(rename = "_id")]
@@ -960,14 +960,14 @@ pub struct Chamber {
 }
 
 /// Chamber properties
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct ChamberProps {
     /// Chamber filters
     pub filters: Vec<ChamberFilter>,
 }
 
 /// Chamber filter
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct ChamberFilter {
     /// Chamber filter filters?
@@ -975,7 +975,7 @@ pub struct ChamberFilter {
 }
 
 /// RGB color
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct Color {
     /// Red
     pub r: u8,
@@ -988,7 +988,7 @@ pub struct Color {
 }
 
 /// 3D Coordinate
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct Coordinate {
     /// x plane
     pub x: f64,
@@ -999,7 +999,7 @@ pub struct Coordinate {
 }
 
 /// Head parts
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub enum HeadSegment {
     /// Top of head
     Top,
@@ -1014,7 +1014,7 @@ pub enum HeadSegment {
 }
 
 /// Health effects on player
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct HealthEffects {
     /// Body effects
     pub common: Health,
@@ -1039,7 +1039,7 @@ pub struct HealthEffects {
 }
 
 /// Health effect
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct Health {
     /// Effect value
     pub value: i64,
@@ -1052,7 +1052,7 @@ pub struct Health {
 }
 
 /// Damage effects on player
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct DamageEffects {
     /// Bloodloss effect
@@ -1071,7 +1071,7 @@ pub struct DamageEffects {
 }
 
 /// Damage effect
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Damage {
     /// ?
@@ -1091,7 +1091,7 @@ pub struct Damage {
 }
 
 /// Speed effects on player
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct SpeedEffects {
     /// Mobility effect
@@ -1107,7 +1107,7 @@ pub struct SpeedEffects {
 }
 
 /// Speed effect
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct Speed {
     /// Effect value
     pub value: i64,
@@ -1120,7 +1120,7 @@ pub struct Speed {
 }
 
 /// ?
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct StackSlot {
     /// Stack slot ID
     #[serde(rename = "_id")]
@@ -1143,14 +1143,14 @@ pub struct StackSlot {
 }
 
 /// Stack slot properties
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct StackSlotProps {
     /// Stack slot filters
     pub filters: Vec<StackSlotFilter>,
 }
 
 /// Stack slot filter
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct StackSlotFilter {
     /// Stack slot filter filters?
@@ -1165,7 +1165,7 @@ struct LocationsResponse {
 }
 
 /// All in-game locations
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct Locations {
     /// Locations
     pub locations: HashMap<String, Location>,
@@ -1174,7 +1174,7 @@ pub struct Locations {
 }
 
 /// In-game location
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Location {
     /// Location is enabled
@@ -1328,7 +1328,7 @@ pub struct Location {
 }
 
 /// Location scene prefab
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct Scene {
     /// Scene path
     pub path: String,
@@ -1337,7 +1337,7 @@ pub struct Scene {
 }
 
 /// Location path?
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Path {
     /// ?
@@ -1347,7 +1347,7 @@ pub struct Path {
 }
 
 /// Location preview
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct Preview {
     /// Location preview path
     pub path: String,
@@ -1356,7 +1356,7 @@ pub struct Preview {
 }
 
 /// Bot wave
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Wave {
     /// Number of bots in wave?
@@ -1388,7 +1388,7 @@ pub struct Wave {
 }
 
 /// ?
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct MinMaxBot {
     /// ?
     pub min: u64,
@@ -1400,7 +1400,7 @@ pub struct MinMaxBot {
 }
 
 /// Location bot stat modifier
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct BotLocationModifier {
     /// Bot accuracy speed modifier
@@ -1417,7 +1417,7 @@ pub struct BotLocationModifier {
 }
 
 /// Extraction point
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Exit {
     /// Extraction name
@@ -1449,7 +1449,7 @@ pub struct Exit {
 }
 
 /// Boss bots
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct BossSpawn {
     /// Boss name
@@ -1481,7 +1481,7 @@ pub struct BossSpawn {
 }
 
 /// Boss difficulty
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum BotDifficulty {
     /// Easy difficulty
@@ -1495,7 +1495,7 @@ pub enum BotDifficulty {
 }
 
 /// Location banner
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct Banner {
     /// Banner ID
     pub id: String,
@@ -1504,7 +1504,7 @@ pub struct Banner {
 }
 
 /// Location banner picture
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct BannerPic {
     /// Picture path
     pub path: String,
@@ -1528,7 +1528,7 @@ struct WeatherData {
 }
 
 /// Weather
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct Weather {
     /// Timestamp
     pub timestamp: u64,
@@ -1565,7 +1565,7 @@ struct LocalizationResponse {
 }
 
 /// EFT localization table
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct Localization {
     /// Localization table for UI elements.
     pub interface: HashMap<String, String>,
@@ -1597,7 +1597,7 @@ pub struct Localization {
 }
 
 /// Quest
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Quest {
     /// Quest name
@@ -1619,7 +1619,7 @@ pub struct Quest {
 }
 
 /// ?
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Preset {
     /// Preset name
@@ -1627,7 +1627,7 @@ pub struct Preset {
 }
 
 /// Item localization
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct ItemLocalization {
     /// Item name
@@ -1639,7 +1639,7 @@ pub struct ItemLocalization {
 }
 
 /// Location localization
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct LocationLocalization {
     /// Location name
@@ -1649,7 +1649,7 @@ pub struct LocationLocalization {
 }
 
 /// Banner localization
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct BannerLocalization {
     /// Banner name
@@ -1659,7 +1659,7 @@ pub struct BannerLocalization {
 }
 
 /// Trader localization
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct TraderLocalization {
     /// Trader full name

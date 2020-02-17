@@ -2,7 +2,7 @@
 
 use crate::inventory::Location;
 use serde::de::{Error, Visitor};
-use serde::{Deserialize, Deserializer};
+use serde::{Deserialize, Deserializer, Serialize};
 use serde_json::Value;
 use std::fmt;
 
@@ -45,7 +45,7 @@ where
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct StringOrInt(String);
 
 impl<'de> Deserialize<'de> for StringOrInt {

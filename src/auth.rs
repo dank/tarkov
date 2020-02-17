@@ -153,7 +153,7 @@ struct ExchangeResponse {
 }
 
 /// Authenticated user session.
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct Session {
     queued: bool,
     /// Session cookie.

@@ -20,7 +20,7 @@ pub enum TradingError {
 }
 
 /// Trader info
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct Trader {
     /// Trader ID
     #[serde(rename = "_id")]
@@ -71,7 +71,7 @@ pub struct Trader {
 }
 
 /// Trader's repair stats
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct Repair {
     /// Repair is available
     pub availability: bool,
@@ -90,7 +90,7 @@ pub struct Repair {
 }
 
 /// Trader currency
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub enum Currency {
     /// Rouble
     #[serde(rename = "RUB")]
@@ -104,7 +104,7 @@ pub enum Currency {
 }
 
 /// Trader's insurance offer
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct Insurance {
     /// Insurance is available
     pub availability: bool,
@@ -121,7 +121,7 @@ pub struct Insurance {
 }
 
 /// Trader loyalty
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Loyalty {
     /// Current loyalty level
@@ -135,7 +135,7 @@ pub struct Loyalty {
 }
 
 /// Trader loyalty level
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct LoyaltyLevel {
     /// Minimum level
@@ -182,7 +182,7 @@ struct TraderPricesResponse {
 }
 
 /// Trader item price
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct Price {
     /// Item localization schema ID
     #[serde(rename = "_tpl")]
@@ -192,7 +192,7 @@ pub struct Price {
 }
 
 /// Item for trade
-#[derive(Debug, Clone, PartialEq)]
+#[derive()]
 pub struct TraderItem {
     /// Item ID
     pub id: String,

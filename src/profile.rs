@@ -14,7 +14,7 @@ struct ProfileResponse {
 }
 
 /// Profile
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Profile {
     /// Profile ID
@@ -65,7 +65,7 @@ pub struct Profile {
 }
 
 /// Profile info
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Info {
     /// Profile nickname
@@ -109,7 +109,7 @@ pub struct Info {
 }
 
 /// Faction, team or side.
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub enum Side {
     /// BEAR faction
     Bear,
@@ -120,7 +120,7 @@ pub enum Side {
 }
 
 /// Profile settings
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Settings {
     /// ?
@@ -132,7 +132,7 @@ pub struct Settings {
 }
 
 /// Player customization
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Customization {
     /// Head customization
@@ -146,7 +146,7 @@ pub struct Customization {
 }
 
 /// Player health
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Health {
     /// Hydration level
@@ -160,7 +160,7 @@ pub struct Health {
 }
 
 /// Health level
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct HealthLevel {
     /// Current health
@@ -170,7 +170,7 @@ pub struct HealthLevel {
 }
 
 /// Body health
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct BodyParts {
     /// Head health
@@ -190,7 +190,7 @@ pub struct BodyParts {
 }
 
 /// Head health
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Head {
     /// Health
@@ -198,7 +198,7 @@ pub struct Head {
 }
 
 /// Chest health
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Chest {
     /// Health
@@ -206,7 +206,7 @@ pub struct Chest {
 }
 
 /// Stomach health
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Stomach {
     /// Health
@@ -214,7 +214,7 @@ pub struct Stomach {
 }
 
 /// Left arm health
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct LeftArm {
     /// Health
@@ -222,7 +222,7 @@ pub struct LeftArm {
 }
 
 /// Right arm health
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct RightArm {
     /// Health
@@ -230,7 +230,7 @@ pub struct RightArm {
 }
 
 /// Left leg health
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct LeftLeg {
     /// Health
@@ -238,7 +238,7 @@ pub struct LeftLeg {
 }
 
 /// Right leg health
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct RightLeg {
     /// Health
@@ -246,7 +246,7 @@ pub struct RightLeg {
 }
 
 /// Profile inventory
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Inventory {
     /// Items
@@ -264,7 +264,7 @@ pub struct Inventory {
 }
 
 /// Player skills
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Skills {
     /// Common skills
@@ -276,7 +276,7 @@ pub struct Skills {
 }
 
 /// Common skill
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct CommonSkill {
     /// Skill ID
@@ -290,7 +290,7 @@ pub struct CommonSkill {
 }
 
 /// Master skill
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct MasteringSkill {
     /// Skill ID
@@ -300,7 +300,7 @@ pub struct MasteringSkill {
 }
 
 /// Player statistics
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Stats {
     /// Session stats counters
@@ -332,7 +332,7 @@ pub struct Stats {
 }
 
 /// Session stats counter
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct SessionCounters {
     /// Statistics
@@ -340,7 +340,7 @@ pub struct SessionCounters {
 }
 
 /// Overall stats counter
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct OverallCounters {
     /// Statistics
@@ -348,7 +348,7 @@ pub struct OverallCounters {
 }
 
 /// Statistics
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct SessionItem {
     /// Statistic key
@@ -358,7 +358,7 @@ pub struct SessionItem {
 }
 
 /// Aggressor
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Aggressor {
     /// Aggressor name
@@ -376,7 +376,7 @@ pub struct Aggressor {
 }
 
 /// Victim
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Victim {
     /// Victim name
@@ -394,7 +394,7 @@ pub struct Victim {
 }
 
 /// ?
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct ConditionCounters {
     /// Counters
@@ -402,7 +402,7 @@ pub struct ConditionCounters {
 }
 
 /// ?
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct ConditionCounter {
     /// Counter ID
@@ -412,7 +412,7 @@ pub struct ConditionCounter {
 }
 
 /// ?
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct BackendCounter {
     /// Counter ID
@@ -424,7 +424,7 @@ pub struct BackendCounter {
 }
 
 /// Insured item
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct InsuredItem {
     /// Insurance ID
@@ -435,7 +435,7 @@ pub struct InsuredItem {
 }
 
 /// Bonus?
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Bonus {
     /// ?
@@ -460,7 +460,7 @@ pub struct Bonus {
 }
 
 /// Quest
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Quest {
     /// Quest ID
@@ -475,7 +475,7 @@ pub struct Quest {
 }
 
 /// Flea market profile
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Ragfair {
     /// Market rating
@@ -510,7 +510,7 @@ struct SelectResponse {
 }
 
 /// Profile select result
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 struct ProfileSelected {
     /// Profile status
@@ -522,7 +522,7 @@ struct ProfileSelected {
 }
 
 /// Profile notifier
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct Notifier {
     /// Notifier server
     pub server: String,

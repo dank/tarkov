@@ -64,7 +64,7 @@ struct SearchResponse {
 }
 
 /// Market search result
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct SearchResult {
     /// Market categories
@@ -78,7 +78,7 @@ pub struct SearchResult {
 }
 
 /// Market offer
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Offer {
     /// Offer ID
@@ -113,7 +113,7 @@ pub struct Offer {
 }
 
 /// Merchant profile
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct User {
     /// Merchant ID
@@ -131,7 +131,7 @@ pub struct User {
 }
 
 /// Offer requirement
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Requirement {
     /// Item localization schema ID
@@ -183,7 +183,7 @@ struct GetPriceResponse {
 }
 
 /// Ragfair item price
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Price {
     /// Item localization schema ID
