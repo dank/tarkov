@@ -5,8 +5,6 @@
 
 An unofficial client library for the [Escape from Tarkov](https://escapefromtarkov.com) (EFT) API.
 
-This library is currently in alpha. Everything may change significantly in future releases.
-
 ## Features
 - [x] Authentication
 - [x] Flea market
