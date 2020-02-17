@@ -192,7 +192,7 @@ pub struct Price {
 }
 
 /// Item for trade
-#[derive()]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct TraderItem {
     /// Item ID
     pub id: String,
