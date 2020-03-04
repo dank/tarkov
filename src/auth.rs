@@ -67,6 +67,9 @@ pub enum LoginError {
     /// Rate limited after too many bad login attempts.
     #[error(display = "too many login attempts")]
     RateLimited,
+    /// Library contains the wrong major version.
+    #[error(display = "wrong major version")]
+    WrongMajorVersion,
 }
 
 pub(crate) async fn login(

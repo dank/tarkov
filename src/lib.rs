@@ -290,6 +290,7 @@ pub(crate) fn handle_error2(error: ErrorResponse) -> Result<()> {
         214 => Err(LoginError::CaptchaRequired)?,
         228 => Err(RagfairError::InvalidBarterItems)?,
         230 => Err(LoginError::RateLimited)?,
+        232 => Err(LoginError::WrongMajorVersion)?,
         263 => Err(Error::Maintenance)?,
         1000 => Err(Error::BackendError)?,
         1501 => Err(RagfairError::MaxOfferCount)?,
