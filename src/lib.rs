@@ -30,7 +30,7 @@ use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 use std::io::Read;
 
-const GAME_VERSION: &str = "0.12.3.6047";
+const GAME_VERSION: &str = "0.12.3.6152";
 const LAUNCHER_VERSION: &str = "0.9.3.1057";
 const UNITY_VERSION: &str = "2018.4.13f1";
 
