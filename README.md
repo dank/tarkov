@@ -5,6 +5,8 @@
 
 An unofficial client library for the [Escape from Tarkov](https://escapefromtarkov.com) (EFT) API.
 
+Note: The game updates faster than I can update this crate. Make sure the `GAME_VERSION` and `LAUNCHER_VERSION` consts are up to date.
+
 ## Features
 - [x] Authentication
 - [x] Flea market
