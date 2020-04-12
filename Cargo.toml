@@ -1,7 +1,7 @@
 [package]
 name = "tarkov"
 description = "A client library for the Escape from Tarkov API"
-version = "0.1.4"
+version = "0.1.5"
 authors = ["Dan Kyung <dan@kyung.ca>"]
 edition = "2018"
 readme = "README.md"
