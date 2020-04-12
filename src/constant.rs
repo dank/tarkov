@@ -1603,15 +1603,15 @@ pub struct Quest {
     /// Quest name
     pub name: String,
     /// Quest description
-    pub description: String,
+    pub description: Option<String>,
     /// Quest note
     pub note: Option<String>,
     /// Quest fail message
-    pub fail_message_text: String,
+    pub fail_message_text: Option<String>,
     /// Quest start message
-    pub started_message_text: String,
+    pub started_message_text: Option<String>,
     /// Quest success message
-    pub success_message_text: String,
+    pub success_message_text: Option<String>,
     /// Quest conditions
     pub conditions: HashMap<String, String>,
     /// Quest location
