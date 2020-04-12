@@ -94,6 +94,8 @@ pub struct Upd {
     pub buy_restriction_current: Option<u64>,
     /// Key info
     pub key: Option<UpdKey>,
+    /// Tag info
+    pub tag: Option<UpdTag>,
 }
 
 /// Medkit item info
@@ -130,6 +132,16 @@ pub struct UpdLight {
 pub struct UpdKey {
     /// Number of usage
     pub number_of_usages: u64,
+}
+
+/// Tag info
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
+#[serde(rename_all = "PascalCase")]
+pub struct UpdTag {
+    /// Color
+    pub color: u64,
+    /// Name
+    pub name: String,
 }
 
 /// Inventory item for trading.
