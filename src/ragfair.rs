@@ -85,7 +85,7 @@ pub struct Offer {
     #[serde(rename = "_id")]
     pub id: String,
     /// ?
-    pub int_id: String,
+    pub int_id: u64,
     /// Merchant profile
     pub user: User,
     /// ?
